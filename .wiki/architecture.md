@@ -72,7 +72,7 @@ On `PlayerScreen` init, the app forces landscape orientation via `SystemChrome.s
 
 The nTV client talks to two surfaces on the nSelf backend:
 
-### REST endpoints (nMedia plugins)
+### REST endpoints (nTV plugins)
 
 | Method | Path | Plugin | Returns |
 |--------|------|--------|--------|

@@ -12,7 +12,7 @@ By the end of this guide you will:
 - **Flutter 3.10+** — install: [flutter.dev/install](https://docs.flutter.dev/get-started/install)
 - **Dart 3.0+** — installed with Flutter.
 - **Git** — for forking + branching.
-- **A running nSelf backend** with the nMedia bundle (per [[Backend-Setup]]) — required to test most features.
+- **A running nSelf backend** with the nTV bundle (per [[Backend-Setup]]) — required to test most features.
 
 ## Steps
 

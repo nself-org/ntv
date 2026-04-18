@@ -15,7 +15,7 @@ This page covers everything needed to run nTV on your local machine and connect 
 **Required for backend-connected features (library, streaming, metadata):**
 
 - nSelf CLI installed and configured (`nself --version` should succeed)
-- nMedia plugin bundle license ($0.99/mo) — activate via `nself license set <key>`
+- nTV plugin bundle license ($0.99/mo) — activate via `nself license set <key>`
 
 **Not required for IPTV M3U use.** Adding M3U playlist URLs in Settings works without any backend.
 
@@ -56,7 +56,7 @@ flutter run -d chrome
 
 ## Backend Setup
 
-If you want to use the full library and streaming features, you need an nSelf backend with the nMedia plugins installed.
+If you want to use the full library and streaming features, you need an nSelf backend with the nTV plugins installed.
 
 See `ntv/.backend/README.md` for the backend initialization walkthrough. The short version:
 

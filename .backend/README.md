@@ -9,15 +9,15 @@ This directory holds the nSelf backend configuration that nTV clients connect to
 ```bash
 cd ntv/.backend
 
-# 1. Set your license key (for Pro plugins in the nMedia bundle)
+# 1. Set your license key (for Pro plugins in the nTV bundle)
 nself license set nself_pro_xxxxx...
 
-# 2. Install free nMedia plugins
+# 2. Install free nTV plugins
 nself plugin install torrent-manager
 nself plugin install content-acquisition
 nself plugin install subtitle-manager
 
-# 3. Install Pro nMedia plugins (requires valid license)
+# 3. Install Pro nTV plugins (requires valid license)
 nself plugin install media-processing
 nself plugin install file-processing
 nself plugin install streaming
@@ -43,9 +43,9 @@ nself start
 | MinIO | S3-compatible media file storage |
 | MeiliSearch | Library full-text search |
 
-## nMedia bundle
+## nTV bundle
 
-See `.env` — the `NMEDIA_BUNDLE_ENABLED` flag and the plugin list. Free plugins install without a license. Pro plugins require an active nMedia bundle subscription ($0.99/mo) or ɳSelf+ ($49.99/yr). See the marketing site at [ntv.nself.org](https://ntv.nself.org) for details.
+See `.env` — the `NMEDIA_BUNDLE_ENABLED` flag and the plugin list. Free plugins install without a license. Pro plugins require an active nTV bundle subscription ($0.99/mo) or ɳSelf+ ($49.99/yr). See the marketing site at [ntv.nself.org](https://ntv.nself.org) for details.
 
 ## Environment files
 

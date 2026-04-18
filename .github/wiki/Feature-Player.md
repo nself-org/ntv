@@ -15,12 +15,12 @@ Underneath, the stream URL comes from the backend `streaming` plugin. nTV does n
 | Item | Required | Notes |
 |------|----------|-------|
 | nSelf CLI | latest stable | F01-MASTER-VERSIONS |
-| Plugin: `streaming` | Yes | Pro — F06 nMedia bundle |
-| Plugin: `media-processing` | Yes | Pro — F06 nMedia bundle |
-| Plugin: `tmdb` | Yes (for metadata while playing) | Pro — F06 nMedia bundle |
+| Plugin: `streaming` | Yes | Pro — F06 nTV bundle |
+| Plugin: `media-processing` | Yes | Pro — F06 nTV bundle |
+| Plugin: `tmdb` | Yes (for metadata while playing) | Pro — F06 nTV bundle |
 | Plugin: `subtitle-manager` | Optional | Pro — for subtitle search beyond the .srt currently bundled with the media |
-| Tier | Bundle: nMedia ($0.99/mo per F06) | per F07-PRICING-TIERS |
-| Bundle | nMedia | per F06-BUNDLE-INVENTORY |
+| Tier | Bundle: nTV ($0.99/mo per F06) | per F07-PRICING-TIERS |
+| Bundle | nTV | per F06-BUNDLE-INVENTORY |
 
 ## Configuration
 
@@ -89,6 +89,6 @@ None tracked yet.
 - [[Feature-Library]] — feature page
 - [[Feature-Settings]] — feature page (player prefs)
 - [[Feature-Sync]] — feature page (resume position)
-- [[Backend-Setup]] — install the nMedia bundle
+- [[Backend-Setup]] — install the nTV bundle
 
 ← [[Home]]

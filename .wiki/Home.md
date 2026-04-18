@@ -1,10 +1,10 @@
 # nTV Wiki
 
-nTV is an open-source media player for your self-hosted content. Built with Flutter, it runs on six platforms: iOS, Android, macOS, Windows, Linux, and Web. It connects to a self-hosted nSelf backend powered by the nMedia plugin bundle.
+nTV is an open-source media player for your self-hosted content. Built with Flutter, it runs on six platforms: iOS, Android, macOS, Windows, Linux, and Web. It connects to a self-hosted nSelf backend powered by the nTV plugin bundle.
 
 **Free use:** Add any IPTV M3U playlist in Settings and browse live channels immediately. No nSelf backend required, no license key needed.
 
-**Full library mode:** Self-host your media collection using nSelf CLI with the nMedia plugin bundle ($0.99/mo). Unlocks library management, adaptive streaming, metadata, EPG, and progress sync.
+**Full library mode:** Self-host your media collection using nSelf CLI with the nTV plugin bundle ($0.99/mo). Unlocks library management, adaptive streaming, metadata, EPG, and progress sync.
 
 **Repo:** [nself-org/ntv](https://github.com/nself-org/ntv)
 **Marketing site:** [ntv.nself.org](https://ntv.nself.org)
@@ -31,7 +31,7 @@ nTV is an open-source media player for your self-hosted content. Built with Flut
 
 ### Reference
 
-- [Plugins](plugins) — nMedia plugin table with install commands
+- [Plugins](plugins) — nTV plugin table with install commands
 - [Platforms](platforms) — per-platform status, limitations, build commands
 - [Contributing](contributing) — Flutter conventions, code style, PR process
 
@@ -51,7 +51,7 @@ nTV is an open-source media player for your self-hosted content. Built with Flut
 | Feature | Requires |
 |---------|---------|
 | IPTV M3U playback | Nothing (free) |
-| Library management | nMedia bundle ($0.99/mo) |
+| Library management | nTV bundle ($0.99/mo) |
 | Adaptive streaming | `streaming` + `stream-gateway` plugins |
 | Metadata (TMDB) | `tmdb` plugin |
 | EPG guide | `epg` plugin |

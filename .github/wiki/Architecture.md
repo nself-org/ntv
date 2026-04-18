@@ -6,7 +6,7 @@
 
 nTV is a Flutter client app that targets six platforms from one codebase: iOS, Android, macOS, Linux, Windows, and Web. The app does not contain a server. All data, all media, all metadata, and all auth state live on a user-hosted nSelf backend.
 
-The backend runs the nMedia plugin bundle. The plugins handle streaming, transcoding, EPG, and TMDB metadata. The app speaks Hasura GraphQL over HTTPS with a JWT.
+The backend runs the nTV plugin bundle. The plugins handle streaming, transcoding, EPG, and TMDB metadata. The app speaks Hasura GraphQL over HTTPS with a JWT.
 
 ## Components
 
@@ -24,7 +24,7 @@ The backend runs the nMedia plugin bundle. The plugins handle streaming, transco
 - **Hasura GraphQL** — exposes the schema to the app with row-level permissions.
 - **Auth (nHost)** — issues JWTs via email/password.
 - **Nginx** — TLS termination + routing to plugin services.
-- **nMedia plugin bundle** — all streaming, transcoding, metadata. Required minimum per [[Backend-Setup]].
+- **nTV plugin bundle** — all streaming, transcoding, metadata. Required minimum per [[Backend-Setup]].
 
 ## Data Flow
 

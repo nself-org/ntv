@@ -2,7 +2,7 @@
 
 ## What This Is
 
-nTV is an open-source media player built with Flutter for 6 platforms (iOS, Android, macOS, Windows, Linux, web). It uses the nSelf backend with the nMedia plugin bundle.
+nTV is an open-source media player built with Flutter for 6 platforms (iOS, Android, macOS, Windows, Linux, web). It uses the nSelf backend with the nTV plugin bundle.
 
 ## Prerequisites
 

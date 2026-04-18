@@ -1,8 +1,8 @@
 # nTV Backend
 
-Self-hosted media server backend for nTV. Runs on the nSelf CLI stack with the nMedia plugin bundle.
+Self-hosted media server backend for nTV. Runs on the nSelf CLI stack with the nTV plugin bundle.
 
-The nTV Flutter app connects to this backend for library management, streaming, EPG scheduling, and metadata. Free IPTV playback (any M3U URL) works without a license. The nMedia bundle ($0.99/mo) adds transcoding, DVR, stream proxying, TMDB metadata, and content acquisition.
+The nTV Flutter app connects to this backend for library management, streaming, EPG scheduling, and metadata. Free IPTV playback (any M3U URL) works without a license. The nTV bundle ($0.99/mo) adds transcoding, DVR, stream proxying, TMDB metadata, and content acquisition.
 
 ---
 
@@ -10,7 +10,7 @@ The nTV Flutter app connects to this backend for library management, streaming, 
 
 - [nSelf CLI](https://nself.org/docs/getting-started) installed (`nself --version`)
 - Docker running locally
-- nMedia bundle license key from [nself.org/pricing](https://nself.org/pricing) (for pro media features)
+- nTV bundle license key from [nself.org/pricing](https://nself.org/pricing) (for pro media features)
 - TMDB API key from [themoviedb.org](https://www.themoviedb.org/settings/api) (free, for metadata)
 
 ---
@@ -38,7 +38,7 @@ The backend is ready when `make status` shows all services healthy.
 
 ## Plugins
 
-### nMedia Bundle (pro, $0.99/mo)
+### nTV Bundle (pro, $0.99/mo)
 
 | Plugin | What it does |
 |--------|--------------|

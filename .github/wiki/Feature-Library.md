@@ -15,12 +15,12 @@ Because the catalog can be large (10k+ titles for serious self-hosters), the des
 | Item | Required | Notes |
 |------|----------|-------|
 | nSelf CLI | latest stable | F01-MASTER-VERSIONS |
-| Plugin: `streaming` | Yes | Pro — F06 nMedia bundle |
-| Plugin: `tmdb` | Yes | Pro — F06 nMedia bundle |
-| Plugin: `media-processing` | Yes | Pro — F06 nMedia bundle (provides on-disk scan) |
+| Plugin: `streaming` | Yes | Pro — F06 nTV bundle |
+| Plugin: `tmdb` | Yes | Pro — F06 nTV bundle |
+| Plugin: `media-processing` | Yes | Pro — F06 nTV bundle (provides on-disk scan) |
 | Plugin: `game-metadata` | Optional | Pro — needed only if browsing games |
-| Tier | Bundle: nMedia ($0.99/mo per F06) | per F07-PRICING-TIERS |
-| Bundle | nMedia | per F06-BUNDLE-INVENTORY |
+| Tier | Bundle: nTV ($0.99/mo per F06) | per F07-PRICING-TIERS |
+| Bundle | nTV | per F06-BUNDLE-INVENTORY |
 
 ## Configuration
 
@@ -95,6 +95,6 @@ None tracked yet.
 - [[Feature-Search]] — feature page
 - [[Feature-Player]] — feature page
 - [[Feature-Sync]] — feature page (watch state)
-- [[Backend-Setup]] — install the nMedia bundle
+- [[Backend-Setup]] — install the nTV bundle
 
 ← [[Home]]

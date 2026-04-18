@@ -5,7 +5,7 @@
 project:
   name: ntv
   display_name: nTV
-  description: nTV media server backend powered by nSelf CLI + nMedia plugin bundle
+  description: nTV media server backend powered by nSelf CLI + nTV plugin bundle
 
 # Required services — always on, no opt-in needed
 # PostgreSQL, Hasura GraphQL, Auth (nHost), Nginx are started by default.
@@ -27,9 +27,9 @@ services:
     # Full-text search across media library
 
 # Custom services: none for nTV
-# Media processing is handled entirely by the nMedia plugin bundle.
+# Media processing is handled entirely by the nTV plugin bundle.
 
-# Pro plugins (nMedia bundle — $0.99/mo)
+# Pro plugins (nTV bundle — $0.99/mo)
 # Install: nself plugin install media-processing streaming stream-gateway epg tmdb
 plugins:
   pro:

@@ -16,9 +16,9 @@ SUBTITLE SUPPORT
 
 Import subtitle files manually or let nTV search for the right track. Adjust timing, size, and position to match your display setup.
 
-UNLOCK THE FULL MEDIA SERVER WITH nMedia ($0.99/mo)
+UNLOCK THE FULL MEDIA SERVER WITH nTV ($0.99/mo)
 
-nTV works with any IPTV M3U for free. For users who want a full media server on their own hardware, the nMedia plugin bundle ($0.99/month) adds:
+nTV works with any IPTV M3U for free. For users who want a full media server on their own hardware, the nTV plugin bundle ($0.99/month) adds:
 
 - Server-side transcoding so any device plays any format
 - Content acquisition and download management
@@ -27,7 +27,7 @@ nTV works with any IPTV M3U for free. For users who want a full media server on 
 - Torrent client integration
 - Podcast library management
 
-The nMedia bundle installs on your self-hosted nSelf backend in one command. There is no managed cloud involved — all content and metadata stays on your server.
+The nTV bundle installs on your self-hosted nSelf backend in one command. There is no managed cloud involved — all content and metadata stays on your server.
 
 SELF-HOSTED AND PRIVATE BY DESIGN
 
@@ -45,6 +45,6 @@ SETUP
 
 1. Install nTV on your device.
 2. Load an IPTV M3U URL in Settings to start watching live TV for free.
-3. Optional: install the nSelf CLI on your server, add the nMedia bundle, and point nTV at your backend for a full self-hosted media server.
+3. Optional: install the nSelf CLI on your server, add the nTV bundle, and point nTV at your backend for a full self-hosted media server.
 
 Full documentation at ntv.nself.org.
