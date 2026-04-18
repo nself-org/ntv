@@ -1,0 +1,1 @@
+Self-hosted media player. Stream your library on iOS, Android, and more.

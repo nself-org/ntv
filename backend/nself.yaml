@@ -1,0 +1,58 @@
+# nTV backend — nSelf project configuration
+# Managed by: nself CLI
+# DO NOT run docker-compose directly. Use: nself build && nself start
+
+project:
+  name: ntv
+  display_name: nTV
+  description: nTV media server backend powered by nSelf CLI + nMedia plugin bundle
+
+# Required services — always on, no opt-in needed
+# PostgreSQL, Hasura GraphQL, Auth (nHost), Nginx are started by default.
+
+# Optional services enabled for nTV
+services:
+  redis:
+    enabled: true
+    # Session caching, playlist state, stream session tokens
+  minio:
+    enabled: true
+    # Object storage for media thumbnails, subtitle files, EPG data
+  mail:
+    enabled: true
+    # Account notifications, password reset
+  search:
+    enabled: true
+    provider: meilisearch
+    # Full-text search across media library
+
+# Custom services: none for nTV
+# Media processing is handled entirely by the nMedia plugin bundle.
+
+# Pro plugins (nMedia bundle — $0.99/mo)
+# Install: nself plugin install media-processing streaming stream-gateway epg tmdb
+plugins:
+  pro:
+    - name: media-processing
+      # Video transcoding, thumbnail generation, subtitle extraction
+    - name: streaming
+      # HLS/DASH adaptive streaming, DVR buffer management
+    - name: stream-gateway
+      # Reverse proxy for live IPTV streams, stream health monitoring
+    - name: epg
+      # Electronic Programme Guide ingestion and scheduling
+    - name: tmdb
+      # Movie/TV metadata, posters, ratings from TMDB API
+
+# Free plugins (MIT, no license required)
+# Install: nself plugin install torrent-manager content-acquisition subtitle-manager
+  free:
+    - name: torrent-manager
+      # Torrent queue management, ratio tracking
+    - name: content-acquisition
+      # Download coordination, library import, file organization
+    - name: subtitle-manager
+      # Subtitle search, download, and synchronization
+
+# Environment: overridden by .env / .env.prod
+# Run `nself build` after changing this file.

@@ -1,0 +1,17 @@
+nTV v1.0.9 — Initial release
+
+This is the first public release of nTV.
+
+What's included:
+- IPTV playback via M3U playlists with HLS and DASH support
+- Adaptive bitrate streaming
+- Media library with TMDB artwork and metadata
+- Electronic Program Guide (EPG) for live channel schedules
+- Subtitle support with manual import and timing adjustment
+- Multi-audio-track selection
+- nSelf backend integration for self-hosted media servers
+- nMedia plugin bundle support for server-side transcoding and DVR
+- iOS, Android, macOS, Windows, Linux, and web builds
+
+Source code: github.com/nself-org/ntv
+Documentation: ntv.nself.org

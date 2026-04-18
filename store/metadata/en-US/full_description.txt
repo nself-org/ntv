@@ -1,0 +1,50 @@
+nTV is a free, open-source media player for iOS, Android, macOS, Windows, Linux, and the web. It connects to your own backend so your library, watch history, and preferences stay on hardware you control — not on someone else's server.
+
+WHAT YOU CAN DO FOR FREE
+
+Load any IPTV playlist (M3U) and start watching immediately. nTV plays HLS and DASH streams out of the box with adaptive bitrate switching, so playback adjusts to your connection without manual intervention. Add subtitles from local files or external sources and choose from multiple audio tracks per title. Everything works without an account, without a subscription, and without sending your viewing data anywhere.
+
+MEDIA LIBRARY
+
+Organize movies, TV shows, and live channels in a unified library view. nTV fetches artwork, cast info, and episode summaries from TMDB so your library looks like a proper streaming service rather than a file list. Browse by genre, search by title, and pick up where you left off across devices.
+
+ELECTRONIC PROGRAM GUIDE
+
+The built-in EPG displays channel schedules for your IPTV streams. See what is on now, what is coming next, and browse ahead by day — all without leaving the app.
+
+SUBTITLE SUPPORT
+
+Import subtitle files manually or let nTV search for the right track. Adjust timing, size, and position to match your display setup.
+
+UNLOCK THE FULL MEDIA SERVER WITH nMedia ($0.99/mo)
+
+nTV works with any IPTV M3U for free. For users who want a full media server on their own hardware, the nMedia plugin bundle ($0.99/month) adds:
+
+- Server-side transcoding so any device plays any format
+- Content acquisition and download management
+- A DVR for recording live streams
+- Advanced media processing and file organization
+- Torrent client integration
+- Podcast library management
+
+The nMedia bundle installs on your self-hosted nSelf backend in one command. There is no managed cloud involved — all content and metadata stays on your server.
+
+SELF-HOSTED AND PRIVATE BY DESIGN
+
+nTV connects to a backend you run on your own infrastructure using the nSelf CLI (free, open-source). Your library, watch history, and user accounts live on your hardware. nTV does not collect analytics, does not phone home, and does not require any account to play IPTV content.
+
+OPEN SOURCE
+
+nTV is MIT-licensed. Source code is available at github.com/nself-org/ntv. Contributions are welcome.
+
+SUPPORTED PLATFORMS
+
+iOS 15+, Android 8+, macOS 12+, Windows 10+, Linux (x86-64), Web
+
+SETUP
+
+1. Install nTV on your device.
+2. Load an IPTV M3U URL in Settings to start watching live TV for free.
+3. Optional: install the nSelf CLI on your server, add the nMedia bundle, and point nTV at your backend for a full self-hosted media server.
+
+Full documentation at ntv.nself.org.
