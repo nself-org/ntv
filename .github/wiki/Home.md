@@ -99,6 +99,30 @@ Display name is **nTV** (locked: lowercase n, uppercase TV — never `ɳTV`, `NT
 
 - [[Contributing]] — early-stage contributor guide. The repo is in bootstrap; expect frequent breaking changes.
 
+## Quick Reference
+
+| Platform | Video Engine | Status |
+|----------|-------------|--------|
+| iOS | AVPlayer (via video_player) | Active |
+| macOS | AVPlayer (via video_player) | Active |
+| Android | ExoPlayer (via video_player) | Active |
+| Windows | platform video_player | Active |
+| Linux | platform video_player | Active |
+| Web | HTML5 + HLS.js | Active |
+
+| Feature | Requires |
+|---------|---------|
+| IPTV M3U playback | Nothing (free) |
+| Library management | nTV bundle ($0.99/mo) |
+| Adaptive streaming | `streaming` + `stream-gateway` plugins |
+| Metadata (TMDB) | `tmdb` plugin |
+| EPG guide | `epg` plugin |
+| Progress sync | Any nSelf backend with `streaming` plugin |
+
+**Free use:** Add any IPTV M3U playlist in Settings and browse live channels immediately. No nSelf backend required, no license key needed. See [[Feature-IPTV]].
+
+**Full library mode:** Self-host your media collection using nSelf CLI with the nTV plugin bundle ($0.99/mo). Unlocks library management, adaptive streaming, metadata, EPG, and progress sync. See [[Backend-Setup]].
+
 ## Resources
 
 - **GitHub:** [nself-org/ntv](https://github.com/nself-org/ntv)

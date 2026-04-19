@@ -9,9 +9,10 @@ By the end of this guide you will:
 
 ## Prerequisites
 
-- **Flutter 3.10+** — install: [flutter.dev/install](https://docs.flutter.dev/get-started/install)
-- **Dart 3.0+** — installed with Flutter.
+- **Flutter 3.24+** — install: [flutter.dev/install](https://docs.flutter.dev/get-started/install)
+- **Dart 3.5+** — installed with Flutter.
 - **Git** — for forking + branching.
+- **nSelf CLI** — for the media backend.
 - **A running nSelf backend** with the nTV bundle (per [[Backend-Setup]]) — required to test most features.
 
 ## Steps
@@ -66,7 +67,7 @@ dart format lib         # formatting
 
 ### Step 6 — Open a pull request
 
-PR title format: `[type] short summary` where type is `feat`, `fix`, `docs`, `refactor`, etc.
+PR title and commit messages follow **Conventional Commits**: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`, etc. (e.g. `feat: add HLS multi-audio track support`).
 
 Include in the PR body:
 

@@ -1,5 +1,7 @@
 # Plugins
 
+**Status:** Active
+
 nTV uses the nTV plugin bundle on the nSelf backend. This page lists every plugin, what it provides to the app, and how to install it.
 
 ---
@@ -39,7 +41,7 @@ nself start
 | `stream-gateway` | Stream URL routing. Returns the final playback URL with auth headers to the nTV client. Handles quality selection. | nTV bundle |
 | `epg` | Electronic Program Guide data. Channel schedule lookup for IPTV channels by `tvg-id`. | nTV bundle |
 | `tmdb` | Movie and TV metadata, poster art, backdrop images, cast, ratings. Populated via `/tmdb/movie/:id` and `/tmdb/tv/:id` endpoints. | nTV bundle |
-| `media-processing` | Encoding pipeline. Transcodes uploaded or downloaded media into HLS-compatible formats. Written in Rust for encoding performance. | nTV bundle |
+| `media-processing` | Encoding pipeline. Transcodes uploaded or downloaded media into HLS-compatible formats. | nTV bundle |
 | `recording` | DVR-style recording from live streams. Recorded files appear in the library. | nTV bundle |
 
 ### Free Plugins (MIT, no license required)
@@ -68,6 +70,10 @@ IPTV M3U playback works with zero plugins — it streams directly from the provi
 
 ## Version Compatibility
 
-All nTV plugins are versioned with the nSelf plugin ecosystem. The nTV app targets the plugin API contract described in [Architecture](architecture). If you run significantly older plugin versions, some endpoints may not exist or may return different shapes.
+All nTV plugins are versioned with the nSelf plugin ecosystem. The nTV app targets the plugin API contract described in [[Architecture]]. If you run significantly older plugin versions, some endpoints may not exist or may return different shapes.
 
 Check `nself plugin list` on your backend to see installed plugin versions.
+
+Bundle membership is canonical in F06-BUNDLE-INVENTORY (in PPI SPORT directory).
+
+← [[Home]]

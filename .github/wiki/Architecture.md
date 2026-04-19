@@ -77,6 +77,96 @@ The app does NOT modify the backend. Plugin install is the user's responsibility
 - Server-side trans-coding control from the app (use backend admin)
 - Plugin install / uninstall from the app
 
+## Routing Reference
+
+Routes are declared in `lib/main.dart` using `go_router`:
+
+```
+/               → HomeScreen (library + search)
+/settings       → SettingsScreen (connection config, playback prefs)
+/detail/:id     → DetailScreen (metadata, episode list, play button)
+  ?type=movie   (default)
+  ?type=tvShow
+/player         → PlayerScreen (full-screen video)
+  ?mediaId=<id>
+```
+
+`HomeScreen` and `SettingsScreen` share a `ShellRoute` which renders the `NavigationBar` shell. `DetailScreen` and `PlayerScreen` are pushed on top with no shell (full-screen experience).
+
+## Backend API Contract
+
+The nTV client talks to two surfaces on the nSelf backend:
+
+### REST endpoints (nTV plugins)
+
+| Method | Path | Plugin | Returns |
+|--------|------|--------|--------|
+| GET | `/streaming/library` | `streaming` | `{items: Media[]}` with optional `?genre=` and `?q=` |
+| GET | `/streaming/continue` | `streaming` | `{items: Media[]}` — items with saved progress |
+| GET | `/streaming/play/:id` | `stream-gateway` | `{url, format, headers}` — playback URL |
+| POST | `/streaming/progress` | `streaming` | Save `{media_id, position_seconds}` |
+| GET | `/streaming/genres` | `streaming` | `{genres: string[]}` |
+| GET | `/tmdb/movie/:id` | `tmdb` | Full media object with metadata |
+| GET | `/tmdb/tv/:id` | `tmdb` | Full TV show object |
+| GET | `/tmdb/tv/:id/season/:n` | `tmdb` | `{episodes: Episode[]}` |
+
+### Authentication
+
+Settings allows an optional API key / bearer token. When set, every request carries `Authorization: Bearer <key>`. For public self-hosted libraries, the key field can be left blank.
+
+## Detailed Data Flow
+
+```
+User opens Library screen
+        │
+        ▼
+libraryProvider (FutureProvider.family)
+        │
+        ▼
+ApiService.getLibrary(genre?, query?)
+        │  GET /streaming/library
+        ▼
+nSelf backend / streaming plugin
+        │
+        ▼
+List<Media> → Riverpod caches result
+        │
+        ▼
+HomeScreen renders poster grid
+        │
+User taps item
+        ▼
+DetailScreen — mediaDetailProvider fetches /tmdb/movie/:id
+        │
+User taps Play
+        ▼
+PlayerScreen — streamInfoProvider fetches /streaming/play/:id
+        │
+        ▼
+VideoPlayerController.networkUrl(stream.url, headers: stream.headers)
+        │
+        ▼
+Platform decoder (AVPlayer / ExoPlayer / HTML5)
+        │
+Progress listener fires every ~10s
+        ▼
+ApiService.saveProgress(mediaId, position) → POST /streaming/progress
+```
+
+## Settings Persistence
+
+`SettingsService` wraps `SharedPreferences`. Keys:
+
+| Key | Stores |
+|-----|--------|
+| `ntv_backend_url` | Backend base URL |
+| `ntv_api_key` | Bearer token (stored locally, not sent anywhere except the configured backend) |
+| `ntv_autoplay` | Autoplay next episode toggle |
+| `ntv_preferred_quality` | `auto`, `1080p`, `720p`, or `480p` |
+| `ntv_m3u_urls` | List of IPTV M3U playlist URLs |
+
+`SettingsService.init()` must be called once at app start before any provider reads settings. In `main()`, this happens inside `ProviderScope`'s initialization.
+
 ## Source
 
 - Internal architecture (full): `docs/ARCHITECTURE.md` in the AI context directory (gitignored)
@@ -87,6 +177,6 @@ The app does NOT modify the backend. Plugin install is the user's responsibility
 
 - [[Getting-Started]] — install + run
 - [[Backend-Setup]] — backend bootstrap
-- [[Player]] — feature page
+- [[Feature-Player]] — feature page
 
 ← [[Home]]

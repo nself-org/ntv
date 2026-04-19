@@ -1,5 +1,7 @@
 # Platforms
 
+**Status:** Active
+
 nTV targets six platforms. This page covers per-platform status, known limitations, and build commands.
 
 ---
@@ -131,3 +133,5 @@ add_header Access-Control-Allow-Origin "https://your-ntv-web-domain.example.com"
 flutter build web
 # Output in build/web/ — serve with any static host
 ```
+
+← [[Home]]

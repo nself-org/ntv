@@ -89,6 +89,32 @@ If any step fails, see [[Backend-Setup]] § Troubleshooting.
 **Cause:** The nTV bundle's `streaming` plugin is not installed on the backend.
 **Fix:** `nself plugin install streaming && nself build && nself start`.
 
+## Platform-Specific Toolchains
+
+| Platform | Additional requirement |
+|----------|----------------------|
+| iOS | Xcode 15+, macOS host, Apple developer account |
+| macOS | Xcode 15+ |
+| Android | Android Studio or SDK tools, `ANDROID_SDK_ROOT` set |
+| Windows | Visual Studio 2022 with Desktop C++ workload |
+| Linux | `clang`, `cmake`, `ninja-build`, `libgtk-3-dev` |
+| Web | Chrome (for `flutter run -d chrome`) |
+
+To target a specific platform with `flutter run`:
+
+```bash
+flutter run -d ios
+flutter run -d android
+flutter run -d macos
+flutter run -d windows
+flutter run -d linux
+flutter run -d chrome
+```
+
+## Using IPTV without a Backend
+
+You don't need an nSelf backend to use the free IPTV M3U player. Open Settings, scroll to the IPTV section, and add a playlist URL. The IPTV channel browser works independently of the backend connection. Full reference: [[Feature-IPTV]].
+
 ## Next Steps
 
 - [[Backend-Setup]] — full nTV install reference
