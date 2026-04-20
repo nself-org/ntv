@@ -1,0 +1,63 @@
+name: Bug Report
+description: Something isn't working in nTV
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please search [existing issues](https://github.com/nself-org/ntv/issues) and check [Discussions](https://github.com/nself-org/ntv/discussions).
+        For security issues, follow the process in [SECURITY.md](https://github.com/nself-org/ntv/blob/main/.github/SECURITY.md) — do not open a public issue.
+  - type: input
+    id: ntv_version
+    attributes:
+      label: nTV version
+      placeholder: "e.g. 0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - iOS
+        - Android
+        - macOS
+        - Linux
+        - Windows
+        - Web
+    validations:
+      required: true
+  - type: input
+    id: backend_version
+    attributes:
+      label: nSelf backend version
+      placeholder: Run `nself version` on the backend server
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the app
+        2. Navigate to...
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      render: shell
