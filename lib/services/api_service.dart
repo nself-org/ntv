@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/media.dart';
 import '../models/channel.dart';
 
-/// HTTP client connecting to nSelf backend with nMedia plugins.
+/// HTTP client connecting to nSelf backend with nTV plugins.
 class ApiService {
   final Dio _dio;
   String? _baseUrl;

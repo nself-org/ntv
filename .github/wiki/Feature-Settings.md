@@ -15,9 +15,9 @@ Settings persist locally per device. The backend URL and JWT live in `flutter_se
 | nSelf CLI | latest stable | F01-MASTER-VERSIONS |
 | Backend reachable from the device | Yes | Local LAN or remote |
 | nSelf account | Yes | Email/password against backend Auth |
-| Plugin: any nMedia plugin | Yes (for the screen to be useful) | Pro — F06 nMedia bundle |
-| Tier | Bundle: nMedia ($0.99/mo per F06) | per F07-PRICING-TIERS |
-| Bundle | nMedia | per F06-BUNDLE-INVENTORY |
+| Plugin: any nTV plugin | Yes (for the screen to be useful) | Pro — F06 nTV bundle |
+| Tier | Bundle: nTV ($0.99/mo per F06) | per F07-PRICING-TIERS |
+| Bundle | nTV | per F06-BUNDLE-INVENTORY |
 
 ## Configuration
 

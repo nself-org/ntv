@@ -135,46 +135,63 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.white38),
-                    const SizedBox(height: 16),
-                    Text(_error!, style: const TextStyle(color: Colors.white70),
-                        textAlign: TextAlign.center),
-                    const SizedBox(height: 24),
-                    OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Go Back'),
-                    ),
-                  ],
+                child: Semantics(
+                  liveRegion: true,
+                  label: 'Playback error: ${_error!}',
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const ExcludeSemantics(
+                        child: Icon(Icons.error_outline, size: 64, color: Colors.white38),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(_error!, style: const TextStyle(color: Colors.white70),
+                          textAlign: TextAlign.center),
+                      const SizedBox(height: 24),
+                      OutlinedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Go Back'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             )
           else if (widget.mediaId == null && widget.streamUrl == null)
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.play_circle_outline, size: 120, color: Colors.white54),
-                  SizedBox(height: 16),
-                  Text('No media selected.', style: TextStyle(color: Colors.white54)),
-                  SizedBox(height: 8),
-                  Text('Choose something from your library to play.',
-                      style: TextStyle(color: Colors.white38, fontSize: 12)),
-                ],
+            Center(
+              child: Semantics(
+                liveRegion: true,
+                label: 'No media selected. Choose something from your library to play.',
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon(Icons.play_circle_outline, size: 120, color: Colors.white54),
+                    ),
+                    SizedBox(height: 16),
+                    Text('No media selected.', style: TextStyle(color: Colors.white54)),
+                    SizedBox(height: 8),
+                    Text('Choose something from your library to play.',
+                        style: TextStyle(color: Colors.white38, fontSize: 12)),
+                  ],
+                ),
               ),
             )
           else
             const Center(child: CircularProgressIndicator()),
 
-          // Back button overlay
+          // Back button overlay (a11y: icon-only button needs explicit label).
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
+              child: Semantics(
+                button: true,
+                label: 'Back',
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  tooltip: 'Back',
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
             ),
           ),

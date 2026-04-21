@@ -13,11 +13,11 @@ Underneath, search hits the same backend `streaming` schema as the Library, but 
 | Item | Required | Notes |
 |------|----------|-------|
 | nSelf CLI | latest stable | F01-MASTER-VERSIONS |
-| Plugin: `streaming` | Yes | Pro — F06 nMedia bundle |
-| Plugin: `tmdb` | Yes | Pro — F06 nMedia bundle (provides searchable metadata) |
+| Plugin: `streaming` | Yes | Pro — F06 nTV bundle |
+| Plugin: `tmdb` | Yes | Pro — F06 nTV bundle (provides searchable metadata) |
 | Plugin: `meilisearch` | Optional | Free — improves ranking + typo tolerance |
-| Tier | Bundle: nMedia ($0.99/mo per F06) | per F07-PRICING-TIERS |
-| Bundle | nMedia | per F06-BUNDLE-INVENTORY |
+| Tier | Bundle: nTV ($0.99/mo per F06) | per F07-PRICING-TIERS |
+| Bundle | nTV | per F06-BUNDLE-INVENTORY |
 
 ## Configuration
 
@@ -86,6 +86,6 @@ None tracked yet.
 
 - [[Feature-Library]] — feature page
 - [[Feature-Settings]] — feature page (search prefs)
-- [[Backend-Setup]] — install the nMedia bundle
+- [[Backend-Setup]] — install the nTV bundle
 
 ← [[Home]]

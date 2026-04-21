@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- S52-T03: APNs environment for debug/development builds.
+	     Production builds use RunnerRelease.entitlements (aps-environment=production). -->
+	<key>aps-environment</key>
+	<string>development</string>
+	<!-- Associated Domains: serves https://ntv.nself.org/.well-known/apple-app-site-association
+	     See SIGNING.md for AASA file contents and hosting steps. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:ntv.nself.org</string>
+		<string>applinks:nself.org</string>
+	</array>
+</dict>
+</plist>

@@ -105,10 +105,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const Divider(height: 32),
 
           // About
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('About'),
-            subtitle: const Text('nTV v1.0.9'),
+          const ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('About'),
+            subtitle: Text('nTV v1.0.9'),
           ),
         ],
       ),

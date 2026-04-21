@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appID": "${APPLE_TEAM_ID}.com.nself.ntv",
+        "paths": [
+          "/stream/*",
+          "/media/*",
+          "/library/*",
+          "/channel/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "${APPLE_TEAM_ID}.com.nself.ntv"
+    ]
+  }
+}

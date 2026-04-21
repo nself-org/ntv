@@ -1,0 +1,46 @@
+name: Feature Request
+description: Suggest an improvement or new feature for nTV
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check [existing feature requests](https://github.com/nself-org/ntv/issues?q=label%3Afeature) first.
+        For large proposals, open a [Discussion](https://github.com/nself-org/ntv/discussions) first.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Which platform does this affect?
+      multiple: true
+      options:
+        - All platforms
+        - iOS
+        - Android
+        - macOS
+        - Linux
+        - Windows
+        - Web
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      placeholder: Describe the problem you're trying to solve
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, mockups, or references

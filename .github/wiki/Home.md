@@ -37,7 +37,7 @@ See [[Backend-Setup]] for backend bootstrap and [[Getting-Started]] for client s
 nTV is a Flutter client. The stack lives on a user-hosted nSelf backend.
 
 - **PostgreSQL**, **Hasura**, **Auth**, **Nginx** — required nSelf backend services
-- **nMedia plugin bundle** — the streaming brain (`media-processing`, `streaming`, `epg`, `tmdb` per F06)
+- **nTV plugin bundle** — the streaming brain (`media-processing`, `streaming`, `epg`, `tmdb` per F06)
 
 See the [[Backend-Setup]] page for full plugin install steps. Source: F08-SERVICE-INVENTORY.
 
@@ -61,7 +61,7 @@ Backend URL + credentials are configured in the app's [[Settings]] screen on fir
 
 ## Plugins
 
-nTV depends on the **nMedia plugin bundle** ($0.99/mo per F06). Required minimum:
+nTV depends on the **nTV plugin bundle** ($0.99/mo per F06). Required minimum:
 
 | Plugin | Tier | Purpose |
 |--------|------|---------|
@@ -78,7 +78,7 @@ Full bundle inventory: F06-BUNDLE-INVENTORY (in PPI SPORT directory).
 
 ## Guides
 
-- [[Backend-Setup]] — set up the nSelf backend with the nMedia bundle
+- [[Backend-Setup]] — set up the nSelf backend with the nTV bundle
 - [[Contributing]] — contributor notes
 
 ## Architecture
@@ -98,6 +98,30 @@ Display name is **nTV** (locked: lowercase n, uppercase TV — never `ɳTV`, `NT
 ## Contributing
 
 - [[Contributing]] — early-stage contributor guide. The repo is in bootstrap; expect frequent breaking changes.
+
+## Quick Reference
+
+| Platform | Video Engine | Status |
+|----------|-------------|--------|
+| iOS | AVPlayer (via video_player) | Active |
+| macOS | AVPlayer (via video_player) | Active |
+| Android | ExoPlayer (via video_player) | Active |
+| Windows | platform video_player | Active |
+| Linux | platform video_player | Active |
+| Web | HTML5 + HLS.js | Active |
+
+| Feature | Requires |
+|---------|---------|
+| IPTV M3U playback | Nothing (free) |
+| Library management | nTV bundle ($0.99/mo) |
+| Adaptive streaming | `streaming` + `stream-gateway` plugins |
+| Metadata (TMDB) | `tmdb` plugin |
+| EPG guide | `epg` plugin |
+| Progress sync | Any nSelf backend with `streaming` plugin |
+
+**Free use:** Add any IPTV M3U playlist in Settings and browse live channels immediately. No nSelf backend required, no license key needed. See [[Feature-IPTV]].
+
+**Full library mode:** Self-host your media collection using nSelf CLI with the nTV plugin bundle ($0.99/mo). Unlocks library management, adaptive streaming, metadata, EPG, and progress sync. See [[Backend-Setup]].
 
 ## Resources
 

@@ -2,7 +2,7 @@
 
 Open-source media player for your self-hosted content. Like Plex, but you own everything.
 
-nTV connects to any ɳSelf backend running the nMedia plugin bundle to browse, stream, and manage your media library.
+nTV connects to any ɳSelf backend running the nTV plugin bundle to browse, stream, and manage your media library.
 
 ## Features (Planned)
 - Browse movies, TV shows, music
@@ -14,7 +14,7 @@ nTV connects to any ɳSelf backend running the nMedia plugin bundle to browse, s
 - Offline downloads
 
 ## Built on ɳSelf
-nTV is a reference app demonstrating the nMedia plugin bundle:
+nTV is a reference app demonstrating the nTV plugin bundle:
 - stream-gateway, streaming, epg, tmdb, game-metadata
 - recording, content-acquisition, media-processing, file-processing
 - subtitle-manager, tokens, torrent-manager, vpn
@@ -38,7 +38,7 @@ MIT
 
 ## Status
 
-[Active] — S24 bootstrap in progress (P93). Backend config ships via nSelf CLI. Flutter scaffold + IPTV M3U free tier + nMedia bundle integration are being built. See `Roadmap` below.
+[Active] — S24 bootstrap in progress (P93). Backend config ships via nSelf CLI. Flutter scaffold + IPTV M3U free tier + nTV bundle integration are being built. See `Roadmap` below.
 
 [![Version](https://img.shields.io/badge/version-1.0.9-blue.svg)](https://github.com/nself-org/ntv/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -67,9 +67,9 @@ Currently, no platform directories exist (`ios/`, `android/`, `macos/`, `linux/`
 - **Flutter 3.10+** — install: [flutter.dev/install](https://docs.flutter.dev/get-started/install)
 - **Dart 3.0+** — installed with Flutter.
 - **nSelf CLI** (latest stable) — install: [nself-org/cli](https://github.com/nself-org/cli/wiki/Installation)
-- **A self-hosted nSelf backend** with the **nMedia plugin bundle** ($0.99/mo).
+- **A self-hosted nSelf backend** with the **nTV plugin bundle** ($0.99/mo).
 
-## Required nMedia Plugins
+## Required nTV Plugins
 
 | Plugin | Tier | Purpose |
 |--------|------|---------|
@@ -105,5 +105,5 @@ See [CONTRIBUTING](https://github.com/nself-org/ntv/wiki/Contributing). The repo
 ## Related Repos
 
 - [cli](https://github.com/nself-org/cli) — the nSelf CLI that runs the user's backend
-- [plugins](https://github.com/nself-org/plugins) — free plugins (`torrent-manager`, `content-acquisition` for nMedia)
-- [plugins-pro](https://github.com/nself-org/plugins-pro) — paid plugins including the nMedia bundle
+- [plugins](https://github.com/nself-org/plugins) — free plugins (`torrent-manager`, `content-acquisition` for nTV)
+- [plugins-pro](https://github.com/nself-org/plugins-pro) — paid plugins including the nTV bundle

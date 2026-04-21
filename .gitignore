@@ -1,3 +1,16 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Secrets
+.env
+.env.local
+.env.production
+.env.staging
+
 # Flutter/Dart
 *.dart_tool/
 .dart_tool/
@@ -7,10 +20,17 @@
 .pub-cache/
 .pub/
 build/
+*/build/
 flutter_*.png
 linked_*.ds
 unlinked.ds
 unlinked_spec.ds
+.symlinks/
+ios/Pods/
+android/.gradle/
+
+# Logs
+*.log
 
 # IDE
 *.iml

@@ -9,10 +9,11 @@ By the end of this guide you will:
 
 ## Prerequisites
 
-- **Flutter 3.10+** — install: [flutter.dev/install](https://docs.flutter.dev/get-started/install)
-- **Dart 3.0+** — installed with Flutter.
+- **Flutter 3.24+** — install: [flutter.dev/install](https://docs.flutter.dev/get-started/install)
+- **Dart 3.5+** — installed with Flutter.
 - **Git** — for forking + branching.
-- **A running nSelf backend** with the nMedia bundle (per [[Backend-Setup]]) — required to test most features.
+- **nSelf CLI** — for the media backend.
+- **A running nSelf backend** with the nTV bundle (per [[Backend-Setup]]) — required to test most features.
 
 ## Steps
 
@@ -66,7 +67,7 @@ dart format lib         # formatting
 
 ### Step 6 — Open a pull request
 
-PR title format: `[type] short summary` where type is `feat`, `fix`, `docs`, `refactor`, etc.
+PR title and commit messages follow **Conventional Commits**: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`, etc. (e.g. `feat: add HLS multi-audio track support`).
 
 Include in the PR body:
 
@@ -78,6 +79,30 @@ Include in the PR body:
 ## Verification
 
 `flutter analyze` and `flutter test` pass on your branch. CI (planned) confirms the same.
+
+## Commit Conventions
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` — new feature or platform support
+- `fix:` — bug fix
+- `chore:` — maintenance, dependencies
+- `docs:` — documentation only
+- `test:` — tests only
+- `refactor:` — no behaviour change
+
+Breaking API changes: add `!` after type (`feat!:`) and document in the PR body.
+
+## Branching Model
+
+| Branch | Purpose |
+|---|---|
+| `main` | Latest stable |
+| `feat/xxx` | New features |
+| `fix/xxx` | Bug fixes |
+| `chore/xxx` | Maintenance |
+| `docs/xxx` | Documentation only |
+| `platform/xxx` | Platform-specific scaffolding work |
 
 ## Code of Conduct
 
@@ -100,13 +125,30 @@ nTV follows the broader nSelf community standards. Be kind. Assume good intent. 
 ## Communication Channels
 
 - **GitHub Issues:** [github.com/nself-org/ntv/issues](https://github.com/nself-org/ntv/issues)
-- **GitHub Discussions:** [github.com/nself-org/ntv/discussions](https://github.com/nself-org/ntv/discussions) (planned)
+- **GitHub Discussions:** [github.com/nself-org/ntv/discussions](https://github.com/nself-org/ntv/discussions)
 - **nself.org** for project-wide announcements
+
+## Security Disclosures
+
+Do not open a public issue for security vulnerabilities. Follow the process in [SECURITY.md](https://github.com/nself-org/ntv/blob/main/.github/SECURITY.md).
+
+## Translations / Internationalisation
+
+nTV internationalisation strategy is under review. Translation contributions are deferred until the strategy is documented. Watch [Discussions](https://github.com/nself-org/ntv/discussions) for updates.
+
+## Code of Conduct
+
+nTV follows the nSelf community standards. See [Code of Conduct](Code-of-Conduct.md) and [ENFORCEMENT.md](https://github.com/nself-org/ntv/blob/main/.github/ENFORCEMENT.md) for the full enforcement process.
+
+## Governance
+
+nTV follows the nSelf [BDFL governance model](https://github.com/nself-org/ntv/blob/main/.github/GOVERNANCE.md). The CODEOWNERS file defines who reviews pull requests. See [CODEOWNERS](https://github.com/nself-org/ntv/blob/main/.github/CODEOWNERS).
 
 ## Next Steps
 
 - [[Getting-Started]] — set up the dev loop end-to-end
 - [[Architecture]] — understand the design before contributing
 - [[Backend-Setup]] — get a backend running
+- [GOVERNANCE.md](https://github.com/nself-org/ntv/blob/main/.github/GOVERNANCE.md) — decision model
 
-← [[Home]]
+← [[Home]] | [[_Sidebar]]

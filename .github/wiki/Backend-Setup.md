@@ -1,22 +1,22 @@
 # Backend Setup
 
-**Status:** Active. The nMedia bundle membership in F06-BUNDLE-INVENTORY contains items marked `[?]` pending user verification; this page reflects that state honestly.
+**Status:** Active. The nTV bundle membership in F06-BUNDLE-INVENTORY contains items marked `[?]` pending user verification; this page reflects that state honestly.
 
 By the end of this guide you will:
 
-- Have an nSelf backend running with the nMedia plugin bundle installed.
+- Have an nSelf backend running with the nTV plugin bundle installed.
 - Be ready to point nTV at that backend per [[Getting-Started]].
 
 ## Prerequisites
 
 - **nSelf CLI** (latest stable) — install: [nself-org/cli](https://github.com/nself-org/cli/wiki/Installation)
 - **Docker Desktop** (or Docker Engine on Linux) — required by the nSelf stack.
-- **An nSelf license key** with the nMedia bundle entitlement (`$0.99/mo` per F06).
+- **An nSelf license key** with the nTV bundle entitlement (`$0.99/mo` per F06).
 - A directory you can dedicate to the stack (e.g., `~/stacks/my-ntv-backend`).
 
-## Required nMedia Plugins
+## Required nTV Plugins
 
-Per F06-BUNDLE-INVENTORY, the nMedia bundle is canonical for the plugins below. Items marked `[?]` await user verification.
+Per F06-BUNDLE-INVENTORY, the nTV bundle is canonical for the plugins below. Items marked `[?]` await user verification.
 
 | Plugin | Tier | Required for | Notes |
 |--------|------|--------------|-------|
@@ -29,7 +29,7 @@ Per F06-BUNDLE-INVENTORY, the nMedia bundle is canonical for the plugins below. 
 | `stream-gateway` | Pro `[?]` | streaming proxy | F06 — pending user verification |
 | `podcast` | Pro `[?]` | podcast support | F06 — pending user verification |
 
-## Optional nMedia Plugins
+## Optional nTV Plugins
 
 These extend the experience but are not required:
 
@@ -59,7 +59,7 @@ nself license set <your-nself-pro-key>
 
 The CLI validates the key against `ping.nself.org/license/validate`. Without a valid key, Pro plugins refuse to install.
 
-### Step 3 — Install the nMedia bundle
+### Step 3 — Install the nTV bundle
 
 Required minimum (matches the table above):
 
@@ -101,7 +101,7 @@ nself build
 nself start
 ```
 
-Expected: Hasura, Postgres, Auth, Nginx, and all installed nMedia plugins come up. `nself ls` shows them green.
+Expected: Hasura, Postgres, Auth, Nginx, and all installed nTV plugins come up. `nself ls` shows them green.
 
 ### Step 6 — Verify the schema
 
@@ -134,11 +134,11 @@ Expected: a JSON response (possibly empty array) — confirms the `streaming` pl
 **Cause:** Migration was skipped or rolled back.
 **Fix:** `nself db sync` to reapply pending migrations. If still failing, file an issue against the plugin.
 
-### "nMedia bundle entitlement not granted"
+### "nTV bundle entitlement not granted"
 
 **Symptom:** A specific Pro plugin from the bundle refuses to install.
-**Cause:** Your tier doesn't include the nMedia bundle (you may be on Free / Basic without the bundle add-on).
-**Fix:** Upgrade to a tier that includes nMedia (per F07-PRICING-TIERS) or add the bundle.
+**Cause:** Your tier doesn't include the nTV bundle (you may be on Free / Basic without the bundle add-on).
+**Fix:** Upgrade to a tier that includes nTV (per F07-PRICING-TIERS) or add the bundle.
 
 ## Next Steps
 

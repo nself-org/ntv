@@ -1,5 +1,7 @@
 # IPTV
 
+**Status:** Active
+
 nTV includes a free IPTV M3U player. No nSelf backend is required. No license key is needed. Add an M3U playlist URL in Settings and browse live channels immediately.
 
 ---
@@ -62,3 +64,11 @@ Live streams use whatever format the provider supplies — typically HLS (`appli
 | Windows | Yes | Limited | platform video_player |
 | Linux | Yes | Limited | platform video_player |
 | Web | Yes | No | HTML5 + HLS.js; no UDP |
+
+## Related
+
+- [[Feature-EPG]] — Electronic Program Guide
+- [[Feature-Player]] — playback feature page
+- [[Platforms]] — per-platform support matrix
+
+← [[Home]]

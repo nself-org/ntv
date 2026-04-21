@@ -10,7 +10,7 @@ What's included:
 - Subtitle support with manual import and timing adjustment
 - Multi-audio-track selection
 - nSelf backend integration for self-hosted media servers
-- nMedia plugin bundle support for server-side transcoding and DVR
+- nTV plugin bundle support for server-side transcoding and DVR
 - iOS, Android, macOS, Windows, Linux, and web builds
 
 Source code: github.com/nself-org/ntv

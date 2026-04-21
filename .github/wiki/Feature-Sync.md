@@ -15,11 +15,11 @@ The backing storage lives in the nSelf backend. The app posts updates over Hasur
 | Item | Required | Notes |
 |------|----------|-------|
 | nSelf CLI | latest stable | F01-MASTER-VERSIONS |
-| Plugin: `streaming` | Yes | Pro — F06 nMedia bundle (provides watch-state schema) |
+| Plugin: `streaming` | Yes | Pro — F06 nTV bundle (provides watch-state schema) |
 | nSelf account (logged in) | Yes | All sync rows are scoped per account |
 | Multiple devices | Optional but pointless without | Sync makes no sense on a single-device install |
-| Tier | Bundle: nMedia ($0.99/mo per F06) | per F07-PRICING-TIERS |
-| Bundle | nMedia | per F06-BUNDLE-INVENTORY |
+| Tier | Bundle: nTV ($0.99/mo per F06) | per F07-PRICING-TIERS |
+| Bundle | nTV | per F06-BUNDLE-INVENTORY |
 
 ## Configuration
 

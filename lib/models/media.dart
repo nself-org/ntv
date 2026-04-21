@@ -1,4 +1,5 @@
 /// Core media data models for nTV.
+library;
 
 enum MediaType { movie, tvShow, episode }
 

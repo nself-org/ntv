@@ -61,7 +61,7 @@ See `metadata/en-US/release_notes.txt`
 |-------|-------|
 | Age rating | 4+ |
 | Content rights | User-supplied content only. nTV does not distribute, host, or provide any media. Users connect the app to their own IPTV sources and self-hosted servers. |
-| In-app purchases | None in the app itself. The nMedia backend bundle ($0.99/mo) is a separate server-side subscription purchased at nself.org. |
+| In-app purchases | None in the app itself. The nTV backend bundle ($0.99/mo) is a separate server-side subscription purchased at nself.org. |
 | Encryption | Standard HTTPS/TLS for backend communication. Uses exempt encryption (standard SSL). |
 | Supported devices | iPhone (iOS 15+), iPad (iPadOS 15+) |
 | Supported orientations | Portrait, Landscape Left, Landscape Right (iPhone); all four orientations (iPad) |
@@ -88,7 +88,7 @@ nTV is a client application only. It does not provide a streaming backend, conte
 To use nTV beyond free IPTV playback, users must:
 
 1. Have a server running the nSelf CLI (free, open-source: github.com/nself-org/cli)
-2. Install the nMedia plugin bundle on that server (`nself plugin install media-processing streaming epg tmdb`)
+2. Install the nTV plugin bundle on that server (`nself plugin install media-processing streaming epg tmdb`)
 3. Configure nTV with the server address and authentication token
 
 The app does not connect to any nSelf-operated backend by default. All data — library metadata, watch history, user accounts — lives on the user's own hardware.

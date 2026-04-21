@@ -17,7 +17,7 @@ help:
 	@printf "\n"
 	@printf "First-time setup:\n"
 	@printf "  1. cp .env.example .env\n"
-	@printf "  2. Set NSELF_PLUGIN_LICENSE_KEY in .env (nMedia bundle, nself.org/pricing)\n"
+	@printf "  2. Set NSELF_PLUGIN_LICENSE_KEY in .env (nTV bundle, nself.org/pricing)\n"
 	@printf "  3. Set TMDB_API_KEY in .env (free at themoviedb.org)\n"
 	@printf "  4. make setup && make build && make start\n"
 

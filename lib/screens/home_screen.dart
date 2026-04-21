@@ -74,22 +74,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search media...',
-                  border: InputBorder.none,
+            ? Semantics(
+                textField: true,
+                label: 'Search media',
+                child: TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Search media...',
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (value) {
+                    ref.read(searchQueryProvider.notifier).state = value;
+                  },
                 ),
-                onSubmitted: (value) {
-                  ref.read(searchQueryProvider.notifier).state = value;
-                },
               )
-            : const Text('nTV'),
+            : Semantics(
+                header: true,
+                label: 'nTV',
+                child: const Text('nTV'),
+              ),
         centerTitle: false,
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
+            tooltip: _isSearching ? 'Close search' : 'Search media',
             onPressed: () {
               setState(() {
                 _isSearching = !_isSearching;
@@ -274,34 +283,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildPosterCard(Media item, {double? width}) {
-    return GestureDetector(
-      onTap: () => context.push('/detail/${item.id}?type=${item.type.name}'),
-      child: SizedBox(
-        width: width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: item.posterUrl != null
-                    ? Image.network(
-                        item.posterUrl!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        errorBuilder: (_, __, ___) => _posterPlaceholder(),
-                      )
-                    : _posterPlaceholder(),
+    return Semantics(
+      button: true,
+      label: 'Open ${item.title}',
+      child: GestureDetector(
+        onTap: () => context.push('/detail/${item.id}?type=${item.type.name}'),
+        child: SizedBox(
+          width: width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: ExcludeSemantics(
+                    child: item.posterUrl != null
+                        ? Image.network(
+                            item.posterUrl!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (_, __, ___) => _posterPlaceholder(),
+                          )
+                        : _posterPlaceholder(),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              item.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+              const SizedBox(height: 6),
+              ExcludeSemantics(
+                child: Text(
+                  item.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

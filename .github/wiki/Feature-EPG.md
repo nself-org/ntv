@@ -1,5 +1,7 @@
 # EPG
 
+**Status:** Active
+
 The Electronic Program Guide (EPG) screen shows the current and upcoming programs for your live TV channels. It presents a time-grid layout for the current day.
 
 **Requires:** nSelf backend with the `epg` plugin installed.
@@ -52,3 +54,10 @@ Configuring EPG sources on the backend is covered in the [epg plugin documentati
 EPG data is cached on the backend and refreshed by the `epg` plugin on a schedule. The nTV client fetches the current day's guide on EPG screen open and does not poll while the screen is open.
 
 Pull down on the EPG screen to force a fresh fetch from the backend.
+
+## Related
+
+- [[Feature-IPTV]] — channel browser and M3U playlists
+- [[Backend-Setup]] — install the `epg` plugin
+
+← [[Home]]
