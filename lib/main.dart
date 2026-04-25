@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'theme/brand_colors.dart';
+
 import 'models/media.dart';
 import 'screens/detail_screen.dart';
 import 'screens/epg_screen.dart';
@@ -9,13 +11,18 @@ import 'screens/home_screen.dart';
 import 'screens/iptv_screen.dart';
 import 'screens/player_screen.dart';
 import 'screens/settings_screen.dart';
+import 'features/auth/auth_service.dart';
 import 'services/settings_service.dart';
+import 'widgets/offline_banner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Load persisted settings before the widget tree builds.
+  // Load persisted settings and restore auth session before the widget tree builds.
   final container = ProviderContainer();
   await container.read(settingsServiceProvider).init();
+  // Initialise the auth SDK — restores tokens from Keychain / Keystore.
+  // authBaseUrl defaults to nself.org; users self-hosting override this in settings.
+  await container.read(authServiceProvider.notifier).init();
   runApp(UncontrolledProviderScope(container: container, child: const NtvApp()));
 }
 
@@ -72,7 +79,7 @@ class NtvApp extends StatelessWidget {
       title: 'nTV',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF6366F1),
+        colorSchemeSeed: NselfBrandColors.primary,
         brightness: Brightness.dark,
         useMaterial3: true,
       ),
@@ -81,21 +88,26 @@ class NtvApp extends StatelessWidget {
   }
 }
 
-class AppShell extends StatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   final Widget child;
   const AppShell({super.key, required this.child});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.child,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: widget.child),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {

@@ -22,11 +22,26 @@ dependencies:
   shared_preferences: ^2.2.0
   url_launcher: ^6.3.0
   package_info_plus: ^8.0.0
+  connectivity_plus: ^6.0.0
+  nself_auth_sdk:
+    path: ../../plugins-pro/paid/auth/flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app-icon.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#030712"
+  adaptive_icon_foreground: "assets/icons/app-icon.png"
+  macos:
+    generate: true
+    image_path: "assets/icons/app-icon.png"
 
 flutter:
   uses-material-design: true
