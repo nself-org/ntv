@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  analyze:
+    name: Analyze & format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib/ test/
+      - run: flutter analyze --fatal-infos
+
+  test:
+    name: Tests (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            os: ubuntu-latest
+          - platform: ios
+            os: macos-latest
+          - platform: macos
+            os: macos-latest
+          - platform: windows
+            os: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+      - name: Run unit + widget tests with coverage
+        run: flutter test --coverage --reporter=expanded
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: matrix.platform == 'android'
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: false
+
+  build-free:
+    name: Build free / ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    needs: [analyze]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: apk
+            os: ubuntu-latest
+          - platform: macos
+            os: macos-latest
+          - platform: windows
+            os: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+      - name: Build ${{ matrix.platform }} (free flavor)
+        run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=free --release
+
+  build-pro:
+    name: Build pro / ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    needs: [analyze]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: apk
+            os: ubuntu-latest
+          - platform: macos
+            os: macos-latest
+          - platform: windows
+            os: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+      - name: Build ${{ matrix.platform }} (pro flavor)
+        run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=pro --release

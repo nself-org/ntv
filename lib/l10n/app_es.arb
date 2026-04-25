@@ -1,0 +1,23 @@
+{
+  "@@locale": "es",
+  "appTitle": "nTV",
+  "navLibrary": "Biblioteca",
+  "navLiveTv": "TV en vivo",
+  "navGuide": "Guía",
+  "navSettings": "Configuración",
+  "loading": "Cargando...",
+  "error": "Algo salió mal",
+  "retry": "Reintentar",
+  "back": "Atrás",
+  "play": "Reproducir",
+  "pause": "Pausar",
+  "search": "Buscar",
+  "searchMedia": "Buscar contenido...",
+  "noResults": "Sin resultados.",
+  "noMedia": "No se encontró contenido.",
+  "noMediaSelected": "Ningún contenido seleccionado.",
+  "playerError": "Error de reproducción",
+  "configureBackend": "Configurar backend",
+  "mediaLibrary": "Tu biblioteca multimedia",
+  "connectBackendHint": "Conéctate a tu backend nSelf para explorar contenido."
+}

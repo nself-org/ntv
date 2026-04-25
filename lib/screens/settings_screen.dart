@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../services/api_service.dart';
 import '../services/settings_service.dart';
 
@@ -13,6 +14,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late TextEditingController _urlController;
   late TextEditingController _apiKeyController;
+  String _appVersion = '…';
 
   @override
   void initState() {
@@ -20,6 +22,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final settings = ref.read(settingsServiceProvider);
     _urlController = TextEditingController(text: settings.backendUrl);
     _apiKeyController = TextEditingController(text: settings.apiKey);
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() => _appVersion = '${info.version}+${info.buildNumber}');
+      }
+    } catch (_) {
+      if (mounted) setState(() => _appVersion = '1.0.9');
+    }
   }
 
   @override
@@ -105,10 +119,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const Divider(height: 32),
 
           // About
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('About'),
-            subtitle: Text('nTV v1.0.9'),
+          ListTile(
+            leading: const Icon(Icons.info_outline, semanticLabel: 'App version info'),
+            title: const Text('About'),
+            subtitle: Text('nTV v$_appVersion'),
           ),
         ],
       ),

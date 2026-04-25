@@ -1,0 +1,23 @@
+{
+  "@@locale": "zh",
+  "appTitle": "nTV",
+  "navLibrary": "媒体库",
+  "navLiveTv": "直播TV",
+  "navGuide": "节目指南",
+  "navSettings": "设置",
+  "loading": "加载中...",
+  "error": "出现了问题",
+  "retry": "重试",
+  "back": "返回",
+  "play": "播放",
+  "pause": "暂停",
+  "search": "搜索",
+  "searchMedia": "搜索媒体...",
+  "noResults": "未找到结果。",
+  "noMedia": "未找到媒体。",
+  "noMediaSelected": "未选择媒体。",
+  "playerError": "播放错误",
+  "configureBackend": "配置后端",
+  "mediaLibrary": "您的媒体库",
+  "connectBackendHint": "连接到您的nSelf后端以浏览内容。"
+}

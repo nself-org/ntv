@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  # ── Android ────────────────────────────────────────────────────────────────
+  release-android:
+    name: Release Android AAB
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+
+      - name: Decode upload keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      - name: Build release AAB (free flavor)
+        run: flutter build appbundle --dart-define=FLAVOR=free --release
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload to Google Play (internal track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: org.nself.ntv
+          releaseFiles: build/app/outputs/bundle/release/*.aab
+          track: internal
+
+  # ── macOS ─────────────────────────────────────────────────────────────────
+  release-macos:
+    name: Release macOS DMG
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+
+      - name: Build macOS (free flavor)
+        run: flutter build macos --dart-define=FLAVOR=free --release
+
+      - name: Create DMG
+        run: |
+          npm install -g create-dmg
+          create-dmg \
+            'build/macos/Build/Products/Release/nTV.app' \
+            'build/macos/' \
+            --overwrite \
+            --dmg-title 'nTV' || true
+          mv build/macos/*.dmg "ntv-${{ github.ref_name }}-macos.dmg" || true
+
+      - name: Notarize DMG
+        run: |
+          xcrun notarytool submit "ntv-${{ github.ref_name }}-macos.dmg" \
+            --apple-id "${{ secrets.APPLE_ID }}" \
+            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" \
+            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
+            --wait || true
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ntv-${{ github.ref_name }}-macos.dmg
+
+  # ── iOS ────────────────────────────────────────────────────────────────────
+  release-ios:
+    name: Release iOS IPA (TestFlight)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+
+      - name: Build iOS (free flavor)
+        run: flutter build ipa --dart-define=FLAVOR=free --release --export-options-plist ios/ExportOptions.plist
+        env:
+          MATCH_CERTIFICATES_REPO_URL: ${{ secrets.MATCH_CERTIFICATES_REPO_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+
+      - name: Upload to TestFlight
+        run: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/ios/ipa/*.ipa \
+            --apiKey "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
+
+  # ── Windows ───────────────────────────────────────────────────────────────
+  release-windows:
+    name: Release Windows MSIX
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+
+      - name: Build Windows (free flavor)
+        run: flutter build windows --dart-define=FLAVOR=free --release
+
+      - name: Package MSIX
+        run: dart run msix:create
+        # msix package config is in pubspec.yaml msix_config section.
+
+      - name: Upload MSIX to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/windows/x64/runner/Release/ntv.msix

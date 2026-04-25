@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -83,6 +84,21 @@ class NtvApp extends StatelessWidget {
         brightness: Brightness.dark,
         useMaterial3: true,
       ),
+      // P96 S232: l10n support — en + es, fr, de, ja, zh, ar stubs.
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('es'),
+        Locale('fr'),
+        Locale('de'),
+        Locale('ja'),
+        Locale('zh'),
+        Locale('ar'),
+      ],
       routerConfig: _router,
     );
   }
