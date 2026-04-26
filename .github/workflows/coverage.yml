@@ -39,7 +39,7 @@ jobs:
           dev_dependencies:
             flutter_test:
               sdk: flutter
-          STUB
+STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
           import 'dart:convert';
 
@@ -142,7 +142,7 @@ jobs:
             }
             static void dispose() { _currentUser = null; }
           }
-          SDK
+SDK
 
       - name: Install dependencies
         run: flutter pub get

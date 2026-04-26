@@ -32,7 +32,7 @@ jobs:
           dev_dependencies:
             flutter_test:
               sdk: flutter
-          STUB
+STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
           import 'dart:convert';
 
@@ -135,7 +135,7 @@ jobs:
             }
             static void dispose() { _currentUser = null; }
           }
-          SDK
+SDK
       - run: flutter pub get
       - name: Auto-format and verify
         run: |
@@ -187,7 +187,7 @@ jobs:
           dev_dependencies:
             flutter_test:
               sdk: flutter
-          STUB
+STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
           import 'dart:convert';
 
@@ -290,7 +290,7 @@ jobs:
             }
             static void dispose() { _currentUser = null; }
           }
-          SDK
+SDK
       - run: flutter pub get
       - name: Run unit + widget tests with coverage
         run: flutter test --coverage --reporter=expanded
@@ -338,7 +338,7 @@ jobs:
           dev_dependencies:
             flutter_test:
               sdk: flutter
-          STUB
+STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
           import 'dart:convert';
 
@@ -441,7 +441,7 @@ jobs:
             }
             static void dispose() { _currentUser = null; }
           }
-          SDK
+SDK
       - run: flutter pub get
       - name: Build ${{ matrix.platform }} (free flavor)
         run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=free --release
@@ -483,7 +483,7 @@ jobs:
           dev_dependencies:
             flutter_test:
               sdk: flutter
-          STUB
+STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
           import 'dart:convert';
 
@@ -586,7 +586,7 @@ jobs:
             }
             static void dispose() { _currentUser = null; }
           }
-          SDK
+SDK
       - run: flutter pub get
       - name: Build ${{ matrix.platform }} (pro flavor)
         run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=pro --release
