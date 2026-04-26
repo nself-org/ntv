@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -15,8 +18,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     defaultConfig {
@@ -32,18 +37,18 @@ android {
 
     // Load key.properties for release signing (CI writes this from secrets)
     val keyPropertiesFile = rootProject.file("key.properties")
-    val keyProperties = java.util.Properties()
+    val keyProperties = Properties()
     if (keyPropertiesFile.exists()) {
-        keyProperties.load(java.io.FileInputStream(keyPropertiesFile))
+        keyProperties.load(FileInputStream(keyPropertiesFile))
     }
 
     signingConfigs {
         if (keyPropertiesFile.exists()) {
             create("release") {
-                keyAlias = keyProperties["keyAlias"] as String
-                keyPassword = keyProperties["keyPassword"] as String
-                storeFile = file(keyProperties["storeFile"] as String)
-                storePassword = keyProperties["storePassword"] as String
+                keyAlias = keyProperties["keyAlias"].toString()
+                keyPassword = keyProperties["keyPassword"].toString()
+                storeFile = file(keyProperties["storeFile"].toString())
+                storePassword = keyProperties["storePassword"].toString()
             }
         }
     }
