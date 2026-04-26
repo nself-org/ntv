@@ -24,7 +24,7 @@ dependencies:
   package_info_plus: ^8.0.0
   connectivity_plus: ^6.0.0
   nself_auth_sdk:
-    path: ../../plugins-pro/paid/auth/flutter
+    path: ../plugins-pro/paid/auth/flutter
 
 dev_dependencies:
   flutter_test:
