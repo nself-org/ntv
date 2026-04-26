@@ -25,8 +25,8 @@ jobs:
 
       - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
         run: |
-          mkdir -p plugins-pro/paid/auth/flutter
-          cat > plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
+          mkdir -p ../plugins-pro/paid/auth/flutter
+          cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
           name: nself_auth_sdk
           version: 1.0.0
           publish_to: none

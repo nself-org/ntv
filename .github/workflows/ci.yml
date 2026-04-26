@@ -16,6 +16,23 @@ jobs:
         with:
           flutter-version: '3.24.0'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter
+          cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
+          name: nself_auth_sdk
+          version: 1.0.0
+          publish_to: none
+          environment:
+            sdk: ">=3.0.0 <4.0.0"
+            flutter: ">=3.10.0"
+          dependencies:
+            flutter:
+              sdk: flutter
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+          STUB
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed lib/ test/
       - run: flutter analyze --fatal-infos
@@ -42,6 +59,23 @@ jobs:
         with:
           flutter-version: '3.24.0'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter
+          cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
+          name: nself_auth_sdk
+          version: 1.0.0
+          publish_to: none
+          environment:
+            sdk: ">=3.0.0 <4.0.0"
+            flutter: ">=3.10.0"
+          dependencies:
+            flutter:
+              sdk: flutter
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+          STUB
       - run: flutter pub get
       - name: Run unit + widget tests with coverage
         run: flutter test --coverage --reporter=expanded
@@ -73,6 +107,23 @@ jobs:
         with:
           flutter-version: '3.24.0'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter
+          cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
+          name: nself_auth_sdk
+          version: 1.0.0
+          publish_to: none
+          environment:
+            sdk: ">=3.0.0 <4.0.0"
+            flutter: ">=3.10.0"
+          dependencies:
+            flutter:
+              sdk: flutter
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+          STUB
       - run: flutter pub get
       - name: Build ${{ matrix.platform }} (free flavor)
         run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=free --release
@@ -98,6 +149,23 @@ jobs:
         with:
           flutter-version: '3.24.0'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter
+          cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
+          name: nself_auth_sdk
+          version: 1.0.0
+          publish_to: none
+          environment:
+            sdk: ">=3.0.0 <4.0.0"
+            flutter: ">=3.10.0"
+          dependencies:
+            flutter:
+              sdk: flutter
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+          STUB
       - run: flutter pub get
       - name: Build ${{ matrix.platform }} (pro flavor)
         run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=pro --release
