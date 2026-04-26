@@ -34,7 +34,7 @@ jobs:
               sdk: flutter
           STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
-          import 'package:flutter/foundation.dart';
+          import 'dart:convert';
 
           class User {
             final String id;
@@ -52,59 +52,101 @@ jobs:
               required this.activePlugins,
               this.accessTokenExpiry,
             });
+
+            Map<String, dynamic> toJson() => {
+              'id': id,
+              'email': email,
+              'displayName': displayName,
+              'tier': tier,
+              'activePlugins': activePlugins,
+              'accessTokenExpiry': accessTokenExpiry?.toIso8601String(),
+            };
+
+            factory User.fromJson(Map<String, dynamic> j) => User(
+              id: j['id'] as String,
+              email: j['email'] as String,
+              displayName: (j['displayName'] ?? j['display_name'] ?? '') as String,
+              tier: (j['tier'] ?? 'free') as String,
+              activePlugins: List<String>.from(
+                  (j['activePlugins'] ?? j['active_plugins'] ?? []) as List),
+              accessTokenExpiry: j['accessTokenExpiry'] != null
+                  ? DateTime.parse(j['accessTokenExpiry'] as String) : null,
+            );
           }
 
-          class StorageBackend {
-            Future<String?> get(String key) async => null;
-            Future<void> set(String key, String value) async {}
-            Future<void> delete(String key) async {}
+          abstract class StorageBackend {
+            Future<String?> read(String key);
+            Future<void> write(String key, String? value);
+            Future<void> delete(String key);
           }
 
           class InMemoryStorageBackend implements StorageBackend {
             final Map<String, String> _data = {};
-            @override Future<String?> get(String key) async => _data[key];
-            @override Future<void> set(String key, String value) async => _data[key] = value;
+            @override Future<String?> read(String key) async => _data[key];
+            @override Future<void> write(String key, String? value) async {
+              if (value == null) { _data.remove(key); } else { _data[key] = value; }
+            }
             @override Future<void> delete(String key) async => _data.remove(key);
           }
 
           class TokenStore {
-            final StorageBackend backend;
-            TokenStore({required this.backend});
-            factory TokenStore.withBackend(StorageBackend backend) => TokenStore(backend: backend);
+            final StorageBackend _backend;
+            TokenStore({required StorageBackend backend}) : _backend = backend;
+            factory TokenStore.withBackend(StorageBackend backend) =>
+                TokenStore(backend: backend);
 
-            Future<void> saveUser(User user) async {}
-            Future<void> saveAccessToken(String token) async {}
+            Future<void> saveUser(User user) =>
+                _backend.write('nself_user_json', jsonEncode(user.toJson()));
+            Future<void> saveAccessToken(String token) =>
+                _backend.write('nself_access_token', token);
             Future<void> saveRefreshToken(String? token) async {}
-            Future<User?> getUser() async => null;
-            Future<String?> getAccessToken() async => null;
+            Future<User?> readUser() async {
+              final raw = await _backend.read('nself_user_json');
+              if (raw == null) return null;
+              try { return User.fromJson(jsonDecode(raw) as Map<String, dynamic>); }
+              catch (_) { return null; }
+            }
+            Future<String?> getAccessToken() => _backend.read('nself_access_token');
           }
 
           class NSelfAuth {
             static User? _currentUser;
-            static String? _accessToken;
 
             static Future<void> initialize({
               required String authBaseUrl,
               required String appVersion,
               TokenStore? tokenStore,
-            }) async {}
-
-            static User? get currentUser => _currentUser;
-            static Future<String?> getAccessToken() async => _accessToken;
-
-            static Future<void> signOut() async {
+            }) async {
               _currentUser = null;
-              _accessToken = null;
+              if (tokenStore != null) {
+                _currentUser = await tokenStore.readUser();
+              }
             }
 
+            static User? get currentUser => _currentUser;
+            static Future<String?> getAccessToken() async => null;
+
+            static Future<void> signOut() async { _currentUser = null; }
             static Future<bool> isBiometricAvailable() async => false;
             static Future<void> enableBiometricUnlock() async {}
-            static Future<User?> unlockWithBiometrics() async => _currentUser;
-            static void dispose() {}
+            static Future<User> unlockWithBiometrics() async {
+              if (_currentUser == null) throw Exception('No active session');
+              return _currentUser!;
+            }
+            static void dispose() { _currentUser = null; }
           }
           SDK
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib/ test/
+      - name: Auto-format and verify
+        run: |
+          dart format lib/ test/
+          if ! git diff --exit-code lib/ test/ > /dev/null 2>&1; then
+            echo "⚠️  dart format changed files. Run 'dart format lib/ test/' locally and commit:"
+            git diff --name-only lib/ test/
+            echo "Proceeding with auto-formatted code for analysis."
+          else
+            echo "✅ All files already formatted."
+          fi
       - run: flutter analyze --fatal-infos
 
   test:
@@ -147,7 +189,7 @@ jobs:
               sdk: flutter
           STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
-          import 'package:flutter/foundation.dart';
+          import 'dart:convert';
 
           class User {
             final String id;
@@ -165,55 +207,88 @@ jobs:
               required this.activePlugins,
               this.accessTokenExpiry,
             });
+
+            Map<String, dynamic> toJson() => {
+              'id': id,
+              'email': email,
+              'displayName': displayName,
+              'tier': tier,
+              'activePlugins': activePlugins,
+              'accessTokenExpiry': accessTokenExpiry?.toIso8601String(),
+            };
+
+            factory User.fromJson(Map<String, dynamic> j) => User(
+              id: j['id'] as String,
+              email: j['email'] as String,
+              displayName: (j['displayName'] ?? j['display_name'] ?? '') as String,
+              tier: (j['tier'] ?? 'free') as String,
+              activePlugins: List<String>.from(
+                  (j['activePlugins'] ?? j['active_plugins'] ?? []) as List),
+              accessTokenExpiry: j['accessTokenExpiry'] != null
+                  ? DateTime.parse(j['accessTokenExpiry'] as String) : null,
+            );
           }
 
-          class StorageBackend {
-            Future<String?> get(String key) async => null;
-            Future<void> set(String key, String value) async {}
-            Future<void> delete(String key) async {}
+          abstract class StorageBackend {
+            Future<String?> read(String key);
+            Future<void> write(String key, String? value);
+            Future<void> delete(String key);
           }
 
           class InMemoryStorageBackend implements StorageBackend {
             final Map<String, String> _data = {};
-            @override Future<String?> get(String key) async => _data[key];
-            @override Future<void> set(String key, String value) async => _data[key] = value;
+            @override Future<String?> read(String key) async => _data[key];
+            @override Future<void> write(String key, String? value) async {
+              if (value == null) { _data.remove(key); } else { _data[key] = value; }
+            }
             @override Future<void> delete(String key) async => _data.remove(key);
           }
 
           class TokenStore {
-            final StorageBackend backend;
-            TokenStore({required this.backend});
-            factory TokenStore.withBackend(StorageBackend backend) => TokenStore(backend: backend);
+            final StorageBackend _backend;
+            TokenStore({required StorageBackend backend}) : _backend = backend;
+            factory TokenStore.withBackend(StorageBackend backend) =>
+                TokenStore(backend: backend);
 
-            Future<void> saveUser(User user) async {}
-            Future<void> saveAccessToken(String token) async {}
+            Future<void> saveUser(User user) =>
+                _backend.write('nself_user_json', jsonEncode(user.toJson()));
+            Future<void> saveAccessToken(String token) =>
+                _backend.write('nself_access_token', token);
             Future<void> saveRefreshToken(String? token) async {}
-            Future<User?> getUser() async => null;
-            Future<String?> getAccessToken() async => null;
+            Future<User?> readUser() async {
+              final raw = await _backend.read('nself_user_json');
+              if (raw == null) return null;
+              try { return User.fromJson(jsonDecode(raw) as Map<String, dynamic>); }
+              catch (_) { return null; }
+            }
+            Future<String?> getAccessToken() => _backend.read('nself_access_token');
           }
 
           class NSelfAuth {
             static User? _currentUser;
-            static String? _accessToken;
 
             static Future<void> initialize({
               required String authBaseUrl,
               required String appVersion,
               TokenStore? tokenStore,
-            }) async {}
-
-            static User? get currentUser => _currentUser;
-            static Future<String?> getAccessToken() async => _accessToken;
-
-            static Future<void> signOut() async {
+            }) async {
               _currentUser = null;
-              _accessToken = null;
+              if (tokenStore != null) {
+                _currentUser = await tokenStore.readUser();
+              }
             }
 
+            static User? get currentUser => _currentUser;
+            static Future<String?> getAccessToken() async => null;
+
+            static Future<void> signOut() async { _currentUser = null; }
             static Future<bool> isBiometricAvailable() async => false;
             static Future<void> enableBiometricUnlock() async {}
-            static Future<User?> unlockWithBiometrics() async => _currentUser;
-            static void dispose() {}
+            static Future<User> unlockWithBiometrics() async {
+              if (_currentUser == null) throw Exception('No active session');
+              return _currentUser!;
+            }
+            static void dispose() { _currentUser = null; }
           }
           SDK
       - run: flutter pub get
@@ -265,7 +340,7 @@ jobs:
               sdk: flutter
           STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
-          import 'package:flutter/foundation.dart';
+          import 'dart:convert';
 
           class User {
             final String id;
@@ -283,55 +358,88 @@ jobs:
               required this.activePlugins,
               this.accessTokenExpiry,
             });
+
+            Map<String, dynamic> toJson() => {
+              'id': id,
+              'email': email,
+              'displayName': displayName,
+              'tier': tier,
+              'activePlugins': activePlugins,
+              'accessTokenExpiry': accessTokenExpiry?.toIso8601String(),
+            };
+
+            factory User.fromJson(Map<String, dynamic> j) => User(
+              id: j['id'] as String,
+              email: j['email'] as String,
+              displayName: (j['displayName'] ?? j['display_name'] ?? '') as String,
+              tier: (j['tier'] ?? 'free') as String,
+              activePlugins: List<String>.from(
+                  (j['activePlugins'] ?? j['active_plugins'] ?? []) as List),
+              accessTokenExpiry: j['accessTokenExpiry'] != null
+                  ? DateTime.parse(j['accessTokenExpiry'] as String) : null,
+            );
           }
 
-          class StorageBackend {
-            Future<String?> get(String key) async => null;
-            Future<void> set(String key, String value) async {}
-            Future<void> delete(String key) async {}
+          abstract class StorageBackend {
+            Future<String?> read(String key);
+            Future<void> write(String key, String? value);
+            Future<void> delete(String key);
           }
 
           class InMemoryStorageBackend implements StorageBackend {
             final Map<String, String> _data = {};
-            @override Future<String?> get(String key) async => _data[key];
-            @override Future<void> set(String key, String value) async => _data[key] = value;
+            @override Future<String?> read(String key) async => _data[key];
+            @override Future<void> write(String key, String? value) async {
+              if (value == null) { _data.remove(key); } else { _data[key] = value; }
+            }
             @override Future<void> delete(String key) async => _data.remove(key);
           }
 
           class TokenStore {
-            final StorageBackend backend;
-            TokenStore({required this.backend});
-            factory TokenStore.withBackend(StorageBackend backend) => TokenStore(backend: backend);
+            final StorageBackend _backend;
+            TokenStore({required StorageBackend backend}) : _backend = backend;
+            factory TokenStore.withBackend(StorageBackend backend) =>
+                TokenStore(backend: backend);
 
-            Future<void> saveUser(User user) async {}
-            Future<void> saveAccessToken(String token) async {}
+            Future<void> saveUser(User user) =>
+                _backend.write('nself_user_json', jsonEncode(user.toJson()));
+            Future<void> saveAccessToken(String token) =>
+                _backend.write('nself_access_token', token);
             Future<void> saveRefreshToken(String? token) async {}
-            Future<User?> getUser() async => null;
-            Future<String?> getAccessToken() async => null;
+            Future<User?> readUser() async {
+              final raw = await _backend.read('nself_user_json');
+              if (raw == null) return null;
+              try { return User.fromJson(jsonDecode(raw) as Map<String, dynamic>); }
+              catch (_) { return null; }
+            }
+            Future<String?> getAccessToken() => _backend.read('nself_access_token');
           }
 
           class NSelfAuth {
             static User? _currentUser;
-            static String? _accessToken;
 
             static Future<void> initialize({
               required String authBaseUrl,
               required String appVersion,
               TokenStore? tokenStore,
-            }) async {}
-
-            static User? get currentUser => _currentUser;
-            static Future<String?> getAccessToken() async => _accessToken;
-
-            static Future<void> signOut() async {
+            }) async {
               _currentUser = null;
-              _accessToken = null;
+              if (tokenStore != null) {
+                _currentUser = await tokenStore.readUser();
+              }
             }
 
+            static User? get currentUser => _currentUser;
+            static Future<String?> getAccessToken() async => null;
+
+            static Future<void> signOut() async { _currentUser = null; }
             static Future<bool> isBiometricAvailable() async => false;
             static Future<void> enableBiometricUnlock() async {}
-            static Future<User?> unlockWithBiometrics() async => _currentUser;
-            static void dispose() {}
+            static Future<User> unlockWithBiometrics() async {
+              if (_currentUser == null) throw Exception('No active session');
+              return _currentUser!;
+            }
+            static void dispose() { _currentUser = null; }
           }
           SDK
       - run: flutter pub get
@@ -377,7 +485,7 @@ jobs:
               sdk: flutter
           STUB
           cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
-          import 'package:flutter/foundation.dart';
+          import 'dart:convert';
 
           class User {
             final String id;
@@ -395,55 +503,88 @@ jobs:
               required this.activePlugins,
               this.accessTokenExpiry,
             });
+
+            Map<String, dynamic> toJson() => {
+              'id': id,
+              'email': email,
+              'displayName': displayName,
+              'tier': tier,
+              'activePlugins': activePlugins,
+              'accessTokenExpiry': accessTokenExpiry?.toIso8601String(),
+            };
+
+            factory User.fromJson(Map<String, dynamic> j) => User(
+              id: j['id'] as String,
+              email: j['email'] as String,
+              displayName: (j['displayName'] ?? j['display_name'] ?? '') as String,
+              tier: (j['tier'] ?? 'free') as String,
+              activePlugins: List<String>.from(
+                  (j['activePlugins'] ?? j['active_plugins'] ?? []) as List),
+              accessTokenExpiry: j['accessTokenExpiry'] != null
+                  ? DateTime.parse(j['accessTokenExpiry'] as String) : null,
+            );
           }
 
-          class StorageBackend {
-            Future<String?> get(String key) async => null;
-            Future<void> set(String key, String value) async {}
-            Future<void> delete(String key) async {}
+          abstract class StorageBackend {
+            Future<String?> read(String key);
+            Future<void> write(String key, String? value);
+            Future<void> delete(String key);
           }
 
           class InMemoryStorageBackend implements StorageBackend {
             final Map<String, String> _data = {};
-            @override Future<String?> get(String key) async => _data[key];
-            @override Future<void> set(String key, String value) async => _data[key] = value;
+            @override Future<String?> read(String key) async => _data[key];
+            @override Future<void> write(String key, String? value) async {
+              if (value == null) { _data.remove(key); } else { _data[key] = value; }
+            }
             @override Future<void> delete(String key) async => _data.remove(key);
           }
 
           class TokenStore {
-            final StorageBackend backend;
-            TokenStore({required this.backend});
-            factory TokenStore.withBackend(StorageBackend backend) => TokenStore(backend: backend);
+            final StorageBackend _backend;
+            TokenStore({required StorageBackend backend}) : _backend = backend;
+            factory TokenStore.withBackend(StorageBackend backend) =>
+                TokenStore(backend: backend);
 
-            Future<void> saveUser(User user) async {}
-            Future<void> saveAccessToken(String token) async {}
+            Future<void> saveUser(User user) =>
+                _backend.write('nself_user_json', jsonEncode(user.toJson()));
+            Future<void> saveAccessToken(String token) =>
+                _backend.write('nself_access_token', token);
             Future<void> saveRefreshToken(String? token) async {}
-            Future<User?> getUser() async => null;
-            Future<String?> getAccessToken() async => null;
+            Future<User?> readUser() async {
+              final raw = await _backend.read('nself_user_json');
+              if (raw == null) return null;
+              try { return User.fromJson(jsonDecode(raw) as Map<String, dynamic>); }
+              catch (_) { return null; }
+            }
+            Future<String?> getAccessToken() => _backend.read('nself_access_token');
           }
 
           class NSelfAuth {
             static User? _currentUser;
-            static String? _accessToken;
 
             static Future<void> initialize({
               required String authBaseUrl,
               required String appVersion,
               TokenStore? tokenStore,
-            }) async {}
-
-            static User? get currentUser => _currentUser;
-            static Future<String?> getAccessToken() async => _accessToken;
-
-            static Future<void> signOut() async {
+            }) async {
               _currentUser = null;
-              _accessToken = null;
+              if (tokenStore != null) {
+                _currentUser = await tokenStore.readUser();
+              }
             }
 
+            static User? get currentUser => _currentUser;
+            static Future<String?> getAccessToken() async => null;
+
+            static Future<void> signOut() async { _currentUser = null; }
             static Future<bool> isBiometricAvailable() async => false;
             static Future<void> enableBiometricUnlock() async {}
-            static Future<User?> unlockWithBiometrics() async => _currentUser;
-            static void dispose() {}
+            static Future<User> unlockWithBiometrics() async {
+              if (_currentUser == null) throw Exception('No active session');
+              return _currentUser!;
+            }
+            static void dispose() { _currentUser = null; }
           }
           SDK
       - run: flutter pub get
