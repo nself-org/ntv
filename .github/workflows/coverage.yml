@@ -25,7 +25,7 @@ jobs:
 
       - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
         run: |
-          mkdir -p ../plugins-pro/paid/auth/flutter
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
           cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
           name: nself_auth_sdk
           version: 1.0.0
@@ -40,6 +40,53 @@ jobs:
             flutter_test:
               sdk: flutter
           STUB
+          cat > ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart <<'SDK'
+          import 'package:flutter/foundation.dart';
+
+          class User {
+            final String id;
+            final String email;
+            User({required this.id, required this.email});
+          }
+
+          class StorageBackend {
+            Future<String?> get(String key) async => null;
+            Future<void> set(String key, String value) async {}
+            Future<void> delete(String key) async {}
+          }
+
+          class InMemoryStorageBackend implements StorageBackend {
+            final Map<String, String> _data = {};
+            @override Future<String?> get(String key) async => _data[key];
+            @override Future<void> set(String key, String value) async => _data[key] = value;
+            @override Future<void> delete(String key) async => _data.remove(key);
+          }
+
+          class TokenStore {
+            final StorageBackend backend;
+            TokenStore({required this.backend});
+            factory TokenStore.withBackend(StorageBackend backend) => TokenStore(backend: backend);
+          }
+
+          class NSelfAuth {
+            static User? _currentUser;
+            static String? _accessToken;
+            static Future<void> initialize({
+              required String authBaseUrl,
+              required String appVersion,
+              TokenStore? tokenStore,
+            }) async {}
+            static User? get currentUser => _currentUser;
+            static Future<String?> getAccessToken() async => _accessToken;
+            static Future<void> signOut() async {
+              _currentUser = null;
+              _accessToken = null;
+            }
+            static Future<bool> isBiometricAvailable() async => false;
+            static Future<void> enableBiometricUnlock() async {}
+            static Future<User?> unlockWithBiometrics() async => null;
+          }
+          SDK
 
       - name: Install dependencies
         run: flutter pub get
