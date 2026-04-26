@@ -105,7 +105,7 @@ class AuthService extends StateNotifier<AuthState> {
     final user = await NSelfAuth.unlockWithBiometrics();
     state = AuthState(
       status: AuthStatus.authenticated,
-      userEmail: user?.email,
+      userEmail: user.email,
     );
   }
 }
