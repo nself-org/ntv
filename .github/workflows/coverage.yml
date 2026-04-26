@@ -46,7 +46,19 @@ jobs:
           class User {
             final String id;
             final String email;
-            User({required this.id, required this.email});
+            final String displayName;
+            final String tier;
+            final List<String> activePlugins;
+            final DateTime? accessTokenExpiry;
+
+            User({
+              required this.id,
+              required this.email,
+              required this.displayName,
+              required this.tier,
+              required this.activePlugins,
+              this.accessTokenExpiry,
+            });
           }
 
           class StorageBackend {
@@ -66,25 +78,36 @@ jobs:
             final StorageBackend backend;
             TokenStore({required this.backend});
             factory TokenStore.withBackend(StorageBackend backend) => TokenStore(backend: backend);
+
+            Future<void> saveUser(User user) async {}
+            Future<void> saveAccessToken(String token) async {}
+            Future<void> saveRefreshToken(String? token) async {}
+            Future<User?> getUser() async => null;
+            Future<String?> getAccessToken() async => null;
           }
 
           class NSelfAuth {
             static User? _currentUser;
             static String? _accessToken;
+
             static Future<void> initialize({
               required String authBaseUrl,
               required String appVersion,
               TokenStore? tokenStore,
             }) async {}
+
             static User? get currentUser => _currentUser;
             static Future<String?> getAccessToken() async => _accessToken;
+
             static Future<void> signOut() async {
               _currentUser = null;
               _accessToken = null;
             }
+
             static Future<bool> isBiometricAvailable() async => false;
             static Future<void> enableBiometricUnlock() async {}
-            static Future<User?> unlockWithBiometrics() async => null;
+            static Future<User?> unlockWithBiometrics() async => _currentUser;
+            static void dispose() {}
           }
           SDK
 

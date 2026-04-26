@@ -285,7 +285,7 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
       onTap: () => _onProgramTap(context, program, ch),
       child: Container(
         color: isNow
-            ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
+            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
             : null,
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
         child: Row(
