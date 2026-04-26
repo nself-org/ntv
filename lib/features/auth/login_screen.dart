@@ -60,7 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceVariant,
+                    color: colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: colorScheme.outline.withOpacity(0.4)),
                   ),
@@ -107,9 +107,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 16),
 
                 // Disabled sign-in button
-                FilledButton(
+                const FilledButton(
                   onPressed: null,
-                  child: const Text('Sign In — Backend Required'),
+                  child: Text('Sign In — Backend Required'),
                 ),
                 const SizedBox(height: 8),
 
