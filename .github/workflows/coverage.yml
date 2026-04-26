@@ -24,6 +24,7 @@ jobs:
           channel: 'stable'
 
       - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        shell: bash
         run: |
           mkdir -p ../plugins-pro/paid/auth/flutter/lib
           cat > ../plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
