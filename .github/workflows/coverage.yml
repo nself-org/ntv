@@ -18,16 +18,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-        with:
-          repository: nself-org/plugins-pro
-          path: plugins-pro
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.x'
           channel: 'stable'
+
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p plugins-pro/paid/auth/flutter
+          cat > plugins-pro/paid/auth/flutter/pubspec.yaml <<'STUB'
+          name: nself_auth_sdk
+          version: 1.0.0
+          publish_to: none
+          environment:
+            sdk: ">=3.0.0 <4.0.0"
+            flutter: ">=3.10.0"
+          dependencies:
+            flutter:
+              sdk: flutter
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+          STUB
 
       - name: Install dependencies
         run: flutter pub get
