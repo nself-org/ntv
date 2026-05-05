@@ -11,7 +11,7 @@ jobs:
     name: Release Android AAB
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
@@ -42,7 +42,7 @@ jobs:
     name: Release macOS DMG
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
@@ -80,7 +80,7 @@ jobs:
     name: Release iOS IPA (TestFlight)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
@@ -107,7 +107,7 @@ jobs:
     name: Release Windows MSIX
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
