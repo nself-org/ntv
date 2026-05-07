@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*.*.*'
 
+env:
+  # Override by setting NTV_BASE_URL as a repository secret or variable.
+  # Falls back to the hosted instance in the build steps when unset.
+  NTV_BASE_URL: https://ntv.nself.org
+
 jobs:
   # ── Android ────────────────────────────────────────────────────────────────
   release-android:
@@ -125,3 +130,74 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: build/windows/x64/runner/Release/ntv.msix
+
+  # ── Samsung Tizen ─────────────────────────────────────────────────────────
+  release-tizen:
+    name: Release Samsung Tizen WGT
+    runs-on: ubuntu-latest
+    # NOTE: Tizen CLI is not pre-installed on GitHub-hosted runners.
+    # This job will fail until the Samsung Tizen SDK is available in CI.
+    # USER-ACTION: Samsung Galaxy Store developer account must be registered
+    # before submission. See platforms/tizen/README.md.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Tizen CLI
+        run: |
+          # Tizen Studio installer — headless install for CLI tooling only
+          wget -q https://download.tizen.org/sdk/Installer/tizen-studio_5.6/web-cli_Tizen_Studio_5.6_ubuntu-64.bin \
+            -O /tmp/tizen-studio-installer.bin
+          chmod +x /tmp/tizen-studio-installer.bin
+          /tmp/tizen-studio-installer.bin --accept-license /opt/tizen-studio
+          echo "/opt/tizen-studio/tools/ide/bin" >> "$GITHUB_PATH"
+
+      - name: Patch NTV_BASE_URL
+        run: |
+          # NTV_BASE_URL env var set at workflow level; override via repo secret if needed
+          sed -i "s|%%NTV_BASE_URL%%|${NTV_BASE_URL}|g" platforms/tizen/index.html
+
+      - name: Build Tizen web app
+        run: |
+          cd platforms/tizen
+          tizen build-web -- .
+
+      - name: Package .wgt
+        run: |
+          cd platforms/tizen
+          tizen package -t wgt -- .buildResult/
+          mv .buildResult/*.wgt "ntv-${{ github.ref_name }}-tizen.wgt"
+
+      - name: Upload WGT to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: platforms/tizen/ntv-${{ github.ref_name }}-tizen.wgt
+
+  # ── LG webOS ──────────────────────────────────────────────────────────────
+  release-webos:
+    name: Release LG webOS IPK
+    runs-on: ubuntu-latest
+    # NOTE: ares-cli must be installed. This job will fail until the
+    # webOS TV CLI npm package is available or pre-cached.
+    # USER-ACTION: LG Content Store developer account must be registered
+    # before submission. See platforms/webos/README.md.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install webOS TV CLI
+        run: npm install -g @webosose/ares-cli
+
+      - name: Patch NTV_BASE_URL
+        run: |
+          # NTV_BASE_URL env var set at workflow level; override via repo secret if needed
+          sed -i "s|%%NTV_BASE_URL%%|${NTV_BASE_URL}|g" platforms/webos/index.html
+
+      - name: Package .ipk
+        run: |
+          cd platforms/webos
+          ares-package .
+          mv *.ipk "ntv-${{ github.ref_name }}-webos.ipk"
+
+      - name: Upload IPK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: platforms/webos/ntv-${{ github.ref_name }}-webos.ipk

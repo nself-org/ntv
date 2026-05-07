@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>nTV</title>
+
+  <!-- webOS service bridge -->
+  <script src="webOSTV.js"></script>
+  <script src="webOSTVjs-1.2.10/webOSTV.js" onerror="/* sdk not present in dev env */"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #030712; }
+    #app-frame {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #030712;
+      color: #0ea5e9;
+      font-family: sans-serif;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading">Loading nTV…</div>
+  <iframe id="app-frame" src="" allow="autoplay; fullscreen; encrypted-media"></iframe>
+
+  <script>
+    (function () {
+      // Resolve backend URL: injected at build time or fall back to hosted
+      var BASE_URL = '%%NTV_BASE_URL%%' !== '%%NTV_BASE_URL%%'
+        ? '%%NTV_BASE_URL%%'
+        : 'https://ntv.nself.org';
+
+      var frame = document.getElementById('app-frame');
+      var loading = document.getElementById('loading');
+
+      frame.addEventListener('load', function () {
+        loading.style.display = 'none';
+      });
+
+      frame.src = BASE_URL;
+
+      // webOS magic remote / remote-control key handling
+      document.addEventListener('keydown', function (e) {
+        try {
+          frame.contentWindow.dispatchEvent(new KeyboardEvent('keydown', {
+            key: e.key,
+            keyCode: e.keyCode,
+            bubbles: true
+          }));
+        } catch (_) {}
+
+        // Back key: close app
+        if (e.keyCode === 461) {
+          try { webOS.platformBack(); } catch (_) { window.history.back(); }
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

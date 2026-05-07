@@ -1,0 +1,22 @@
+{
+  "id": "org.nself.ntv",
+  "version": "1.0.0",
+  "vendor": "nSelf",
+  "type": "web",
+  "main": "index.html",
+  "title": "nTV",
+  "icon": "icon.png",
+  "largeIcon": "icon-large.png",
+  "miniicon": "icon-mini.png",
+  "bgColor": "#030712",
+  "iconColor": "#0ea5e9",
+  "splashBackground": "#030712",
+  "disableBackHistoryAPI": false,
+  "allowVideoCapture": false,
+  "tappableNotification": false,
+  "transparent": false,
+  "resolution": "FHD",
+  "requiredMemory": 20,
+  "useNativeScroll": false,
+  "trustLevel": "default"
+}

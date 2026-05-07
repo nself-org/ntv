@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>nTV</title>
+
+  <!-- Tizen TV key events -->
+  <script src="$WEBAPIS/webapis/webapis.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #030712; }
+    #app-frame {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #030712;
+      color: #0ea5e9;
+      font-family: sans-serif;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading">Loading nTV…</div>
+  <iframe id="app-frame" src="" allow="autoplay; fullscreen; encrypted-media"></iframe>
+
+  <script>
+    (function () {
+      // Resolve backend URL: injected at build time or fall back to hosted
+      var BASE_URL = '%%NTV_BASE_URL%%' !== '%%NTV_BASE_URL%%'
+        ? '%%NTV_BASE_URL%%'
+        : 'https://ntv.nself.org';
+
+      var frame = document.getElementById('app-frame');
+      var loading = document.getElementById('loading');
+
+      frame.addEventListener('load', function () {
+        loading.style.display = 'none';
+      });
+
+      frame.src = BASE_URL;
+
+      // Remote-control key mapping
+      window.addEventListener('keydown', function (e) {
+        // Forward all key events into the iframe
+        try {
+          frame.contentWindow.dispatchEvent(new KeyboardEvent('keydown', {
+            key: e.key,
+            keyCode: e.keyCode,
+            bubbles: true
+          }));
+        } catch (_) {}
+
+        // Back key: exit app
+        if (e.keyCode === 10009 || e.key === 'XF86Back') {
+          try { tizen.application.getCurrentApplication().exit(); } catch (_) {}
+        }
+      });
+
+      // Register Samsung remote keys
+      try {
+        tizen.tvinputdevice.registerKeyBatch([
+          'MediaPlay', 'MediaPause', 'MediaStop',
+          'MediaFastForward', 'MediaRewind',
+          'MediaPlayPause', 'ChannelUp', 'ChannelDown',
+          'ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'
+        ]);
+      } catch (_) {}
+    })();
+  </script>
+
+</body>
+</html>

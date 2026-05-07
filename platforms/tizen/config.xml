@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:tizen="http://tizen.org/ns/widgets"
+        id="org.nself.ntv"
+        version="1.0.0"
+        viewmodes="maximized">
+
+  <tizen:application id="org.nself.ntv.ntv"
+                     package="org.nself.ntv"
+                     required_version="6.5"/>
+
+  <content src="index.html"/>
+
+  <icon src="icon.png"/>
+
+  <name>nTV</name>
+  <description>Free IPTV player by nSelf</description>
+
+  <!-- TV-specific permissions -->
+  <tizen:privilege name="http://tizen.org/privilege/internet"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.display"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+
+  <!-- Samsung TV profile -->
+  <tizen:profile name="tv-samsung"/>
+
+  <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+
+  <!-- Allow remote-content access for self-hosted instances -->
+  <access origin="*" subdomains="true"/>
+
+</widget>
