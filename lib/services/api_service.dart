@@ -142,6 +142,68 @@ class ApiService {
     final response = await _dio.get('/media-processing/status/$jobId');
     return response.data as Map<String, dynamic>;
   }
+
+  // ---------------------------------------------------------------------------
+  // Live Channels (T16)
+  // ---------------------------------------------------------------------------
+
+  /// GET /channels — paginated list of live broadcast channels.
+  Future<LiveChannelListResult> getLiveChannels({int page = 1, int pageSize = 50}) async {
+    final response = await _dio.get('/api/v1/channels', queryParameters: {
+      'page': page,
+      'page_size': pageSize,
+    });
+    final data = response.data as Map<String, dynamic>;
+    final items = (data['data'] as List<dynamic>? ?? [])
+        .map((e) => LiveChannelInfo.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return LiveChannelListResult(
+      channels: items,
+      total: (data['total'] as int?) ?? items.length,
+      page: (data['page'] as int?) ?? page,
+      pageSize: (data['page_size'] as int?) ?? pageSize,
+    );
+  }
+
+  /// GET /channels/{id}/stream — HLS URL + EPG current/next program for a channel.
+  Future<LiveChannelStream> getLiveChannelStream(String channelId) async {
+    final response = await _dio.get('/api/v1/channels/$channelId/stream');
+    return LiveChannelStream.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  // ---------------------------------------------------------------------------
+  // DVR Jobs (T15 backend)
+  // ---------------------------------------------------------------------------
+
+  /// GET /dvr — list all scheduled and completed DVR jobs.
+  Future<List<DvrJob>> getDvrJobs() async {
+    final response = await _dio.get('/api/v1/dvr');
+    final items = (response.data['data'] as List<dynamic>? ?? [])
+        .map((e) => DvrJob.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return items;
+  }
+
+  /// POST /dvr — create a new DVR recording job.
+  Future<DvrJob> createDvrJob({
+    required String channelId,
+    String? programTitle,
+    required DateTime scheduledStart,
+    required DateTime scheduledEnd,
+  }) async {
+    final response = await _dio.post('/api/v1/dvr', data: {
+      'channel_id': channelId,
+      if (programTitle != null) 'program_title': programTitle,
+      'scheduled_start': scheduledStart.toUtc().toIso8601String(),
+      'scheduled_end': scheduledEnd.toUtc().toIso8601String(),
+    });
+    return DvrJob.fromJson(response.data['dvr_job'] as Map<String, dynamic>);
+  }
+
+  /// DELETE /dvr/{id} — cancel a scheduled DVR job.
+  Future<void> cancelDvrJob(String jobId) async {
+    await _dio.delete('/api/v1/dvr/$jobId');
+  }
 }
 
 /// Global provider for the API service singleton.

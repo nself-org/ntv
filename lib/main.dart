@@ -13,6 +13,8 @@ import 'screens/iptv_screen.dart';
 import 'screens/player_screen.dart';
 import 'screens/settings_screen.dart';
 import 'features/auth/auth_service.dart';
+import 'features/live_channels/live_channel_guide.dart';
+import 'features/live_channels/recording_scheduler.dart';
 import 'services/settings_service.dart';
 import 'widgets/offline_banner.dart';
 
@@ -44,6 +46,14 @@ final _router = GoRouter(
         GoRoute(
           path: '/epg',
           builder: (context, state) => const EpgScreen(),
+        ),
+        GoRoute(
+          path: '/live',
+          builder: (context, state) => const LiveChannelGuide(),
+        ),
+        GoRoute(
+          path: '/recordings',
+          builder: (context, state) => const RecordingScheduler(),
         ),
         GoRoute(
           path: '/settings',
@@ -136,6 +146,10 @@ class _AppShellState extends ConsumerState<AppShell> {
             case 2:
               context.go('/epg');
             case 3:
+              context.go('/live');
+            case 4:
+              context.go('/recordings');
+            case 5:
               context.go('/settings');
           }
         },
@@ -150,13 +164,25 @@ class _AppShellState extends ConsumerState<AppShell> {
             icon: Icon(Icons.live_tv_outlined, semanticLabel: 'Live TV'),
             selectedIcon: Icon(Icons.live_tv, semanticLabel: 'Live TV'),
             label: 'Live TV',
-            tooltip: 'Live TV channels',
+            tooltip: 'Live TV channels (M3U playlists)',
           ),
           NavigationDestination(
             icon: Icon(Icons.grid_view_outlined, semanticLabel: 'Program guide'),
             selectedIcon: Icon(Icons.grid_view, semanticLabel: 'Program guide'),
             label: 'Guide',
             tooltip: 'Electronic program guide',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.cast_outlined, semanticLabel: 'Live channels'),
+            selectedIcon: Icon(Icons.cast, semanticLabel: 'Live channels'),
+            label: 'Channels',
+            tooltip: 'Live broadcast channels (HLS)',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.videocam_outlined, semanticLabel: 'Recordings'),
+            selectedIcon: Icon(Icons.videocam, semanticLabel: 'Recordings'),
+            label: 'Record',
+            tooltip: 'DVR recordings scheduler',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined, semanticLabel: 'Settings'),
