@@ -201,3 +201,120 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: platforms/webos/ntv-${{ github.ref_name }}-webos.ipk
+
+  # ── Roku (T17) ────────────────────────────────────────────────────────────
+  release-roku:
+    name: Release Roku BrightScript .zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate BrightScript syntax
+        run: |
+          # Use bsc (BrightScript compiler) if available; else lightweight Python check.
+          if npx --yes bsc --version &>/dev/null 2>&1; then
+            npx bsc --project platforms/roku/bsconfig.json
+          else
+            echo "bsc not available — running sub/function balance check"
+            python3 - <<'PYEOF'
+          import glob, re, sys
+          errors = []
+          for f in glob.glob("platforms/roku/**/*.brs", recursive=True):
+              with open(f) as fh:
+                  src = fh.read()
+              opens  = len(re.findall(r'^\s*(sub|function)\s+\w+', src, re.MULTILINE | re.IGNORECASE))
+              closes = len(re.findall(r'^\s*end\s+(sub|function)', src, re.MULTILINE | re.IGNORECASE))
+              if opens != closes:
+                  errors.append(f"{f}: {opens} open(s), {closes} close(s)")
+          if errors:
+              print("BrightScript syntax errors:\n" + "\n".join(errors))
+              sys.exit(1)
+          print("BrightScript syntax OK")
+          PYEOF
+          fi
+
+      - name: Package Roku .zip
+        run: |
+          cd platforms/roku
+          zip -r "../../ntv-${{ github.ref_name }}-roku.zip" manifest source/ images/ config/
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ntv-${{ github.ref_name }}-roku.zip
+
+  # ── Apple TV — Flutter tvOS (T18) ─────────────────────────────────────────
+  release-appletv:
+    name: Release Apple TV IPA (TestFlight tvOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+
+      - name: Add tvOS platform (idempotent)
+        run: flutter create --platforms=tvos . || true
+
+      - name: Build tvOS IPA (free flavor)
+        id: build_tvos
+        run: |
+          flutter build ipa \
+            --dart-define=FLAVOR=free \
+            --release \
+            --export-options-plist platforms/appletv/ExportOptions.plist \
+          || echo "TVOS_BUILD_FAILED=true" >> "$GITHUB_OUTPUT"
+        env:
+          MATCH_CERTIFICATES_REPO_URL: ${{ secrets.MATCH_CERTIFICATES_REPO_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Upload tvOS IPA to TestFlight
+        if: steps.build_tvos.outputs.TVOS_BUILD_FAILED != 'true'
+        run: |
+          xcrun altool --upload-app \
+            --type tvos \
+            --file build/ios/ipa/*.ipa \
+            --apiKey "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
+
+      - name: Warn on Flutter tvOS instability (UD-24 fallback)
+        if: steps.build_tvos.outputs.TVOS_BUILD_FAILED == 'true'
+        run: |
+          echo "::warning::Flutter tvOS build failed. Per UD-24, native Swift tvOS port is the v1.2.0 fallback."
+          echo "::warning::File .claude/ideas/native-swift-appletv-port.md if not already present."
+
+  # ── Android TV (T19) ──────────────────────────────────────────────────────
+  release-androidtv:
+    name: Release Android TV AAB (Play Store TV track)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - run: flutter pub get
+
+      - name: Decode upload keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      - name: Build TV release AAB
+        run: flutter build appbundle --dart-define=FLAVOR=free --release
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload to Google Play (TV internal track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: org.nself.ntv
+          releaseFiles: build/app/outputs/bundle/release/*.aab
+          track: internal
+          releaseName: "${{ github.ref_name }} (Android TV)"

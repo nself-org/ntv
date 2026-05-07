@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  nTV Roku — Root SceneGraph scene
+  Hosts the main navigation stack: home grid → detail → video player.
+-->
+<component name="NTVScene" extends="Scene">
+  <interface>
+    <function name="handleDeepLink"/>
+  </interface>
+
+  <script type="text/brightscript" uri="pkg:/source/scenes/NTVScene.brs"/>
+
+  <children>
+    <!-- Background -->
+    <Rectangle
+      id="bg"
+      width="1920"
+      height="1080"
+      color="0x030712FF"
+    />
+
+    <!-- Loading indicator shown while fetching library -->
+    <BusySpinner
+      id="spinner"
+      visible="true"
+      translation="[940, 500]"
+    />
+
+    <!-- Video player (hidden until content selected) -->
+    <Video
+      id="videoPlayer"
+      visible="false"
+      width="1920"
+      height="1080"
+      translation="[0, 0]"
+    />
+
+    <!-- Home grid — populated from nSelf HLS manifest -->
+    <MarkupGrid
+      id="contentGrid"
+      visible="false"
+      translation="[80, 120]"
+      itemSize="[440, 248]"
+      itemSpacing="[20, 20]"
+      numColumns="4"
+    />
+
+    <!-- Header bar -->
+    <Label
+      id="headerLabel"
+      text="nTV"
+      translation="[80, 40]"
+      font="font:LargeBoldSystemFont"
+      color="0xFFFFFFFF"
+    />
+  </children>
+</component>
