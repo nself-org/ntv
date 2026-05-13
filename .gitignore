@@ -8,6 +8,7 @@ Thumbs.db
 # Secrets
 .env
 .env.local
+.env.secrets
 .env.production
 .env.staging
 
