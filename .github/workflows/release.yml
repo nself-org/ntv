@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.4'
           cache: true
       - run: flutter pub get
 
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.4'
           cache: true
       - run: flutter pub get
 
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.4'
           cache: true
       - run: flutter pub get
 
@@ -115,7 +115,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.4'
           cache: true
       - run: flutter pub get
 
@@ -132,11 +132,28 @@ jobs:
           files: build/windows/x64/runner/Release/ntv.msix
 
   # ── Samsung Tizen ─────────────────────────────────────────────────────────
+  # Probe job: check if TIZEN_SDK_CERT_BASE64 secret is configured.
+  probe-tizen:
+    name: Probe Tizen secret
+    runs-on: ubuntu-latest
+    outputs:
+      have_cert: ${{ steps.check.outputs.have_cert }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.TIZEN_SDK_CERT_BASE64 }}" ]; then
+            echo "have_cert=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_cert=false" >> "$GITHUB_OUTPUT"
+          fi
+
   release-tizen:
     name: Release Samsung Tizen WGT
     runs-on: ubuntu-latest
-    # NOTE: Tizen CLI is not pre-installed on GitHub-hosted runners.
-    # This job will fail until the Samsung Tizen SDK is available in CI.
+    needs: probe-tizen
+    if: needs.probe-tizen.outputs.have_cert == 'true'
+    # Conditional-skip: only runs when TIZEN_SDK_CERT_BASE64 secret is set.
+    # The Tizen Studio CLI is not pre-installed on GitHub-hosted runners.
     # USER-ACTION: Samsung Galaxy Store developer account must be registered
     # before submission. See platforms/tizen/README.md.
     steps:
@@ -173,11 +190,27 @@ jobs:
           files: platforms/tizen/ntv-${{ github.ref_name }}-tizen.wgt
 
   # ── LG webOS ──────────────────────────────────────────────────────────────
+  # Probe job: check if WEBOS_DEVELOPER_KEY secret is configured.
+  probe-webos:
+    name: Probe webOS secret
+    runs-on: ubuntu-latest
+    outputs:
+      have_key: ${{ steps.check.outputs.have_key }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.WEBOS_DEVELOPER_KEY }}" ]; then
+            echo "have_key=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_key=false" >> "$GITHUB_OUTPUT"
+          fi
+
   release-webos:
     name: Release LG webOS IPK
     runs-on: ubuntu-latest
-    # NOTE: ares-cli must be installed. This job will fail until the
-    # webOS TV CLI npm package is available or pre-cached.
+    needs: probe-webos
+    if: needs.probe-webos.outputs.have_key == 'true'
+    # Conditional-skip: only runs when WEBOS_DEVELOPER_KEY secret is set.
     # USER-ACTION: LG Content Store developer account must be registered
     # before submission. See platforms/webos/README.md.
     steps:
@@ -251,7 +284,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.4'
           cache: true
       - run: flutter pub get
 
@@ -295,7 +328,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.4'
           cache: true
       - run: flutter pub get
 
