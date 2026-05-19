@@ -26,7 +26,9 @@ void main() async {
   // Initialise the auth SDK — restores tokens from Keychain / Keystore.
   // authBaseUrl defaults to nself.org; users self-hosting override this in settings.
   await container.read(authServiceProvider.notifier).init();
-  runApp(UncontrolledProviderScope(container: container, child: const NtvApp()));
+  runApp(
+    UncontrolledProviderScope(container: container, child: const NtvApp()),
+  );
 }
 
 final _router = GoRouter(
@@ -35,18 +37,9 @@ final _router = GoRouter(
     ShellRoute(
       builder: (context, state, child) => AppShell(child: child),
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const HomeScreen(),
-        ),
-        GoRoute(
-          path: '/iptv',
-          builder: (context, state) => const IptvScreen(),
-        ),
-        GoRoute(
-          path: '/epg',
-          builder: (context, state) => const EpgScreen(),
-        ),
+        GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+        GoRoute(path: '/iptv', builder: (context, state) => const IptvScreen()),
+        GoRoute(path: '/epg', builder: (context, state) => const EpgScreen()),
         GoRoute(
           path: '/live',
           builder: (context, state) => const LiveChannelGuide(),
@@ -167,7 +160,10 @@ class _AppShellState extends ConsumerState<AppShell> {
             tooltip: 'Live TV channels (M3U playlists)',
           ),
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined, semanticLabel: 'Program guide'),
+            icon: Icon(
+              Icons.grid_view_outlined,
+              semanticLabel: 'Program guide',
+            ),
             selectedIcon: Icon(Icons.grid_view, semanticLabel: 'Program guide'),
             label: 'Guide',
             tooltip: 'Electronic program guide',

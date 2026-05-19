@@ -35,11 +35,14 @@ class Media {
       id: json['id'].toString(),
       title: json['title'] as String? ?? json['name'] as String? ?? '',
       overview: json['overview'] as String?,
-      posterUrl: json['poster_url'] as String? ?? json['poster_path'] as String?,
-      backdropUrl: json['backdrop_url'] as String? ?? json['backdrop_path'] as String?,
+      posterUrl:
+          json['poster_url'] as String? ?? json['poster_path'] as String?,
+      backdropUrl:
+          json['backdrop_url'] as String? ?? json['backdrop_path'] as String?,
       type: _parseType(json['media_type'] as String?),
       rating: (json['vote_average'] as num?)?.toDouble(),
-      releaseDate: json['release_date'] as String? ?? json['first_air_date'] as String?,
+      releaseDate:
+          json['release_date'] as String? ?? json['first_air_date'] as String?,
       genres: (json['genres'] as List<dynamic>?)
               ?.map((g) => g is Map ? g['name'] as String : g.toString())
               .toList() ??
@@ -99,18 +102,15 @@ class StreamInfo {
   final String? format; // hls, dash, mp4
   final Map<String, String> headers;
 
-  const StreamInfo({
-    required this.url,
-    this.format,
-    this.headers = const {},
-  });
+  const StreamInfo({required this.url, this.format, this.headers = const {}});
 
   factory StreamInfo.fromJson(Map<String, dynamic> json) {
     return StreamInfo(
       url: json['url'] as String,
       format: json['format'] as String?,
-      headers: (json['headers'] as Map<String, dynamic>?)
-              ?.map((k, v) => MapEntry(k, v.toString())) ??
+      headers: (json['headers'] as Map<String, dynamic>?)?.map(
+            (k, v) => MapEntry(k, v.toString()),
+          ) ??
           {},
     );
   }

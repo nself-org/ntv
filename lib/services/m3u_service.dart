@@ -7,10 +7,12 @@ class M3uService {
   final Dio _dio;
 
   M3uService()
-      : _dio = Dio(BaseOptions(
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 30),
-        ));
+      : _dio = Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 30),
+          ),
+        );
 
   /// Parses raw M3U text into a list of [Channel] objects.
   ///
@@ -50,13 +52,15 @@ class M3uService {
         // Stream URL line.
         final name = currentName ?? 'Channel ${channels.length + 1}';
         final id = currentId ?? '${currentGroup ?? 'ch'}_${channels.length}';
-        channels.add(Channel(
-          id: id,
-          name: name,
-          group: currentGroup,
-          logoUrl: currentLogo,
-          streamUrl: line,
-        ));
+        channels.add(
+          Channel(
+            id: id,
+            name: name,
+            group: currentGroup,
+            logoUrl: currentLogo,
+            streamUrl: line,
+          ),
+        );
 
         // Reset state for next channel.
         currentName = null;
@@ -98,8 +102,10 @@ final m3uServiceProvider = Provider<M3uService>((ref) => M3uService());
 
 /// Family provider that fetches and parses a playlist by URL.
 /// Results are cached until the provider is invalidated.
-final playlistProvider =
-    FutureProvider.family<List<Channel>, String>((ref, url) async {
+final playlistProvider = FutureProvider.family<List<Channel>, String>((
+  ref,
+  url,
+) async {
   final service = ref.read(m3uServiceProvider);
   return service.fetchPlaylist(url);
 });

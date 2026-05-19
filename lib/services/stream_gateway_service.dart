@@ -37,7 +37,10 @@ class StreamGatewayService {
     String mediaId,
     String preferredQuality,
   ) async {
-    final info = await _api.getStreamViaGateway(mediaId, quality: preferredQuality);
+    final info = await _api.getStreamViaGateway(
+      mediaId,
+      quality: preferredQuality,
+    );
 
     // Infer format from URL extension when the backend omits it.
     String format = info.format ?? _inferFormat(info.url);

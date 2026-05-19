@@ -13,11 +13,7 @@ void main() {
   group('HelpWidget — ntv', () {
     testWidgets('renders ListTile with Help & Feedback title', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: HelpWidget(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: HelpWidget())),
       );
 
       expect(find.text('Help & Feedback'), findsOneWidget);
@@ -27,11 +23,7 @@ void main() {
 
     testWidgets('tap on HelpWidget does not throw', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: HelpWidget(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: HelpWidget())),
       );
 
       await tester.tap(find.byType(HelpWidget));

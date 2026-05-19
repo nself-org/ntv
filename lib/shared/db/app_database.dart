@@ -67,9 +67,10 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<Favorite>> watchFavorites() => select(favorites).watch();
 
   Future<bool> isFavorite(String channelId) async {
-    final row = await (select(favorites)
-              ..where((t) => t.channelId.equals(channelId)))
-            .getSingleOrNull();
+    final row = await (select(
+      favorites,
+    )..where((t) => t.channelId.equals(channelId)))
+        .getSingleOrNull();
     return row != null;
   }
 
@@ -100,8 +101,9 @@ class AppDatabase extends _$AppDatabase {
     if (rows.length > 50) {
       final toDelete = rows.sublist(50);
       for (final row in toDelete) {
-        await (delete(watchHistory)
-              ..where((t) => t.channelId.equals(row.channelId)))
+        await (delete(
+          watchHistory,
+        )..where((t) => t.channelId.equals(row.channelId)))
             .go();
       }
     }
@@ -110,9 +112,13 @@ class AppDatabase extends _$AppDatabase {
   // ── EPG cache ──────────────────────────────────────────────────────────────
 
   Future<void> replaceEpgForChannel(
-      String channelId, List<EpgCacheCompanion> entries) async {
+    String channelId,
+    List<EpgCacheCompanion> entries,
+  ) async {
     await transaction(() async {
-      await (delete(epgCache)..where((t) => t.channelId.equals(channelId)))
+      await (delete(
+        epgCache,
+      )..where((t) => t.channelId.equals(channelId)))
           .go();
       await batch((b) => b.insertAll(epgCache, entries));
     });
@@ -126,7 +132,9 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> pruneStaleEpg() async {
     final cutoff = DateTime.now().subtract(const Duration(days: 7));
-    await (delete(epgCache)..where((t) => t.end.isSmallerThanValue(cutoff)))
+    await (delete(
+      epgCache,
+    )..where((t) => t.end.isSmallerThanValue(cutoff)))
         .go();
   }
 }

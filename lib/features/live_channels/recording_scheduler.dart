@@ -8,9 +8,11 @@ import '../../services/api_service.dart';
 // ---------------------------------------------------------------------------
 
 /// All DVR jobs (scheduled + completed + failed).
-final dvrJobsProvider = AsyncNotifierProvider<DvrJobsNotifier, List<DvrJob>>(() {
-  return DvrJobsNotifier();
-});
+final dvrJobsProvider = AsyncNotifierProvider<DvrJobsNotifier, List<DvrJob>>(
+  () {
+    return DvrJobsNotifier();
+  },
+);
 
 class DvrJobsNotifier extends AsyncNotifier<List<DvrJob>> {
   @override
@@ -97,26 +99,26 @@ class _RecordingSchedulerState extends ConsumerState<RecordingScheduler>
         ),
       ),
       body: ref.watch(dvrJobsProvider).when(
-        data: (jobs) => TabBarView(
-          controller: _tabController,
-          children: [
-            _buildJobList(
-              context,
-              jobs.where((j) => j.isScheduled || j.isRecording).toList(),
-              emptyMessage: 'No scheduled recordings.',
-              showCancel: true,
+            data: (jobs) => TabBarView(
+              controller: _tabController,
+              children: [
+                _buildJobList(
+                  context,
+                  jobs.where((j) => j.isScheduled || j.isRecording).toList(),
+                  emptyMessage: 'No scheduled recordings.',
+                  showCancel: true,
+                ),
+                _buildJobList(
+                  context,
+                  jobs.where((j) => j.isCompleted || j.isFailed).toList(),
+                  emptyMessage: 'No completed recordings yet.',
+                  showCancel: false,
+                ),
+              ],
             ),
-            _buildJobList(
-              context,
-              jobs.where((j) => j.isCompleted || j.isFailed).toList(),
-              emptyMessage: 'No completed recordings yet.',
-              showCancel: false,
-            ),
-          ],
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => _buildError(context, e),
-      ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => _buildError(context, e),
+          ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showScheduleDialog(context),
         icon: const Icon(Icons.fiber_manual_record),
@@ -220,11 +222,16 @@ class _RecordingSchedulerState extends ConsumerState<RecordingScheduler>
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text('Failed to load recordings',
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Failed to load recordings',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
-          Text(error.toString(), style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center),
+          Text(
+            error.toString(),
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: () => ref.invalidate(dvrJobsProvider),
@@ -268,9 +275,7 @@ class _DvrJobTile extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  job.isRecording
-                      ? Icons.fiber_manual_record
-                      : Icons.schedule,
+                  job.isRecording ? Icons.fiber_manual_record : Icons.schedule,
                   color: statusColor,
                   size: 18,
                 ),
@@ -284,17 +289,19 @@ class _DvrJobTile extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha:0.15),
+                    color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     statusLabel,
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelSmall
-                        ?.copyWith(color: statusColor),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelSmall?.copyWith(color: statusColor),
                   ),
                 ),
               ],
@@ -420,15 +427,19 @@ class _ScheduleRecordingSheetState
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: 24, right: 24, top: 24,
+        left: 24,
+        right: 24,
+        top: 24,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Schedule Recording',
-              style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Schedule Recording',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 24),
           TextField(
             controller: _channelIdController,
@@ -491,7 +502,10 @@ class _ScheduleRecordingSheetState
       setState(() => _error = 'End time must be after start time.');
       return;
     }
-    setState(() { _saving = true; _error = null; });
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
     try {
       await widget.onSchedule(
         channelId: channelId,
@@ -503,7 +517,12 @@ class _ScheduleRecordingSheetState
       );
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) setState(() { _saving = false; _error = e.toString(); });
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _error = e.toString();
+        });
+      }
     }
   }
 }
@@ -525,8 +544,7 @@ class _DateTimePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatted =
-        '${value.day}/${value.month}/${value.year}  '
+    final formatted = '${value.day}/${value.month}/${value.year}  '
         '${value.hour.toString().padLeft(2, '0')}:'
         '${value.minute.toString().padLeft(2, '0')}';
 
@@ -557,9 +575,8 @@ class _DateTimePicker extends StatelessWidget {
       initialTime: TimeOfDay.fromDateTime(value),
     );
     if (time == null) return;
-    onChanged(DateTime(
-      date.year, date.month, date.day,
-      time.hour, time.minute,
-    ));
+    onChanged(
+      DateTime(date.year, date.month, date.day, time.hour, time.minute),
+    );
   }
 }

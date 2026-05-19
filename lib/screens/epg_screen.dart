@@ -96,7 +96,10 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
             children: [
               const Icon(Icons.error_outline, size: 48),
               const SizedBox(height: 16),
-              Text('Failed to load guide', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                'Failed to load guide',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               Text(
                 e.toString(),
@@ -131,7 +134,10 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 24),
-            Text('Backend not configured', style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              'Backend not configured',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             Text(
               'Connect to your nSelf backend to load EPG data.',
@@ -165,7 +171,10 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 24),
-            Text('No playlists added', style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              'No playlists added',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             Text(
               'Add an M3U playlist in Live TV to see the program guide.',
@@ -197,7 +206,10 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 24),
-          Text('No guide data available', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'No guide data available',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
           Text(
             'The EPG plugin on your backend returned no schedule data for today.',
@@ -222,11 +234,16 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
     );
   }
 
-  Widget _buildChannelRow(BuildContext context, Channel ch, EpgSchedule? schedule) {
+  Widget _buildChannelRow(
+    BuildContext context,
+    Channel ch,
+    EpgSchedule? schedule,
+  ) {
     final now = DateTime.now();
     final programs = schedule?.programs ?? [];
-    final todayPrograms =
-        programs.where((p) => p.start.day == now.day && p.start.month == now.month).toList();
+    final todayPrograms = programs
+        .where((p) => p.start.day == now.day && p.start.month == now.month)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +261,8 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
                       width: 32,
                       height: 32,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.tv, size: 20),
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.tv, size: 20),
                     ),
                   )
                 : const Icon(Icons.tv, size: 20),
@@ -277,15 +295,22 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
     );
   }
 
-  Widget _buildProgramTile(BuildContext context, EpgProgram program, Channel ch) {
+  Widget _buildProgramTile(
+    BuildContext context,
+    EpgProgram program,
+    Channel ch,
+  ) {
     final isNow = program.isNow;
-    final timeRange = '${_formatTime(program.start)} – ${_formatTime(program.end)}';
+    final timeRange =
+        '${_formatTime(program.start)} – ${_formatTime(program.end)}';
 
     return InkWell(
       onTap: () => _onProgramTap(context, program, ch),
       child: Container(
         color: isNow
-            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
+            ? Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.3)
             : null,
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
         child: Row(
@@ -314,15 +339,23 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
                     children: [
                       if (isNow) ...[
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             'NOW',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                 ),
                           ),
                         ),
@@ -331,8 +364,12 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
                       Expanded(
                         child: Text(
                           program.title,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: isNow ? FontWeight.bold : FontWeight.normal,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                fontWeight:
+                                    isNow ? FontWeight.bold : FontWeight.normal,
                               ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -345,7 +382,8 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
                     Text(
                       program.description!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -395,7 +433,10 @@ class _EpgScreenState extends ConsumerState<EpgScreen> {
             ),
             if (program.description != null) ...[
               const SizedBox(height: 12),
-              Text(program.description!, style: Theme.of(ctx).textTheme.bodyMedium),
+              Text(
+                program.description!,
+                style: Theme.of(ctx).textTheme.bodyMedium,
+              ),
             ],
             const SizedBox(height: 16),
           ],

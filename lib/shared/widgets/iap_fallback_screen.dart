@@ -23,10 +23,7 @@ enum IapFallbackReason {
 class IapFallbackScreen extends StatelessWidget {
   final IapFallbackReason reason;
 
-  const IapFallbackScreen({
-    super.key,
-    required this.reason,
-  });
+  const IapFallbackScreen({super.key, required this.reason});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +42,7 @@ class IapFallbackScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                content.icon,
-                size: 56,
-                color: content.iconColor,
-              ),
+              Icon(content.icon, size: 56, color: content.iconColor),
               const SizedBox(height: 24),
               Text(
                 content.title,
@@ -115,8 +108,7 @@ class IapFallbackScreen extends StatelessWidget {
           icon: Icons.public_off_outlined,
           iconColor: const Color(0xFFF59E0B), // amber-500
           title: 'Bundle unavailable in your region',
-          body:
-              'The nTV Bundle is not available for purchase in your region. '
+          body: 'The nTV Bundle is not available for purchase in your region. '
               'You can still use nTV with a free M3U playlist. '
               'If you think this is a mistake, contact support.',
           primaryAction: _IapAction(

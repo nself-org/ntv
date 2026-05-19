@@ -77,5 +77,6 @@ class SettingsService extends ChangeNotifier {
   }
 }
 
-final settingsServiceProvider =
-    ChangeNotifierProvider<SettingsService>((ref) => SettingsService());
+final settingsServiceProvider = ChangeNotifierProvider<SettingsService>(
+  (ref) => SettingsService(),
+);

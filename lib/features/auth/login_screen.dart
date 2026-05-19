@@ -58,16 +58,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // "Account sync coming soon" info banner
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: colorScheme.outline.withOpacity(0.4)),
+                    border: Border.all(
+                      color: colorScheme.outline.withValues(alpha: 0.4),
+                    ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline, color: colorScheme.primary, size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: colorScheme.primary,
+                        size: 20,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -127,7 +136,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Guest mode — primary CTA for free flavor
                 FilledButton.tonal(
                   onPressed: _continueAsGuest,
-                  child: const Text('Continue without an account (local M3U only)'),
+                  child: const Text(
+                    'Continue without an account (local M3U only)',
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(

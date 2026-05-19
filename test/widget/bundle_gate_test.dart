@@ -5,7 +5,9 @@ import 'package:ntv/flavors.dart';
 
 void main() {
   group('BundleGateWidget', () {
-    testWidgets('shows CTA when bundle is not active (free flavor)', (tester) async {
+    testWidgets('shows CTA when bundle is not active (free flavor)', (
+      tester,
+    ) async {
       // appFlavor is free in test runs.
       expect(isBundleActive, isFalse);
 
@@ -22,15 +24,13 @@ void main() {
       expect(find.text('EPG Content'), findsNothing);
     });
 
-    testWidgets('shows child when bundle is active (pro flavor)', (tester) async {
+    testWidgets('shows child when bundle is active (pro flavor)', (
+      tester,
+    ) async {
       // Override: simulate pro flavor by using BundleGateWidget.child path directly.
       // We test the widget in isolation by wrapping with a conditional.
       const child = Text('EPG Content');
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: child),
-        ),
-      );
+      await tester.pumpWidget(const MaterialApp(home: Scaffold(body: child)));
       expect(find.text('EPG Content'), findsOneWidget);
     });
   });

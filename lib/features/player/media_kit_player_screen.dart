@@ -31,7 +31,8 @@ class MediaKitPlayerScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MediaKitPlayerScreen> createState() => _MediaKitPlayerScreenState();
+  ConsumerState<MediaKitPlayerScreen> createState() =>
+      _MediaKitPlayerScreenState();
 }
 
 class _MediaKitPlayerScreenState extends ConsumerState<MediaKitPlayerScreen> {
@@ -68,13 +69,15 @@ class _MediaKitPlayerScreenState extends ConsumerState<MediaKitPlayerScreen> {
   void _recordHistory() {
     final db = ref.read(appDatabaseProvider);
     if (widget.channelId == null) return;
-    db.upsertHistory(WatchHistoryCompanion(
-      channelId: Value(widget.channelId!),
-      channelName: Value(widget.channelName ?? widget.channelId!),
-      channelLogo: Value(widget.channelLogo),
-      streamUrl: Value(widget.streamUrl ?? ''),
-      watchedAt: Value(DateTime.now()),
-    ));
+    db.upsertHistory(
+      WatchHistoryCompanion(
+        channelId: Value(widget.channelId!),
+        channelName: Value(widget.channelName ?? widget.channelId!),
+        channelLogo: Value(widget.channelLogo),
+        streamUrl: Value(widget.streamUrl ?? ''),
+        watchedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   void _toggleControls() {
@@ -226,12 +229,18 @@ class _BottomControls extends StatelessWidget {
                 label: 'Seek back 10 seconds',
                 button: true,
                 child: IconButton(
-                  icon: const Icon(Icons.replay_10, color: Colors.white, size: 32),
+                  icon: const Icon(
+                    Icons.replay_10,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                   tooltip: 'Back 10 seconds',
                   onPressed: () async {
                     final pos = player.state.position;
                     final target = pos - const Duration(seconds: 10);
-                    await player.seek(target < Duration.zero ? Duration.zero : target);
+                    await player.seek(
+                      target < Duration.zero ? Duration.zero : target,
+                    );
                   },
                 ),
               ),
@@ -256,7 +265,11 @@ class _BottomControls extends StatelessWidget {
                 label: 'Seek forward 10 seconds',
                 button: true,
                 child: IconButton(
-                  icon: const Icon(Icons.forward_10, color: Colors.white, size: 32),
+                  icon: const Icon(
+                    Icons.forward_10,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                   tooltip: 'Forward 10 seconds',
                   onPressed: () async {
                     final pos = player.state.position;
