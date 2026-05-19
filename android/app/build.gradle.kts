@@ -10,8 +10,11 @@ plugins {
 
 android {
     namespace = "com.nself.ntv"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Pin compileSdk = 35: media_kit_video 1.3.1 Android code is incompatible with compileSdk 36
+    // (TextureRegistry.SurfaceProducer.Callback added abstract onSurfaceDestroyed() in SDK 36).
+    // Pin ndkVersion: plugins require NDK 27.0.12077973 (backward-compatible with all listed plugins).
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
