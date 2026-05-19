@@ -44,9 +44,8 @@ class AuthService extends StateNotifier<AuthState> {
     await NSelfAuth.initialize(
       authBaseUrl: authBaseUrl,
       appVersion: '1.0.9',
-      tokenStore: _testBackend != null
-          ? TokenStore.withBackend(_testBackend!)
-          : null,
+      tokenStore:
+          _testBackend != null ? TokenStore.withBackend(_testBackend!) : null,
     );
 
     final user = NSelfAuth.currentUser;
@@ -75,10 +74,7 @@ class AuthService extends StateNotifier<AuthState> {
     );
     await store.saveAccessToken(accessToken);
     if (refreshToken != null) await store.saveRefreshToken(refreshToken);
-    state = AuthState(
-      status: AuthStatus.authenticated,
-      userEmail: email,
-    );
+    state = AuthState(status: AuthStatus.authenticated, userEmail: email);
   }
 
   /// Continue without a backend account (local M3U only).
@@ -103,12 +99,10 @@ class AuthService extends StateNotifier<AuthState> {
   /// Throws [BiometricUnavailableException] / [SessionExpiredException] on failure.
   Future<void> unlockWithBiometrics() async {
     final user = await NSelfAuth.unlockWithBiometrics();
-    state = AuthState(
-      status: AuthStatus.authenticated,
-      userEmail: user?.email,
-    );
+    state = AuthState(status: AuthStatus.authenticated, userEmail: user.email);
   }
 }
 
-final authServiceProvider =
-    StateNotifierProvider<AuthService, AuthState>((ref) => AuthService());
+final authServiceProvider = StateNotifierProvider<AuthService, AuthState>(
+  (ref) => AuthService(),
+);

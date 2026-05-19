@@ -9,78 +9,122 @@ class $FavoritesTable extends Favorites
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $FavoritesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _channelIdMeta =
-      const VerificationMeta('channelId');
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
   @override
   late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
-      'channel_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _channelNameMeta =
-      const VerificationMeta('channelName');
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _channelNameMeta = const VerificationMeta(
+    'channelName',
+  );
   @override
   late final GeneratedColumn<String> channelName = GeneratedColumn<String>(
-      'channel_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _channelLogoMeta =
-      const VerificationMeta('channelLogo');
+    'channel_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _channelLogoMeta = const VerificationMeta(
+    'channelLogo',
+  );
   @override
   late final GeneratedColumn<String> channelLogo = GeneratedColumn<String>(
-      'channel_logo', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _streamUrlMeta =
-      const VerificationMeta('streamUrl');
+    'channel_logo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _streamUrlMeta = const VerificationMeta(
+    'streamUrl',
+  );
   @override
   late final GeneratedColumn<String> streamUrl = GeneratedColumn<String>(
-      'stream_url', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _addedAtMeta =
-      const VerificationMeta('addedAt');
+    'stream_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addedAtMeta = const VerificationMeta(
+    'addedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
-      'added_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'added_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [channelId, channelName, channelLogo, streamUrl, addedAt];
+  List<GeneratedColumn> get $columns => [
+        channelId,
+        channelName,
+        channelLogo,
+        streamUrl,
+        addedAt,
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'favorites';
   @override
-  VerificationContext validateIntegrity(Insertable<Favorite> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<Favorite> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('channel_id')) {
-      context.handle(_channelIdMeta,
-          channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta));
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_channelIdMeta);
     }
     if (data.containsKey('channel_name')) {
       context.handle(
+        _channelNameMeta,
+        channelName.isAcceptableOrUnknown(
+          data['channel_name']!,
           _channelNameMeta,
-          channelName.isAcceptableOrUnknown(
-              data['channel_name']!, _channelNameMeta));
+        ),
+      );
     } else if (isInserting) {
       context.missing(_channelNameMeta);
     }
     if (data.containsKey('channel_logo')) {
       context.handle(
+        _channelLogoMeta,
+        channelLogo.isAcceptableOrUnknown(
+          data['channel_logo']!,
           _channelLogoMeta,
-          channelLogo.isAcceptableOrUnknown(
-              data['channel_logo']!, _channelLogoMeta));
+        ),
+      );
     }
     if (data.containsKey('stream_url')) {
-      context.handle(_streamUrlMeta,
-          streamUrl.isAcceptableOrUnknown(data['stream_url']!, _streamUrlMeta));
+      context.handle(
+        _streamUrlMeta,
+        streamUrl.isAcceptableOrUnknown(data['stream_url']!, _streamUrlMeta),
+      );
     } else if (isInserting) {
       context.missing(_streamUrlMeta);
     }
     if (data.containsKey('added_at')) {
-      context.handle(_addedAtMeta,
-          addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta));
+      context.handle(
+        _addedAtMeta,
+        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
+      );
     } else if (isInserting) {
       context.missing(_addedAtMeta);
     }
@@ -93,16 +137,26 @@ class $FavoritesTable extends Favorites
   Favorite map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Favorite(
-      channelId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_id'])!,
-      channelName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_name'])!,
-      channelLogo: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_logo']),
-      streamUrl: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}stream_url'])!,
-      addedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}added_at'])!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      channelName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_name'],
+      )!,
+      channelLogo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_logo'],
+      ),
+      streamUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stream_url'],
+      )!,
+      addedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}added_at'],
+      )!,
     );
   }
 
@@ -118,12 +172,13 @@ class Favorite extends DataClass implements Insertable<Favorite> {
   final String? channelLogo;
   final String streamUrl;
   final DateTime addedAt;
-  const Favorite(
-      {required this.channelId,
-      required this.channelName,
-      this.channelLogo,
-      required this.streamUrl,
-      required this.addedAt});
+  const Favorite({
+    required this.channelId,
+    required this.channelName,
+    this.channelLogo,
+    required this.streamUrl,
+    required this.addedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -149,8 +204,10 @@ class Favorite extends DataClass implements Insertable<Favorite> {
     );
   }
 
-  factory Favorite.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Favorite.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Favorite(
       channelId: serializer.fromJson<String>(json['channelId']),
@@ -172,12 +229,13 @@ class Favorite extends DataClass implements Insertable<Favorite> {
     };
   }
 
-  Favorite copyWith(
-          {String? channelId,
-          String? channelName,
-          Value<String?> channelLogo = const Value.absent(),
-          String? streamUrl,
-          DateTime? addedAt}) =>
+  Favorite copyWith({
+    String? channelId,
+    String? channelName,
+    Value<String?> channelLogo = const Value.absent(),
+    String? streamUrl,
+    DateTime? addedAt,
+  }) =>
       Favorite(
         channelId: channelId ?? this.channelId,
         channelName: channelName ?? this.channelName,
@@ -267,13 +325,14 @@ class FavoritesCompanion extends UpdateCompanion<Favorite> {
     });
   }
 
-  FavoritesCompanion copyWith(
-      {Value<String>? channelId,
-      Value<String>? channelName,
-      Value<String?>? channelLogo,
-      Value<String>? streamUrl,
-      Value<DateTime>? addedAt,
-      Value<int>? rowid}) {
+  FavoritesCompanion copyWith({
+    Value<String>? channelId,
+    Value<String>? channelName,
+    Value<String?>? channelLogo,
+    Value<String>? streamUrl,
+    Value<DateTime>? addedAt,
+    Value<int>? rowid,
+  }) {
     return FavoritesCompanion(
       channelId: channelId ?? this.channelId,
       channelName: channelName ?? this.channelName,
@@ -328,78 +387,122 @@ class $WatchHistoryTable extends WatchHistory
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $WatchHistoryTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _channelIdMeta =
-      const VerificationMeta('channelId');
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
   @override
   late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
-      'channel_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _channelNameMeta =
-      const VerificationMeta('channelName');
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _channelNameMeta = const VerificationMeta(
+    'channelName',
+  );
   @override
   late final GeneratedColumn<String> channelName = GeneratedColumn<String>(
-      'channel_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _channelLogoMeta =
-      const VerificationMeta('channelLogo');
+    'channel_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _channelLogoMeta = const VerificationMeta(
+    'channelLogo',
+  );
   @override
   late final GeneratedColumn<String> channelLogo = GeneratedColumn<String>(
-      'channel_logo', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _streamUrlMeta =
-      const VerificationMeta('streamUrl');
+    'channel_logo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _streamUrlMeta = const VerificationMeta(
+    'streamUrl',
+  );
   @override
   late final GeneratedColumn<String> streamUrl = GeneratedColumn<String>(
-      'stream_url', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _watchedAtMeta =
-      const VerificationMeta('watchedAt');
+    'stream_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _watchedAtMeta = const VerificationMeta(
+    'watchedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> watchedAt = GeneratedColumn<DateTime>(
-      'watched_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'watched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [channelId, channelName, channelLogo, streamUrl, watchedAt];
+  List<GeneratedColumn> get $columns => [
+        channelId,
+        channelName,
+        channelLogo,
+        streamUrl,
+        watchedAt,
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'watch_history';
   @override
-  VerificationContext validateIntegrity(Insertable<WatchHistoryData> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<WatchHistoryData> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('channel_id')) {
-      context.handle(_channelIdMeta,
-          channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta));
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_channelIdMeta);
     }
     if (data.containsKey('channel_name')) {
       context.handle(
+        _channelNameMeta,
+        channelName.isAcceptableOrUnknown(
+          data['channel_name']!,
           _channelNameMeta,
-          channelName.isAcceptableOrUnknown(
-              data['channel_name']!, _channelNameMeta));
+        ),
+      );
     } else if (isInserting) {
       context.missing(_channelNameMeta);
     }
     if (data.containsKey('channel_logo')) {
       context.handle(
+        _channelLogoMeta,
+        channelLogo.isAcceptableOrUnknown(
+          data['channel_logo']!,
           _channelLogoMeta,
-          channelLogo.isAcceptableOrUnknown(
-              data['channel_logo']!, _channelLogoMeta));
+        ),
+      );
     }
     if (data.containsKey('stream_url')) {
-      context.handle(_streamUrlMeta,
-          streamUrl.isAcceptableOrUnknown(data['stream_url']!, _streamUrlMeta));
+      context.handle(
+        _streamUrlMeta,
+        streamUrl.isAcceptableOrUnknown(data['stream_url']!, _streamUrlMeta),
+      );
     } else if (isInserting) {
       context.missing(_streamUrlMeta);
     }
     if (data.containsKey('watched_at')) {
-      context.handle(_watchedAtMeta,
-          watchedAt.isAcceptableOrUnknown(data['watched_at']!, _watchedAtMeta));
+      context.handle(
+        _watchedAtMeta,
+        watchedAt.isAcceptableOrUnknown(data['watched_at']!, _watchedAtMeta),
+      );
     } else if (isInserting) {
       context.missing(_watchedAtMeta);
     }
@@ -412,16 +515,26 @@ class $WatchHistoryTable extends WatchHistory
   WatchHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return WatchHistoryData(
-      channelId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_id'])!,
-      channelName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_name'])!,
-      channelLogo: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_logo']),
-      streamUrl: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}stream_url'])!,
-      watchedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}watched_at'])!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      channelName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_name'],
+      )!,
+      channelLogo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_logo'],
+      ),
+      streamUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stream_url'],
+      )!,
+      watchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}watched_at'],
+      )!,
     );
   }
 
@@ -438,12 +551,13 @@ class WatchHistoryData extends DataClass
   final String? channelLogo;
   final String streamUrl;
   final DateTime watchedAt;
-  const WatchHistoryData(
-      {required this.channelId,
-      required this.channelName,
-      this.channelLogo,
-      required this.streamUrl,
-      required this.watchedAt});
+  const WatchHistoryData({
+    required this.channelId,
+    required this.channelName,
+    this.channelLogo,
+    required this.streamUrl,
+    required this.watchedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -469,8 +583,10 @@ class WatchHistoryData extends DataClass
     );
   }
 
-  factory WatchHistoryData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory WatchHistoryData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return WatchHistoryData(
       channelId: serializer.fromJson<String>(json['channelId']),
@@ -492,12 +608,13 @@ class WatchHistoryData extends DataClass
     };
   }
 
-  WatchHistoryData copyWith(
-          {String? channelId,
-          String? channelName,
-          Value<String?> channelLogo = const Value.absent(),
-          String? streamUrl,
-          DateTime? watchedAt}) =>
+  WatchHistoryData copyWith({
+    String? channelId,
+    String? channelName,
+    Value<String?> channelLogo = const Value.absent(),
+    String? streamUrl,
+    DateTime? watchedAt,
+  }) =>
       WatchHistoryData(
         channelId: channelId ?? this.channelId,
         channelName: channelName ?? this.channelName,
@@ -587,13 +704,14 @@ class WatchHistoryCompanion extends UpdateCompanion<WatchHistoryData> {
     });
   }
 
-  WatchHistoryCompanion copyWith(
-      {Value<String>? channelId,
-      Value<String>? channelName,
-      Value<String?>? channelLogo,
-      Value<String>? streamUrl,
-      Value<DateTime>? watchedAt,
-      Value<int>? rowid}) {
+  WatchHistoryCompanion copyWith({
+    Value<String>? channelId,
+    Value<String>? channelName,
+    Value<String?>? channelLogo,
+    Value<String>? streamUrl,
+    Value<DateTime>? watchedAt,
+    Value<int>? rowid,
+  }) {
     return WatchHistoryCompanion(
       channelId: channelId ?? this.channelId,
       channelName: channelName ?? this.channelName,
@@ -651,84 +769,129 @@ class $EpgCacheTable extends EpgCache
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _channelIdMeta =
-      const VerificationMeta('channelId');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
   @override
   late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
-      'channel_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _startMeta = const VerificationMeta('start');
   @override
   late final GeneratedColumn<DateTime> start = GeneratedColumn<DateTime>(
-      'start', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'start',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _endMeta = const VerificationMeta('end');
   @override
   late final GeneratedColumn<DateTime> end = GeneratedColumn<DateTime>(
-      'end', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
+    'end',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, channelId, title, start, end, description];
+  List<GeneratedColumn> get $columns => [
+        id,
+        channelId,
+        title,
+        start,
+        end,
+        description,
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'epg_cache';
   @override
-  VerificationContext validateIntegrity(Insertable<EpgCacheData> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<EpgCacheData> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('channel_id')) {
-      context.handle(_channelIdMeta,
-          channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta));
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_channelIdMeta);
     }
     if (data.containsKey('title')) {
       context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
     if (data.containsKey('start')) {
       context.handle(
-          _startMeta, start.isAcceptableOrUnknown(data['start']!, _startMeta));
+        _startMeta,
+        start.isAcceptableOrUnknown(data['start']!, _startMeta),
+      );
     } else if (isInserting) {
       context.missing(_startMeta);
     }
     if (data.containsKey('end')) {
       context.handle(
-          _endMeta, end.isAcceptableOrUnknown(data['end']!, _endMeta));
+        _endMeta,
+        end.isAcceptableOrUnknown(data['end']!, _endMeta),
+      );
     } else if (isInserting) {
       context.missing(_endMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
           _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
+        ),
+      );
     }
     return context;
   }
@@ -739,18 +902,30 @@ class $EpgCacheTable extends EpgCache
   EpgCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return EpgCacheData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      channelId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}channel_id'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      start: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}start'])!,
-      end: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}end'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      start: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start'],
+      )!,
+      end: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
     );
   }
 
@@ -767,13 +942,14 @@ class EpgCacheData extends DataClass implements Insertable<EpgCacheData> {
   final DateTime start;
   final DateTime end;
   final String? description;
-  const EpgCacheData(
-      {required this.id,
-      required this.channelId,
-      required this.title,
-      required this.start,
-      required this.end,
-      this.description});
+  const EpgCacheData({
+    required this.id,
+    required this.channelId,
+    required this.title,
+    required this.start,
+    required this.end,
+    this.description,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -801,8 +977,10 @@ class EpgCacheData extends DataClass implements Insertable<EpgCacheData> {
     );
   }
 
-  factory EpgCacheData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory EpgCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return EpgCacheData(
       id: serializer.fromJson<int>(json['id']),
@@ -826,13 +1004,14 @@ class EpgCacheData extends DataClass implements Insertable<EpgCacheData> {
     };
   }
 
-  EpgCacheData copyWith(
-          {int? id,
-          String? channelId,
-          String? title,
-          DateTime? start,
-          DateTime? end,
-          Value<String?> description = const Value.absent()}) =>
+  EpgCacheData copyWith({
+    int? id,
+    String? channelId,
+    String? title,
+    DateTime? start,
+    DateTime? end,
+    Value<String?> description = const Value.absent(),
+  }) =>
       EpgCacheData(
         id: id ?? this.id,
         channelId: channelId ?? this.channelId,
@@ -925,13 +1104,14 @@ class EpgCacheCompanion extends UpdateCompanion<EpgCacheData> {
     });
   }
 
-  EpgCacheCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? channelId,
-      Value<String>? title,
-      Value<DateTime>? start,
-      Value<DateTime>? end,
-      Value<String?>? description}) {
+  EpgCacheCompanion copyWith({
+    Value<int>? id,
+    Value<String>? channelId,
+    Value<String>? title,
+    Value<DateTime>? start,
+    Value<DateTime>? end,
+    Value<String?>? description,
+  }) {
     return EpgCacheCompanion(
       id: id ?? this.id,
       channelId: channelId ?? this.channelId,
@@ -990,8 +1170,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [favorites, watchHistory, epgCache];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        favorites,
+        watchHistory,
+        epgCache,
+      ];
 }
 
 typedef $$FavoritesTableCreateCompanionBuilder = FavoritesCompanion Function({
@@ -1021,19 +1204,29 @@ class $$FavoritesTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get channelId => $composableBuilder(
-      column: $table.channelId, builder: (column) => ColumnFilters(column));
+        column: $table.channelId,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get channelName => $composableBuilder(
-      column: $table.channelName, builder: (column) => ColumnFilters(column));
+        column: $table.channelName,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get channelLogo => $composableBuilder(
-      column: $table.channelLogo, builder: (column) => ColumnFilters(column));
+        column: $table.channelLogo,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get streamUrl => $composableBuilder(
-      column: $table.streamUrl, builder: (column) => ColumnFilters(column));
+        column: $table.streamUrl,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<DateTime> get addedAt => $composableBuilder(
-      column: $table.addedAt, builder: (column) => ColumnFilters(column));
+        column: $table.addedAt,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$FavoritesTableOrderingComposer
@@ -1046,19 +1239,29 @@ class $$FavoritesTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get channelId => $composableBuilder(
-      column: $table.channelId, builder: (column) => ColumnOrderings(column));
+        column: $table.channelId,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get channelName => $composableBuilder(
-      column: $table.channelName, builder: (column) => ColumnOrderings(column));
+        column: $table.channelName,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get channelLogo => $composableBuilder(
-      column: $table.channelLogo, builder: (column) => ColumnOrderings(column));
+        column: $table.channelLogo,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get streamUrl => $composableBuilder(
-      column: $table.streamUrl, builder: (column) => ColumnOrderings(column));
+        column: $table.streamUrl,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<DateTime> get addedAt => $composableBuilder(
-      column: $table.addedAt, builder: (column) => ColumnOrderings(column));
+        column: $table.addedAt,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$FavoritesTableAnnotationComposer
@@ -1074,10 +1277,14 @@ class $$FavoritesTableAnnotationComposer
       $composableBuilder(column: $table.channelId, builder: (column) => column);
 
   GeneratedColumn<String> get channelName => $composableBuilder(
-      column: $table.channelName, builder: (column) => column);
+        column: $table.channelName,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<String> get channelLogo => $composableBuilder(
-      column: $table.channelLogo, builder: (column) => column);
+        column: $table.channelLogo,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<String> get streamUrl =>
       $composableBuilder(column: $table.streamUrl, builder: (column) => column);
@@ -1099,52 +1306,54 @@ class $$FavoritesTableTableManager extends RootTableManager<
     Favorite,
     PrefetchHooks Function()> {
   $$FavoritesTableTableManager(_$AppDatabase db, $FavoritesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$FavoritesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$FavoritesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$FavoritesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<String> channelId = const Value.absent(),
-            Value<String> channelName = const Value.absent(),
-            Value<String?> channelLogo = const Value.absent(),
-            Value<String> streamUrl = const Value.absent(),
-            Value<DateTime> addedAt = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              FavoritesCompanion(
-            channelId: channelId,
-            channelName: channelName,
-            channelLogo: channelLogo,
-            streamUrl: streamUrl,
-            addedAt: addedAt,
-            rowid: rowid,
+      : super(
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$FavoritesTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$FavoritesTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$FavoritesTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<String> channelId = const Value.absent(),
+              Value<String> channelName = const Value.absent(),
+              Value<String?> channelLogo = const Value.absent(),
+              Value<String> streamUrl = const Value.absent(),
+              Value<DateTime> addedAt = const Value.absent(),
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                FavoritesCompanion(
+              channelId: channelId,
+              channelName: channelName,
+              channelLogo: channelLogo,
+              streamUrl: streamUrl,
+              addedAt: addedAt,
+              rowid: rowid,
+            ),
+            createCompanionCallback: ({
+              required String channelId,
+              required String channelName,
+              Value<String?> channelLogo = const Value.absent(),
+              required String streamUrl,
+              required DateTime addedAt,
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                FavoritesCompanion.insert(
+              channelId: channelId,
+              channelName: channelName,
+              channelLogo: channelLogo,
+              streamUrl: streamUrl,
+              addedAt: addedAt,
+              rowid: rowid,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
           ),
-          createCompanionCallback: ({
-            required String channelId,
-            required String channelName,
-            Value<String?> channelLogo = const Value.absent(),
-            required String streamUrl,
-            required DateTime addedAt,
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              FavoritesCompanion.insert(
-            channelId: channelId,
-            channelName: channelName,
-            channelLogo: channelLogo,
-            streamUrl: streamUrl,
-            addedAt: addedAt,
-            rowid: rowid,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
+        );
 }
 
 typedef $$FavoritesTableProcessedTableManager = ProcessedTableManager<
@@ -1188,19 +1397,29 @@ class $$WatchHistoryTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get channelId => $composableBuilder(
-      column: $table.channelId, builder: (column) => ColumnFilters(column));
+        column: $table.channelId,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get channelName => $composableBuilder(
-      column: $table.channelName, builder: (column) => ColumnFilters(column));
+        column: $table.channelName,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get channelLogo => $composableBuilder(
-      column: $table.channelLogo, builder: (column) => ColumnFilters(column));
+        column: $table.channelLogo,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get streamUrl => $composableBuilder(
-      column: $table.streamUrl, builder: (column) => ColumnFilters(column));
+        column: $table.streamUrl,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<DateTime> get watchedAt => $composableBuilder(
-      column: $table.watchedAt, builder: (column) => ColumnFilters(column));
+        column: $table.watchedAt,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$WatchHistoryTableOrderingComposer
@@ -1213,19 +1432,29 @@ class $$WatchHistoryTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get channelId => $composableBuilder(
-      column: $table.channelId, builder: (column) => ColumnOrderings(column));
+        column: $table.channelId,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get channelName => $composableBuilder(
-      column: $table.channelName, builder: (column) => ColumnOrderings(column));
+        column: $table.channelName,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get channelLogo => $composableBuilder(
-      column: $table.channelLogo, builder: (column) => ColumnOrderings(column));
+        column: $table.channelLogo,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get streamUrl => $composableBuilder(
-      column: $table.streamUrl, builder: (column) => ColumnOrderings(column));
+        column: $table.streamUrl,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<DateTime> get watchedAt => $composableBuilder(
-      column: $table.watchedAt, builder: (column) => ColumnOrderings(column));
+        column: $table.watchedAt,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$WatchHistoryTableAnnotationComposer
@@ -1241,10 +1470,14 @@ class $$WatchHistoryTableAnnotationComposer
       $composableBuilder(column: $table.channelId, builder: (column) => column);
 
   GeneratedColumn<String> get channelName => $composableBuilder(
-      column: $table.channelName, builder: (column) => column);
+        column: $table.channelName,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<String> get channelLogo => $composableBuilder(
-      column: $table.channelLogo, builder: (column) => column);
+        column: $table.channelLogo,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<String> get streamUrl =>
       $composableBuilder(column: $table.streamUrl, builder: (column) => column);
@@ -1264,57 +1497,59 @@ class $$WatchHistoryTableTableManager extends RootTableManager<
     $$WatchHistoryTableUpdateCompanionBuilder,
     (
       WatchHistoryData,
-      BaseReferences<_$AppDatabase, $WatchHistoryTable, WatchHistoryData>
+      BaseReferences<_$AppDatabase, $WatchHistoryTable, WatchHistoryData>,
     ),
     WatchHistoryData,
     PrefetchHooks Function()> {
   $$WatchHistoryTableTableManager(_$AppDatabase db, $WatchHistoryTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$WatchHistoryTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$WatchHistoryTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$WatchHistoryTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<String> channelId = const Value.absent(),
-            Value<String> channelName = const Value.absent(),
-            Value<String?> channelLogo = const Value.absent(),
-            Value<String> streamUrl = const Value.absent(),
-            Value<DateTime> watchedAt = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              WatchHistoryCompanion(
-            channelId: channelId,
-            channelName: channelName,
-            channelLogo: channelLogo,
-            streamUrl: streamUrl,
-            watchedAt: watchedAt,
-            rowid: rowid,
+      : super(
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$WatchHistoryTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$WatchHistoryTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$WatchHistoryTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<String> channelId = const Value.absent(),
+              Value<String> channelName = const Value.absent(),
+              Value<String?> channelLogo = const Value.absent(),
+              Value<String> streamUrl = const Value.absent(),
+              Value<DateTime> watchedAt = const Value.absent(),
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                WatchHistoryCompanion(
+              channelId: channelId,
+              channelName: channelName,
+              channelLogo: channelLogo,
+              streamUrl: streamUrl,
+              watchedAt: watchedAt,
+              rowid: rowid,
+            ),
+            createCompanionCallback: ({
+              required String channelId,
+              required String channelName,
+              Value<String?> channelLogo = const Value.absent(),
+              required String streamUrl,
+              required DateTime watchedAt,
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                WatchHistoryCompanion.insert(
+              channelId: channelId,
+              channelName: channelName,
+              channelLogo: channelLogo,
+              streamUrl: streamUrl,
+              watchedAt: watchedAt,
+              rowid: rowid,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
           ),
-          createCompanionCallback: ({
-            required String channelId,
-            required String channelName,
-            Value<String?> channelLogo = const Value.absent(),
-            required String streamUrl,
-            required DateTime watchedAt,
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              WatchHistoryCompanion.insert(
-            channelId: channelId,
-            channelName: channelName,
-            channelLogo: channelLogo,
-            streamUrl: streamUrl,
-            watchedAt: watchedAt,
-            rowid: rowid,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
+        );
 }
 
 typedef $$WatchHistoryTableProcessedTableManager = ProcessedTableManager<
@@ -1328,7 +1563,7 @@ typedef $$WatchHistoryTableProcessedTableManager = ProcessedTableManager<
     $$WatchHistoryTableUpdateCompanionBuilder,
     (
       WatchHistoryData,
-      BaseReferences<_$AppDatabase, $WatchHistoryTable, WatchHistoryData>
+      BaseReferences<_$AppDatabase, $WatchHistoryTable, WatchHistoryData>,
     ),
     WatchHistoryData,
     PrefetchHooks Function()>;
@@ -1359,22 +1594,34 @@ class $$EpgCacheTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+        column: $table.id,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get channelId => $composableBuilder(
-      column: $table.channelId, builder: (column) => ColumnFilters(column));
+        column: $table.channelId,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
+        column: $table.title,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<DateTime> get start => $composableBuilder(
-      column: $table.start, builder: (column) => ColumnFilters(column));
+        column: $table.start,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<DateTime> get end => $composableBuilder(
-      column: $table.end, builder: (column) => ColumnFilters(column));
+        column: $table.end,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnFilters(column));
+        column: $table.description,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$EpgCacheTableOrderingComposer
@@ -1387,22 +1634,34 @@ class $$EpgCacheTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+        column: $table.id,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get channelId => $composableBuilder(
-      column: $table.channelId, builder: (column) => ColumnOrderings(column));
+        column: $table.channelId,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
+        column: $table.title,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<DateTime> get start => $composableBuilder(
-      column: $table.start, builder: (column) => ColumnOrderings(column));
+        column: $table.start,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<DateTime> get end => $composableBuilder(
-      column: $table.end, builder: (column) => ColumnOrderings(column));
+        column: $table.end,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnOrderings(column));
+        column: $table.description,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$EpgCacheTableAnnotationComposer
@@ -1430,7 +1689,9 @@ class $$EpgCacheTableAnnotationComposer
       $composableBuilder(column: $table.end, builder: (column) => column);
 
   GeneratedColumn<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => column);
+        column: $table.description,
+        builder: (column) => column,
+      );
 }
 
 class $$EpgCacheTableTableManager extends RootTableManager<
@@ -1442,56 +1703,61 @@ class $$EpgCacheTableTableManager extends RootTableManager<
     $$EpgCacheTableAnnotationComposer,
     $$EpgCacheTableCreateCompanionBuilder,
     $$EpgCacheTableUpdateCompanionBuilder,
-    (EpgCacheData, BaseReferences<_$AppDatabase, $EpgCacheTable, EpgCacheData>),
+    (
+      EpgCacheData,
+      BaseReferences<_$AppDatabase, $EpgCacheTable, EpgCacheData>,
+    ),
     EpgCacheData,
     PrefetchHooks Function()> {
   $$EpgCacheTableTableManager(_$AppDatabase db, $EpgCacheTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$EpgCacheTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$EpgCacheTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$EpgCacheTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> channelId = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<DateTime> start = const Value.absent(),
-            Value<DateTime> end = const Value.absent(),
-            Value<String?> description = const Value.absent(),
-          }) =>
-              EpgCacheCompanion(
-            id: id,
-            channelId: channelId,
-            title: title,
-            start: start,
-            end: end,
-            description: description,
+      : super(
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$EpgCacheTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$EpgCacheTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$EpgCacheTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<int> id = const Value.absent(),
+              Value<String> channelId = const Value.absent(),
+              Value<String> title = const Value.absent(),
+              Value<DateTime> start = const Value.absent(),
+              Value<DateTime> end = const Value.absent(),
+              Value<String?> description = const Value.absent(),
+            }) =>
+                EpgCacheCompanion(
+              id: id,
+              channelId: channelId,
+              title: title,
+              start: start,
+              end: end,
+              description: description,
+            ),
+            createCompanionCallback: ({
+              Value<int> id = const Value.absent(),
+              required String channelId,
+              required String title,
+              required DateTime start,
+              required DateTime end,
+              Value<String?> description = const Value.absent(),
+            }) =>
+                EpgCacheCompanion.insert(
+              id: id,
+              channelId: channelId,
+              title: title,
+              start: start,
+              end: end,
+              description: description,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
           ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String channelId,
-            required String title,
-            required DateTime start,
-            required DateTime end,
-            Value<String?> description = const Value.absent(),
-          }) =>
-              EpgCacheCompanion.insert(
-            id: id,
-            channelId: channelId,
-            title: title,
-            start: start,
-            end: end,
-            description: description,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
+        );
 }
 
 typedef $$EpgCacheTableProcessedTableManager = ProcessedTableManager<
@@ -1503,7 +1769,10 @@ typedef $$EpgCacheTableProcessedTableManager = ProcessedTableManager<
     $$EpgCacheTableAnnotationComposer,
     $$EpgCacheTableCreateCompanionBuilder,
     $$EpgCacheTableUpdateCompanionBuilder,
-    (EpgCacheData, BaseReferences<_$AppDatabase, $EpgCacheTable, EpgCacheData>),
+    (
+      EpgCacheData,
+      BaseReferences<_$AppDatabase, $EpgCacheTable, EpgCacheData>,
+    ),
     EpgCacheData,
     PrefetchHooks Function()>;
 

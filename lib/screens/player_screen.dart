@@ -7,7 +7,10 @@ import '../models/media.dart';
 import '../services/api_service.dart';
 
 /// Provider to fetch the stream URL for a given media ID.
-final streamInfoProvider = FutureProvider.family<StreamInfo, String>((ref, mediaId) async {
+final streamInfoProvider = FutureProvider.family<StreamInfo, String>((
+  ref,
+  mediaId,
+) async {
   final api = ref.read(apiServiceProvider);
   return api.getStreamUrl(mediaId);
 });
@@ -60,7 +63,9 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     try {
       final api = ref.read(apiServiceProvider);
       if (!api.isConfigured) {
-        setState(() => _error = 'Backend not configured. Go to Settings first.');
+        setState(
+          () => _error = 'Backend not configured. Go to Settings first.',
+        );
         return;
       }
       final stream = await api.getStreamUrl(widget.mediaId!);
@@ -86,8 +91,10 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       showControlsOnInitialize: false,
       errorBuilder: (context, errorMessage) {
         return Center(
-          child: Text('Playback error: $errorMessage',
-              style: const TextStyle(color: Colors.white)),
+          child: Text(
+            'Playback error: $errorMessage',
+            style: const TextStyle(color: Colors.white),
+          ),
         );
       },
     );
@@ -105,7 +112,8 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
   void _onPositionChanged() {
     final pos = _videoController?.value.position ?? Duration.zero;
     // Save every 10 seconds of progress.
-    if ((pos - _lastSavedPosition).inSeconds.abs() >= 10 && widget.mediaId != null) {
+    if ((pos - _lastSavedPosition).inSeconds.abs() >= 10 &&
+        widget.mediaId != null) {
       _lastSavedPosition = pos;
       final api = ref.read(apiServiceProvider);
       api.saveProgress(widget.mediaId!, pos).catchError((_) {});
@@ -142,11 +150,18 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const ExcludeSemantics(
-                        child: Icon(Icons.error_outline, size: 64, color: Colors.white38),
+                        child: Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.white38,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Text(_error!, style: const TextStyle(color: Colors.white70),
-                          textAlign: TextAlign.center),
+                      Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.white70),
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 24),
                       OutlinedButton(
                         onPressed: () => Navigator.of(context).pop(),
@@ -161,18 +176,28 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
             Center(
               child: Semantics(
                 liveRegion: true,
-                label: 'No media selected. Choose something from your library to play.',
+                label:
+                    'No media selected. Choose something from your library to play.',
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ExcludeSemantics(
-                      child: Icon(Icons.play_circle_outline, size: 120, color: Colors.white54),
+                      child: Icon(
+                        Icons.play_circle_outline,
+                        size: 120,
+                        color: Colors.white54,
+                      ),
                     ),
                     SizedBox(height: 16),
-                    Text('No media selected.', style: TextStyle(color: Colors.white54)),
+                    Text(
+                      'No media selected.',
+                      style: TextStyle(color: Colors.white54),
+                    ),
                     SizedBox(height: 8),
-                    Text('Choose something from your library to play.',
-                        style: TextStyle(color: Colors.white38, fontSize: 12)),
+                    Text(
+                      'Choose something from your library to play.',
+                      style: TextStyle(color: Colors.white38, fontSize: 12),
+                    ),
                   ],
                 ),
               ),

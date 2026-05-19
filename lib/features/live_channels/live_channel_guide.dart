@@ -23,16 +23,17 @@ class LiveChannelsNotifier extends AsyncNotifier<LiveChannelListResult> {
   Future<void> loadMore() async {
     final current = state.valueOrNull;
     if (current == null || !current.hasMore) return;
-    final next = await ref.read(apiServiceProvider).getLiveChannels(
-          page: current.page + 1,
-          pageSize: current.pageSize,
-        );
-    state = AsyncData(LiveChannelListResult(
-      channels: [...current.channels, ...next.channels],
-      total: next.total,
-      page: next.page,
-      pageSize: next.pageSize,
-    ));
+    final next = await ref
+        .read(apiServiceProvider)
+        .getLiveChannels(page: current.page + 1, pageSize: current.pageSize);
+    state = AsyncData(
+      LiveChannelListResult(
+        channels: [...current.channels, ...next.channels],
+        total: next.total,
+        page: next.page,
+        pageSize: next.pageSize,
+      ),
+    );
   }
 }
 
@@ -152,10 +153,16 @@ class _LiveChannelGuideState extends ConsumerState<LiveChannelGuide> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.live_tv_outlined, size: 80,
-              color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.live_tv_outlined,
+            size: 80,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(height: 24),
-          Text('No live channels', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'No live channels',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
           Text(
             'Add channels via your nSelf backend (streaming plugin).',
@@ -176,8 +183,10 @@ class _LiveChannelGuideState extends ConsumerState<LiveChannelGuide> {
         children: [
           const Icon(Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          Text('Failed to load channels',
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Failed to load channels',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           Text(
             error.toString(),
@@ -254,19 +263,19 @@ class _ChannelTileState extends State<_ChannelTile> {
         ),
       },
       child: Semantics(
-        label: '${ch.name}${ch.currentProgram != null ? ", now: ${ch.currentProgram}" : ""}',
+        label:
+            '${ch.name}${ch.currentProgram != null ? ", now: ${ch.currentProgram}" : ""}',
         button: true,
         child: InkWell(
           onTap: widget.onActivate,
           focusNode: _focusNode,
-          focusColor: colorScheme.primaryContainer.withValues(alpha:0.3),
+          focusColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             decoration: BoxDecoration(
               border: widget.isFocused
                   ? Border(
-                      left: BorderSide(
-                          color: colorScheme.primary, width: 4),
+                      left: BorderSide(color: colorScheme.primary, width: 4),
                     )
                   : null,
             ),
@@ -300,10 +309,12 @@ class _ChannelTileState extends State<_ChannelTile> {
                           if (ch.number != null) ...[
                             Text(
                               ch.number!,
-                              style:
-                                  Theme.of(context).textTheme.labelSmall?.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
-                                      ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                             const SizedBox(width: 6),
                           ],
@@ -330,7 +341,9 @@ class _ChannelTileState extends State<_ChannelTile> {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 1),
+                                horizontal: 5,
+                                vertical: 1,
+                              ),
                               decoration: BoxDecoration(
                                 color: colorScheme.primary,
                                 borderRadius: BorderRadius.circular(3),
@@ -340,9 +353,7 @@ class _ChannelTileState extends State<_ChannelTile> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .labelSmall
-                                    ?.copyWith(
-                                      color: colorScheme.onPrimary,
-                                    ),
+                                    ?.copyWith(color: colorScheme.onPrimary),
                               ),
                             ),
                             const SizedBox(width: 6),
@@ -366,10 +377,13 @@ class _ChannelTileState extends State<_ChannelTile> {
                         const SizedBox(height: 1),
                         Text(
                           'Next: ${ch.nextProgram}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: colorScheme
-                                    .onSurfaceVariant
-                                    .withValues(alpha:0.7),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(
+                                color: colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.7,
+                                ),
                               ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -383,7 +397,7 @@ class _ChannelTileState extends State<_ChannelTile> {
                   Icons.play_circle_outline,
                   color: widget.isFocused
                       ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant.withValues(alpha:0.5),
+                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 ),
               ],
             ),

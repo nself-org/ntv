@@ -28,14 +28,16 @@ void main() {
     test('init with persisted user restores authenticated state', () async {
       // Seed a user into the SDK store before calling init.
       final store = TokenStore.withBackend(backend);
-      await store.saveUser(User(
-        id: 'u1',
-        email: 'test@example.com',
-        displayName: 'Test User',
-        tier: 'free',
-        activePlugins: const [],
-        accessTokenExpiry: DateTime.now().add(const Duration(hours: 1)),
-      ));
+      await store.saveUser(
+        User(
+          id: 'u1',
+          email: 'test@example.com',
+          displayName: 'Test User',
+          tier: 'free',
+          activePlugins: const [],
+          accessTokenExpiry: DateTime.now().add(const Duration(hours: 1)),
+        ),
+      );
       await store.saveAccessToken('tok_abc');
 
       await service.init(authBaseUrl: 'https://test.example.com/v1/auth');

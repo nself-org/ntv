@@ -30,13 +30,15 @@ class FavoritesNotifier extends StateNotifier<void> {
     if (isFav) {
       await _db.removeFavorite(channelId);
     } else {
-      await _db.addFavorite(FavoritesCompanion(
-        channelId: Value(channelId),
-        channelName: Value(channelName),
-        channelLogo: Value(channelLogo),
-        streamUrl: Value(streamUrl),
-        addedAt: Value(DateTime.now()),
-      ));
+      await _db.addFavorite(
+        FavoritesCompanion(
+          channelId: Value(channelId),
+          channelName: Value(channelName),
+          channelLogo: Value(channelLogo),
+          streamUrl: Value(streamUrl),
+          addedAt: Value(DateTime.now()),
+        ),
+      );
     }
   }
 

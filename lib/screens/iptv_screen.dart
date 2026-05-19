@@ -62,10 +62,7 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('Cancel'),
           ),
-          FilledButton(
-            onPressed: _addPlaylist,
-            child: const Text('Add'),
-          ),
+          FilledButton(onPressed: _addPlaylist, child: const Text('Add')),
         ],
       ),
     );
@@ -119,7 +116,10 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
             color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(height: 24),
-          Text('No playlists yet', style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            'No playlists yet',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 8),
           Text(
             'Add an M3U playlist URL to browse live channels.',
@@ -147,11 +147,7 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
         final url = urls[i];
         return ListTile(
           leading: const Icon(Icons.playlist_play),
-          title: Text(
-            url,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          title: Text(url, maxLines: 1, overflow: TextOverflow.ellipsis),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -186,7 +182,10 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
           children: [
             const Icon(Icons.error_outline, size: 48),
             const SizedBox(height: 16),
-            Text('Failed to load playlist', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Failed to load playlist',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             Text(
               e.toString(),
@@ -207,7 +206,11 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
     );
   }
 
-  Widget _buildChannelList(BuildContext context, List<Channel> channels, String playlistUrl) {
+  Widget _buildChannelList(
+    BuildContext context,
+    List<Channel> channels,
+    String playlistUrl,
+  ) {
     final searchQuery = ref.watch(_channelSearchProvider);
     final selectedGroup = ref.watch(_selectedGroupProvider);
 
@@ -223,7 +226,8 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
     }
     if (searchQuery.isNotEmpty) {
       final q = searchQuery.toLowerCase();
-      filtered = filtered.where((ch) => ch.name.toLowerCase().contains(q)).toList();
+      filtered =
+          filtered.where((ch) => ch.name.toLowerCase().contains(q)).toList();
     }
 
     return Column(
@@ -279,15 +283,17 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
                         ref.read(_selectedGroupProvider.notifier).state = null,
                   ),
                 ),
-                ...sortedGroups.map((g) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: Text(g),
-                        selected: selectedGroup == g,
-                        onSelected: (_) =>
-                            ref.read(_selectedGroupProvider.notifier).state = g,
-                      ),
-                    )),
+                ...sortedGroups.map(
+                  (g) => Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(g),
+                      selected: selectedGroup == g,
+                      onSelected: (_) =>
+                          ref.read(_selectedGroupProvider.notifier).state = g,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -324,13 +330,20 @@ class _IptvScreenState extends ConsumerState<IptvScreen> {
                                 width: 40,
                                 height: 40,
                                 fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.tv),
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.tv),
                               ),
                             )
                           : const Icon(Icons.tv),
-                      title: Text(ch.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      title: Text(
+                        ch.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       subtitle: ch.group != null ? Text(ch.group!) : null,
-                      onTap: () => context.push('/player?streamUrl=${Uri.encodeComponent(ch.streamUrl)}'),
+                      onTap: () => context.push(
+                        '/player?streamUrl=${Uri.encodeComponent(ch.streamUrl)}',
+                      ),
                     );
                   },
                 ),

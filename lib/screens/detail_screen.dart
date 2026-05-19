@@ -6,14 +6,20 @@ import '../services/api_service.dart';
 
 /// Provider to fetch media details by ID and type.
 final mediaDetailProvider =
-    FutureProvider.family<Media, ({String id, MediaType type})>((ref, params) async {
+    FutureProvider.family<Media, ({String id, MediaType type})>((
+  ref,
+  params,
+) async {
   final api = ref.read(apiServiceProvider);
   return api.getMediaDetails(params.id, type: params.type);
 });
 
 /// Provider to fetch episodes for a TV show season.
 final episodesProvider =
-    FutureProvider.family<List<Episode>, ({String showId, int season})>((ref, params) async {
+    FutureProvider.family<List<Episode>, ({String showId, int season})>((
+  ref,
+  params,
+) async {
   final api = ref.read(apiServiceProvider);
   return api.getEpisodes(params.showId, params.season);
 });
@@ -63,8 +69,11 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                 ? Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(media.backdropUrl!, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _backdropPlaceholder()),
+                      Image.network(
+                        media.backdropUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _backdropPlaceholder(),
+                      ),
                       const DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -90,19 +99,25 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                 Row(
                   children: [
                     if (media.releaseDate != null)
-                      Text(media.releaseDate!.substring(0, 4),
-                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text(
+                        media.releaseDate!.substring(0, 4),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     if (media.runtime != null) ...[
                       const SizedBox(width: 16),
-                      Text('${media.runtime} min',
-                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text(
+                        '${media.runtime} min',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ],
                     if (media.rating != null) ...[
                       const SizedBox(width: 16),
                       Icon(Icons.star, size: 16, color: Colors.amber.shade600),
                       const SizedBox(width: 4),
-                      Text(media.rating!.toStringAsFixed(1),
-                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text(
+                        media.rating!.toStringAsFixed(1),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ],
                   ],
                 ),
@@ -115,10 +130,15 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                     spacing: 8,
                     runSpacing: 4,
                     children: media.genres
-                        .map((g) => Chip(
-                              label: Text(g, style: const TextStyle(fontSize: 12)),
-                              visualDensity: VisualDensity.compact,
-                            ))
+                        .map(
+                          (g) => Chip(
+                            label: Text(
+                              g,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        )
                         .toList(),
                   ),
 
@@ -128,7 +148,8 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () => context.push('/player?mediaId=${media.id}'),
+                    onPressed: () =>
+                        context.push('/player?mediaId=${media.id}'),
                     icon: const Icon(Icons.play_arrow),
                     label: const Text('Play'),
                   ),
@@ -138,9 +159,15 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
 
                 // Description
                 if (media.overview != null) ...[
-                  Text('Overview', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Overview',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 8),
-                  Text(media.overview!, style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    media.overview!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ],
             ),
@@ -154,13 +181,19 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Text('Episodes', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Episodes',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const Spacer(),
                   DropdownButton<int>(
                     value: _selectedSeason,
                     items: List.generate(
                       media.seasonCount!,
-                      (i) => DropdownMenuItem(value: i + 1, child: Text('Season ${i + 1}')),
+                      (i) => DropdownMenuItem(
+                        value: i + 1,
+                        child: Text('Season ${i + 1}'),
+                      ),
                     ),
                     onChanged: (v) => setState(() => _selectedSeason = v ?? 1),
                   ),
@@ -181,38 +214,43 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
 
     return episodes.when(
       data: (eps) => SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (ctx, i) {
-            final ep = eps[i];
-            return ListTile(
-              leading: SizedBox(
-                width: 80,
-                height: 45,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: ep.stillUrl != null
-                      ? Image.network(ep.stillUrl!, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _episodePlaceholder())
-                      : _episodePlaceholder(),
-                ),
+        delegate: SliverChildBuilderDelegate((ctx, i) {
+          final ep = eps[i];
+          return ListTile(
+            leading: SizedBox(
+              width: 80,
+              height: 45,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: ep.stillUrl != null
+                    ? Image.network(
+                        ep.stillUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _episodePlaceholder(),
+                      )
+                    : _episodePlaceholder(),
               ),
-              title: Text('${ep.episodeNumber}. ${ep.title}'),
-              subtitle: ep.runtime != null ? Text('${ep.runtime} min') : null,
-              onTap: () => context.push('/player?mediaId=${ep.id}'),
-            );
-          },
-          childCount: eps.length,
-        ),
+            ),
+            title: Text('${ep.episodeNumber}. ${ep.title}'),
+            subtitle: ep.runtime != null ? Text('${ep.runtime} min') : null,
+            onTap: () => context.push('/player?mediaId=${ep.id}'),
+          );
+        }, childCount: eps.length),
       ),
-      loading: () => const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
-      error: (e, _) => SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
+      loading: () => const SliverToBoxAdapter(
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) =>
+          SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
     );
   }
 
   Widget _backdropPlaceholder() {
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: const Center(child: Icon(Icons.movie, size: 64, color: Colors.white24)),
+      child: const Center(
+        child: Icon(Icons.movie, size: 64, color: Colors.white24),
+      ),
     );
   }
 

@@ -54,9 +54,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       apiKey: _apiKeyController.text.trim(),
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Settings saved.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Settings saved.')));
   }
 
   @override
@@ -120,7 +120,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           // About
           ListTile(
-            leading: const Icon(Icons.info_outline, semanticLabel: 'App version info'),
+            leading: const Icon(
+              Icons.info_outline,
+              semanticLabel: 'App version info',
+            ),
             title: const Text('About'),
             subtitle: Text('nTV v$_appVersion'),
           ),
@@ -140,9 +143,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               settings.setPreferredQuality(q);
               Navigator.pop(ctx);
             },
-            child: Text(q, style: TextStyle(
-              fontWeight: settings.preferredQuality == q ? FontWeight.bold : FontWeight.normal,
-            )),
+            child: Text(
+              q,
+              style: TextStyle(
+                fontWeight: settings.preferredQuality == q
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
+            ),
           );
         }).toList(),
       ),

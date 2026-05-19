@@ -6,7 +6,10 @@ import '../services/api_service.dart';
 import '../services/settings_service.dart';
 
 /// Provider that fetches the media library from the backend.
-final libraryProvider = FutureProvider.family<List<Media>, String?>((ref, genre) async {
+final libraryProvider = FutureProvider.family<List<Media>, String?>((
+  ref,
+  genre,
+) async {
   final api = ref.read(apiServiceProvider);
   if (!api.isConfigured) return [];
   return api.getLibrary(genre: genre);
@@ -89,11 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   },
                 ),
               )
-            : Semantics(
-                header: true,
-                label: 'nTV',
-                child: const Text('nTV'),
-              ),
+            : Semantics(header: true, label: 'nTV', child: const Text('nTV')),
         centerTitle: false,
         actions: [
           IconButton(
@@ -111,7 +110,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: _isSearching ? _buildSearchResults() : _buildLibrary(library, continueWatching, genres),
+      body: _isSearching
+          ? _buildSearchResults()
+          : _buildLibrary(library, continueWatching, genres),
     );
   }
 
@@ -122,9 +123,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.video_library, size: 80, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.video_library,
+              size: 80,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 24),
-            Text('Your Media Library', style: Theme.of(context).textTheme.headlineMedium),
+            Text(
+              'Your Media Library',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
             const SizedBox(height: 8),
             Text(
               'Connect to your nSelf backend to browse content.',
@@ -182,20 +190,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             padding: const EdgeInsets.only(right: 8),
                             child: FilterChip(
                               label: const Text('All'),
-                              selected: ref.watch(selectedGenreProvider) == null,
-                              onSelected: (_) =>
-                                  ref.read(selectedGenreProvider.notifier).state = null,
+                              selected:
+                                  ref.watch(selectedGenreProvider) == null,
+                              onSelected: (_) => ref
+                                  .read(selectedGenreProvider.notifier)
+                                  .state = null,
                             ),
                           ),
-                          ...genreList.map((g) => Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: FilterChip(
-                                  label: Text(g),
-                                  selected: ref.watch(selectedGenreProvider) == g,
-                                  onSelected: (_) =>
-                                      ref.read(selectedGenreProvider.notifier).state = g,
-                                ),
-                              )),
+                          ...genreList.map(
+                            (g) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(g),
+                                selected: ref.watch(selectedGenreProvider) == g,
+                                onSelected: (_) => ref
+                                    .read(
+                                      selectedGenreProvider.notifier,
+                                    )
+                                    .state = g,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -214,8 +229,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                          child: Text('Continue Watching',
-                              style: Theme.of(context).textTheme.titleMedium),
+                          child: Text(
+                            'Continue Watching',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
                         ),
                         SizedBox(
                           height: 180,
@@ -223,7 +240,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             itemCount: items.length,
-                            itemBuilder: (ctx, i) => _buildPosterCard(items[i], width: 120),
+                            itemBuilder: (ctx, i) =>
+                                _buildPosterCard(items[i], width: 120),
                           ),
                         ),
                       ],
@@ -237,18 +255,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text('Library', style: Theme.of(context).textTheme.titleMedium),
+              child: Text(
+                'Library',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
           ),
 
           // Media grid
           library.when(
             data: (items) => items.isEmpty
-                ? const SliverFillRemaining(child: Center(child: Text('No media found.')))
+                ? const SliverFillRemaining(
+                    child: Center(child: Text('No media found.')),
+                  )
                 : SliverPadding(
                     padding: const EdgeInsets.all(16),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 180,
                         childAspectRatio: 0.65,
                         crossAxisSpacing: 12,
@@ -260,8 +284,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   ),
-            loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
-            error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e'))),
+            loading: () => const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) =>
+                SliverFillRemaining(child: Center(child: Text('Error: $e'))),
           ),
         ],
       ),

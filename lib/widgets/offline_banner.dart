@@ -5,8 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Provides the current list of connectivity results.
 ///
 /// Updates reactively as network state changes via [Connectivity.onConnectivityChanged].
-final connectivityProvider =
-    StreamProvider<List<ConnectivityResult>>((ref) async* {
+final connectivityProvider = StreamProvider<List<ConnectivityResult>>((
+  ref,
+) async* {
   // Emit the initial state immediately.
   yield await Connectivity().checkConnectivity();
   // Then follow live updates.
@@ -18,8 +19,7 @@ final isOfflineProvider = Provider<bool>((ref) {
   final result = ref.watch(connectivityProvider);
   return result.maybeWhen(
     data: (results) =>
-        results.isEmpty ||
-        results.every((r) => r == ConnectivityResult.none),
+        results.isEmpty || results.every((r) => r == ConnectivityResult.none),
     orElse: () => false,
   );
 });

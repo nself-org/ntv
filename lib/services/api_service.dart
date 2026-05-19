@@ -11,15 +11,23 @@ class ApiService {
   String _preferredQuality = 'auto';
 
   ApiService()
-      : _dio = Dio(BaseOptions(
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 30),
-        ));
+      : _dio = Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 10),
+            receiveTimeout: const Duration(seconds: 30),
+          ),
+        );
 
   bool get isConfigured => _baseUrl != null && _baseUrl!.isNotEmpty;
 
-  void configure({required String baseUrl, String? apiKey, String? preferredQuality}) {
-    _baseUrl = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+  void configure({
+    required String baseUrl,
+    String? apiKey,
+    String? preferredQuality,
+  }) {
+    _baseUrl = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     _apiKey = apiKey;
     _dio.options.baseUrl = _baseUrl!;
     if (_apiKey != null && _apiKey!.isNotEmpty) {
@@ -40,13 +48,19 @@ class ApiService {
     if (genre != null) params['genre'] = genre;
     if (query != null) params['q'] = query;
 
-    final response = await _dio.get('/streaming/library', queryParameters: params);
+    final response = await _dio.get(
+      '/streaming/library',
+      queryParameters: params,
+    );
     final items = response.data['items'] as List<dynamic>? ?? [];
     return items.map((e) => Media.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   /// GET /tmdb/movie/{id} or /tmdb/tv/{id} — media details with metadata.
-  Future<Media> getMediaDetails(String id, {MediaType type = MediaType.movie}) async {
+  Future<Media> getMediaDetails(
+    String id, {
+    MediaType type = MediaType.movie,
+  }) async {
     final path = type == MediaType.tvShow ? '/tmdb/tv/$id' : '/tmdb/movie/$id';
     final response = await _dio.get(path);
     return Media.fromJson(response.data as Map<String, dynamic>);
@@ -56,7 +70,9 @@ class ApiService {
   Future<List<Episode>> getEpisodes(String showId, int season) async {
     final response = await _dio.get('/tmdb/tv/$showId/season/$season');
     final episodes = response.data['episodes'] as List<dynamic>? ?? [];
-    return episodes.map((e) => Episode.fromJson(e as Map<String, dynamic>)).toList();
+    return episodes
+        .map((e) => Episode.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /streaming/play/{id} — get stream URL for playback.
@@ -75,7 +91,10 @@ class ApiService {
   ///
   /// Sends the preferred quality as an [X-Quality] header so the gateway can
   /// select the appropriate bitrate variant.
-  Future<StreamInfo> getStreamViaGateway(String mediaId, {String? quality}) async {
+  Future<StreamInfo> getStreamViaGateway(
+    String mediaId, {
+    String? quality,
+  }) async {
     final q = quality ?? _preferredQuality;
     final response = await _dio.get(
       '/stream-gateway/play/$mediaId',
@@ -93,10 +112,10 @@ class ApiService {
 
   /// POST /streaming/progress — save playback position.
   Future<void> saveProgress(String mediaId, Duration position) async {
-    await _dio.post('/streaming/progress', data: {
-      'media_id': mediaId,
-      'position_seconds': position.inSeconds,
-    });
+    await _dio.post(
+      '/streaming/progress',
+      data: {'media_id': mediaId, 'position_seconds': position.inSeconds},
+    );
   }
 
   /// GET /streaming/genres — available genre list.
@@ -113,16 +132,16 @@ class ApiService {
     List<String> channelIds, {
     DateTime? date,
   }) async {
-    final params = <String, dynamic>{
-      'channels': channelIds.join(','),
-    };
+    final params = <String, dynamic>{'channels': channelIds.join(',')};
     if (date != null) {
       params['date'] =
           '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     }
     final response = await _dio.get('/epg/schedule', queryParameters: params);
     final schedules = response.data['schedules'] as List<dynamic>? ?? [];
-    return schedules.map((e) => EpgSchedule.fromJson(e as Map<String, dynamic>)).toList();
+    return schedules
+        .map((e) => EpgSchedule.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /tmdb/search — search TMDB for movies or TV shows.
@@ -148,11 +167,14 @@ class ApiService {
   // ---------------------------------------------------------------------------
 
   /// GET /channels — paginated list of live broadcast channels.
-  Future<LiveChannelListResult> getLiveChannels({int page = 1, int pageSize = 50}) async {
-    final response = await _dio.get('/api/v1/channels', queryParameters: {
-      'page': page,
-      'page_size': pageSize,
-    });
+  Future<LiveChannelListResult> getLiveChannels({
+    int page = 1,
+    int pageSize = 50,
+  }) async {
+    final response = await _dio.get(
+      '/api/v1/channels',
+      queryParameters: {'page': page, 'page_size': pageSize},
+    );
     final data = response.data as Map<String, dynamic>;
     final items = (data['data'] as List<dynamic>? ?? [])
         .map((e) => LiveChannelInfo.fromJson(e as Map<String, dynamic>))
@@ -191,12 +213,15 @@ class ApiService {
     required DateTime scheduledStart,
     required DateTime scheduledEnd,
   }) async {
-    final response = await _dio.post('/api/v1/dvr', data: {
-      'channel_id': channelId,
-      if (programTitle != null) 'program_title': programTitle,
-      'scheduled_start': scheduledStart.toUtc().toIso8601String(),
-      'scheduled_end': scheduledEnd.toUtc().toIso8601String(),
-    });
+    final response = await _dio.post(
+      '/api/v1/dvr',
+      data: {
+        'channel_id': channelId,
+        if (programTitle != null) 'program_title': programTitle,
+        'scheduled_start': scheduledStart.toUtc().toIso8601String(),
+        'scheduled_end': scheduledEnd.toUtc().toIso8601String(),
+      },
+    );
     return DvrJob.fromJson(response.data['dvr_job'] as Map<String, dynamic>);
   }
 
