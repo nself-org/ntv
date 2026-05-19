@@ -101,6 +101,11 @@ jobs:
           cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
           cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
+      - name: Enable and scaffold macOS desktop runner
+        if: matrix.platform == 'macos'
+        run: |
+          flutter config --enable-macos-desktop
+          flutter create --platforms=macos .
       - name: Build ${{ matrix.platform }} (free flavor)
         run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=free --release
 
@@ -131,5 +136,10 @@ jobs:
           cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
           cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
+      - name: Enable and scaffold macOS desktop runner
+        if: matrix.platform == 'macos'
+        run: |
+          flutter config --enable-macos-desktop
+          flutter create --platforms=macos .
       - name: Build ${{ matrix.platform }} (pro flavor)
         run: flutter build ${{ matrix.platform }} --dart-define=FLAVOR=pro --release
