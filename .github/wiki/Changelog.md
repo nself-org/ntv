@@ -4,6 +4,10 @@ All notable changes to nTV are documented in this file.
 
 ---
 
+## v1.1.3 — 2026-05-21
+
+Patch release. P103 end-of-phase shipping. Version alignment only; no functional changes.
+
 ## v1.1.0 — 2026-05-15
 
 Minor release. App store binary submissions (Roku, AppleTV, Android TV, Samsung, LG). nTV bundle updated to 12 plugins.
