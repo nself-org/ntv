@@ -1,7 +1,7 @@
 name: ntv
 description: Open-source media player for your self-hosted content. Built on nSelf.
 publish_to: 'none'
-version: 1.1.2+1
+version: 1.1.3+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
