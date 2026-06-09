@@ -1,6 +1,6 @@
 # Platforms
 
-**Status at v1.0.9:** Free IPTV player — Flutter code ships for multiple platforms, but no binaries are submitted to any app store at v1.0.9. Store submissions (iOS App Store, Google Play, macOS Mac App Store) are coming in v1.1.0. Release builds are unsigned. Roku, Apple TV, Samsung, LG Smart TV targets are v1.1.0+.
+**Status at v1.1.3:** Free IPTV player — Flutter code ships for multiple platforms, but no binaries are submitted to any app store at v1.1.3. Store submissions (iOS App Store, Google Play, macOS Mac App Store) and full media server + multi-platform TV targets (Roku, Apple TV, Samsung, LG Smart TV) are planned for v1.2.0+. Release builds are unsigned.
 
 nTV targets six platforms. This page covers per-platform status, known limitations, and build commands.
 
