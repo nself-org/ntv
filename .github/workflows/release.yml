@@ -19,7 +19,7 @@ jobs:
     name: Release Android AAB
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
@@ -55,7 +55,7 @@ jobs:
     name: Release macOS DMG
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
@@ -98,7 +98,7 @@ jobs:
     name: Release iOS IPA (TestFlight)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
@@ -130,7 +130,7 @@ jobs:
     name: Release Windows MSIX
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
@@ -180,7 +180,7 @@ jobs:
     # USER-ACTION: Samsung Galaxy Store developer account must be registered
     # before submission. See platforms/tizen/README.md.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Tizen CLI
         run: |
@@ -237,7 +237,7 @@ jobs:
     # USER-ACTION: LG Content Store developer account must be registered
     # before submission. See platforms/webos/README.md.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install webOS TV CLI
         run: npm install -g @webosose/ares-cli
@@ -263,7 +263,7 @@ jobs:
     name: Release Roku BrightScript .zip
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Validate BrightScript syntax
         run: |
@@ -304,7 +304,7 @@ jobs:
     name: Release Apple TV IPA (TestFlight tvOS)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
@@ -353,7 +353,7 @@ jobs:
     name: Release Android TV AAB (Play Store TV track)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
