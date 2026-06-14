@@ -1,0 +1,27 @@
+# lefthook.yml — nself/ntv (Flutter)
+# Install: brew install lefthook && lefthook install (at repo root)
+
+pre-commit:
+  parallel: true
+  commands:
+    format-check:
+      glob: "**/*.dart"
+      run: dart format --set-exit-if-changed {staged_files}
+    analyze:
+      glob: "**/*.dart"
+      run: flutter analyze --no-pub
+    secrets-scan:
+      run: |
+        if [ -f .github/gitleaks.toml ]; then
+          gitleaks protect --staged --config .github/gitleaks.toml
+        else
+          gitleaks protect --staged
+        fi
+
+pre-push:
+  parallel: false
+  commands:
+    test:
+      run: flutter test
+    build-check:
+      run: flutter build web --no-pub
