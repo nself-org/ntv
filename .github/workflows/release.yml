@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+
 env:
   # Override by setting NTV_BASE_URL as a repository secret or variable.
   # Falls back to the hosted instance in the build steps when unset.
@@ -21,6 +24,11 @@ jobs:
         with:
           flutter-version: '3.27.4'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
+          cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
+          cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
 
       - name: Decode upload keystore
@@ -52,6 +60,11 @@ jobs:
         with:
           flutter-version: '3.27.4'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
+          cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
+          cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
 
       - name: Build macOS (free flavor)
@@ -90,6 +103,11 @@ jobs:
         with:
           flutter-version: '3.27.4'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
+          cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
+          cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
 
       - name: Build iOS (free flavor)
@@ -117,6 +135,11 @@ jobs:
         with:
           flutter-version: '3.27.4'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
+          cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
+          cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
 
       - name: Build Windows (free flavor)
@@ -286,6 +309,11 @@ jobs:
         with:
           flutter-version: '3.27.4'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
+          cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
+          cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
 
       - name: Add tvOS platform (idempotent)
@@ -330,6 +358,11 @@ jobs:
         with:
           flutter-version: '3.27.4'
           cache: true
+      - name: Create stub nself_auth_sdk for CI (plugins-pro not accessible)
+        run: |
+          mkdir -p ../plugins-pro/paid/auth/flutter/lib
+          cp .github/ci-stubs/nself_auth_sdk/pubspec.yaml ../plugins-pro/paid/auth/flutter/pubspec.yaml
+          cp .github/ci-stubs/nself_auth_sdk/lib/nself_auth_sdk.dart ../plugins-pro/paid/auth/flutter/lib/nself_auth_sdk.dart
       - run: flutter pub get
 
       - name: Decode upload keystore
