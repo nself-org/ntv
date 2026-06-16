@@ -156,3 +156,18 @@ docker-compose.override.yml
 *.dll
 *.so
 *.dylib
+
+# React Native / Expo (P3 E4 W2 S4 — RN scaffold)
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+ios/Pods/
+ios/build/
+android/build/
+android/.gradle/
+android/app/build/
+*.hprof
+*.jks
+pnpm-lock.yaml
