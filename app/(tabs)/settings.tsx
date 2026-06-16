@@ -1,7 +1,7 @@
 /**
  * Purpose: Settings tab screen for ɳTV — source management (M3U/XTREAM), playback
  *          preferences, notification settings, and app info.
- * Inputs:  useChannelList hook (m3uUrls, xtreamCreds, addM3USource, removeM3USource, addXtreamSource).
+ * Inputs:  useChannelList hook (m3uUrls, xtreamSources, addM3USource, removeM3USource, addXtreamSource).
  * Outputs: Settings form with source list, player prefs, notification prefs, about.
  * Constraints: All settings persisted to AsyncStorage. No GraphQL. 7 UI states.
  *              source management: add M3U URL → appears in list; XTREAM creds → authenticated entry.
@@ -136,7 +136,7 @@ function AddM3UModal({
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function SettingsScreen(): React.ReactElement {
-  const { m3uUrls, xtreamCreds, addM3USource, removeM3USource } = useChannelList();
+  const { m3uUrls, xtreamSources: xtreamCreds, addM3USource, removeM3USource } = useChannelList();
   const [addM3UVisible, setAddM3UVisible] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(false);
   const [autoQuality, setAutoQuality] = useState(true);
@@ -175,10 +175,10 @@ export default function SettingsScreen(): React.ReactElement {
           </View>
         )}
         {xtreamCreds.map((cred) => (
-          <View key={`${cred.host}-${cred.username}`} style={styles.card}>
+          <View key={`${cred.server}-${cred.username}`} style={styles.card}>
             <View style={styles.sourceRow}>
               <Ionicons name="server-outline" size={16} color="#6b7280" style={{ marginRight: 10 }} />
-              <Text style={styles.sourceUrl} numberOfLines={1}>Xtream: {cred.host}</Text>
+              <Text style={styles.sourceUrl} numberOfLines={1}>Xtream: {cred.server}</Text>
             </View>
           </View>
         ))}

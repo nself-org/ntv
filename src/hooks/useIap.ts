@@ -42,7 +42,7 @@ import {
 import { useAuth } from '@nself/auth-core';
 
 export interface UseIapState {
-  products: InAppPurchases.Product[];
+  products: InAppPurchases.IAPItemDetails[];
   isBundle: boolean;
   isPurchasing: boolean;
   isRestoring: boolean;
@@ -50,6 +50,7 @@ export interface UseIapState {
   initiatePurchase: (productId: string) => Promise<void>;
   restorePurchases: () => Promise<void>;
 }
+
 
 /**
  * Hook for managing nTV Bundle IAP purchases.
@@ -59,7 +60,7 @@ export function useIap(): UseIapState {
   const authState = useAuth();
   const jwt =
     authState.status === 'authenticated' ? authState.jwt : null;
-  const [products, setProducts] = useState<InAppPurchases.Product[]>([]);
+  const [products, setProducts] = useState<InAppPurchases.IAPItemDetails[]>([]);
   const [isBundle, setIsBundle] = useState(
     process.env.EXPO_PUBLIC_NSELF_BUNDLE === 'ntv'
   );
@@ -72,7 +73,7 @@ export function useIap(): UseIapState {
     const init = async () => {
       try {
         await initializeIAP();
-        const prods = await getProducts();
+        const prods: InAppPurchases.IAPItemDetails[] = await getProducts();
         setProducts(prods);
       } catch (err) {
         console.error('[useIap] Initialization failed:', err);

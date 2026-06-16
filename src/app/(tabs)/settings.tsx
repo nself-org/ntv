@@ -62,39 +62,7 @@ const SUPPORTED_LOCALES = [
   { code: 'pt', name: 'Português' },
 ];
 
-// UI copy — wire @nself/i18n t() keys when translations are available
-const T = {
-  title: 'Settings',
-  sourcesSection: 'IPTV Sources',
-  m3uSubsection: 'M3U Playlist URLs',
-  m3uPlaceholder: 'https://example.com/playlist.m3u',
-  addM3U: 'Add',
-  noM3U: 'No M3U playlists added yet.',
-  removeLabel: (url: string) => `Remove ${url}`,
-  xtreamSubsection: 'XTREAM Codes Sources',
-  xtreamServerPlaceholder: 'http://server.com:8080',
-  xtreamUserPlaceholder: 'username',
-  xtreamPassPlaceholder: 'password',
-  addXtream: 'Add XTREAM Source',
-  noXtream: 'No XTREAM sources added.',
-  xtreamValidation: 'Server, username, and password are all required.',
-  langSection: 'Language',
-  langLabel: 'Display language',
-  langHint: 'Tap to cycle through supported languages',
-  playerSection: 'Player',
-  bufferLabel: 'Buffer size (seconds)',
-  qualityLabel: 'Default quality',
-  qualityAuto: 'Auto',
-  notifsSection: 'Notifications',
-  notifsSchedule: 'Recording reminders',
-  notifsNew: 'New channel alerts',
-  aboutSection: 'About',
-  versionLabel: 'Version',
-  licenseLabel: 'License',
-  openSource: 'MIT — free and open source',
-  cancel: 'Cancel',
-  remove: 'Remove',
-};
+// All strings are now i18n-wrapped via useNselfTranslation hook
 
 // ---------------------------------------------------------------------------
 // Section header
@@ -166,12 +134,12 @@ export default function SettingsScreen(): React.ReactElement {
 
   const handleRemoveM3U = useCallback(
     (url: string) => {
-      Alert.alert(`${T.remove} source`, `Remove "${url}"?`, [
-        { text: T.cancel, style: 'cancel' },
-        { text: T.remove, style: 'destructive', onPress: () => removeM3USource(url) },
+      Alert.alert(`${t('remove')} source`, `Remove "${url}"?`, [
+        { text: t('cancel'), style: 'cancel' },
+        { text: t('remove'), style: 'destructive', onPress: () => removeM3USource(url) },
       ]);
     },
-    [removeM3USource],
+    [removeM3USource, t],
   );
 
   // ── XTREAM handlers ─────────────────────────────────────────────────────────
@@ -181,7 +149,7 @@ export default function SettingsScreen(): React.ReactElement {
     const username = xtUser.trim();
     const password = xtPass.trim();
     if (!server || !username || !password) {
-      Alert.alert('Missing fields', T.xtreamValidation);
+      Alert.alert('Missing fields', t('xtream.validation'));
       return;
     }
     const creds: XtreamCredentials = { server, username, password };
@@ -194,20 +162,20 @@ export default function SettingsScreen(): React.ReactElement {
     } finally {
       setXtSaving(false);
     }
-  }, [xtServer, xtUser, xtPass, addXtreamSource]);
+  }, [xtServer, xtUser, xtPass, addXtreamSource, t]);
 
   const handleRemoveXtream = useCallback(
     (creds: XtreamCredentials) => {
-      Alert.alert(`${T.remove} source`, `Remove "${creds.server}"?`, [
-        { text: T.cancel, style: 'cancel' },
+      Alert.alert(`${t('remove')} source`, `Remove "${creds.server}"?`, [
+        { text: t('cancel'), style: 'cancel' },
         {
-          text: T.remove,
+          text: t('remove'),
           style: 'destructive',
           onPress: () => removeXtreamSource(creds.server),
         },
       ]);
     },
-    [removeXtreamSource],
+    [removeXtreamSource, t],
   );
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -225,28 +193,28 @@ export default function SettingsScreen(): React.ReactElement {
         </Text>
 
         {/* ── Language ── */}
-        <SectionHeader title={T.langSection} />
+        <SectionHeader title="Language" />
         <Pressable
           style={[styles.card, styles.langRow, I18nManager.isRTL && styles.langRowRTL]}
           onPress={handleNextLocale}
           accessibilityRole="button"
-          accessibilityLabel={`${T.langLabel}: ${currentLocaleName}. ${T.langHint}`}
+          accessibilityLabel={`${t('language.label')}: ${currentLocaleName}. ${t('language.hint')}`}
         >
-          <Text style={styles.prefLabel}>{T.langLabel}</Text>
+          <Text style={styles.prefLabel}>{t('language.label')}</Text>
           <Text style={styles.langValue}>{currentLocaleName}</Text>
         </Pressable>
 
         {/* ── IPTV Sources ── */}
-        <SectionHeader title={T.sourcesSection} />
+        <SectionHeader title={t('iptv.sources')} />
 
         {/* M3U subsection */}
         <Text style={[styles.subsectionLabel, I18nManager.isRTL && styles.textRTL]}>
-          {T.m3uSubsection}
+          {t('m3u.playlists')}
         </Text>
 
         {m3uUrls.length === 0 ? (
           <Text style={[styles.emptyNote, I18nManager.isRTL && styles.textRTL]}>
-            {T.noM3U}
+            {t('m3u.none')}
           </Text>
         ) : (
           m3uUrls.map((url) => (
@@ -261,7 +229,7 @@ export default function SettingsScreen(): React.ReactElement {
                 style={({ pressed }) => [styles.removeBtn, pressed && styles.removeBtnPressed]}
                 onPress={() => handleRemoveM3U(url)}
                 accessibilityRole="button"
-                accessibilityLabel={T.removeLabel(url)}
+                accessibilityLabel={`${t('m3u.removeLabel')} ${url}`}
                 hitSlop={8}
               >
                 <Text style={styles.removeBtnText}>✕</Text>
@@ -274,7 +242,7 @@ export default function SettingsScreen(): React.ReactElement {
         <View style={[styles.addRow, I18nManager.isRTL && styles.addRowRTL]}>
           <TextInput
             style={[styles.addInput, I18nManager.isRTL && styles.inputRTL]}
-            placeholder={T.m3uPlaceholder}
+            placeholder={t('m3u.placeholder')}
             placeholderTextColor="#6b7280"
             value={m3uInput}
             onChangeText={setM3uInput}
@@ -283,7 +251,7 @@ export default function SettingsScreen(): React.ReactElement {
             keyboardType="url"
             returnKeyType="done"
             onSubmitEditing={handleAddM3U}
-            accessibilityLabel="M3U playlist URL"
+            accessibilityLabel={t('m3u.playlists')}
             textAlign={I18nManager.isRTL ? 'right' : 'left'}
           />
           <Pressable
@@ -295,24 +263,24 @@ export default function SettingsScreen(): React.ReactElement {
             onPress={handleAddM3U}
             disabled={m3uSaving || !m3uInput.trim()}
             accessibilityRole="button"
-            accessibilityLabel={T.addM3U}
+            accessibilityLabel={t('m3u.add')}
           >
             {m3uSaving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.addBtnText}>{T.addM3U}</Text>
+              <Text style={styles.addBtnText}>{t('m3u.add')}</Text>
             )}
           </Pressable>
         </View>
 
         {/* XTREAM subsection */}
         <Text style={[styles.subsectionLabel, I18nManager.isRTL && styles.textRTL]}>
-          {T.xtreamSubsection}
+          {t('xtream.sources')}
         </Text>
 
         {xtreamSources.length === 0 ? (
           <Text style={[styles.emptyNote, I18nManager.isRTL && styles.textRTL]}>
-            {T.noXtream}
+            {t('xtream.none')}
           </Text>
         ) : (
           xtreamSources.map((creds) => (
@@ -330,7 +298,7 @@ export default function SettingsScreen(): React.ReactElement {
                 style={({ pressed }) => [styles.removeBtn, pressed && styles.removeBtnPressed]}
                 onPress={() => handleRemoveXtream(creds)}
                 accessibilityRole="button"
-                accessibilityLabel={T.removeLabel(creds.server)}
+                accessibilityLabel={`${t('m3u.removeLabel')} ${creds.server}`}
                 hitSlop={8}
               >
                 <Text style={styles.removeBtnText}>✕</Text>
@@ -343,38 +311,38 @@ export default function SettingsScreen(): React.ReactElement {
         <View style={styles.card}>
           <TextInput
             style={[styles.fieldInput, I18nManager.isRTL && styles.inputRTL]}
-            placeholder={T.xtreamServerPlaceholder}
+            placeholder={t('xtream.serverPlaceholder')}
             placeholderTextColor="#6b7280"
             value={xtServer}
             onChangeText={setXtServer}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="url"
-            accessibilityLabel="XTREAM server URL"
+            accessibilityLabel={t('xtream.server')}
             textAlign={I18nManager.isRTL ? 'right' : 'left'}
           />
           <View style={styles.fieldSep} />
           <TextInput
             style={[styles.fieldInput, I18nManager.isRTL && styles.inputRTL]}
-            placeholder={T.xtreamUserPlaceholder}
+            placeholder={t('xtream.usernamePlaceholder')}
             placeholderTextColor="#6b7280"
             value={xtUser}
             onChangeText={setXtUser}
             autoCapitalize="none"
             autoCorrect={false}
-            accessibilityLabel="XTREAM username"
+            accessibilityLabel={t('xtream.username')}
             textAlign={I18nManager.isRTL ? 'right' : 'left'}
           />
           <View style={styles.fieldSep} />
           <TextInput
             style={[styles.fieldInput, I18nManager.isRTL && styles.inputRTL]}
-            placeholder={T.xtreamPassPlaceholder}
+            placeholder={t('xtream.passwordPlaceholder')}
             placeholderTextColor="#6b7280"
             value={xtPass}
             onChangeText={setXtPass}
             autoCapitalize="none"
             secureTextEntry
-            accessibilityLabel="XTREAM password"
+            accessibilityLabel={t('xtream.password')}
             textAlign={I18nManager.isRTL ? 'right' : 'left'}
           />
           <Pressable
@@ -386,29 +354,29 @@ export default function SettingsScreen(): React.ReactElement {
             onPress={handleAddXtream}
             disabled={xtSaving || !xtServer.trim()}
             accessibilityRole="button"
-            accessibilityLabel={T.addXtream}
+            accessibilityLabel={t('xtream.add')}
           >
             {xtSaving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.fullBtnText}>{T.addXtream}</Text>
+              <Text style={styles.fullBtnText}>{t('xtream.add')}</Text>
             )}
           </Pressable>
         </View>
 
         {/* ── Player Prefs ── */}
-        <SectionHeader title={T.playerSection} />
+        <SectionHeader title="Player" />
 
         <View style={styles.card}>
           <View style={[styles.prefRow, I18nManager.isRTL && styles.prefRowRTL]}>
-            <Text style={styles.prefLabel}>{T.bufferLabel}</Text>
+            <Text style={styles.prefLabel}>{t('player.bufferLabel')}</Text>
             <TextInput
               style={styles.bufferInput}
               value={bufferSecs}
               onChangeText={(v) => setBufferSecs(v.replace(/\D/g, ''))}
               keyboardType="number-pad"
               maxLength={3}
-              accessibilityLabel={T.bufferLabel}
+              accessibilityLabel={t('player.bufferLabel')}
               textAlign="center"
             />
           </View>
@@ -416,7 +384,7 @@ export default function SettingsScreen(): React.ReactElement {
           <View style={styles.fieldSep} />
 
           <View style={[styles.prefRow, I18nManager.isRTL && styles.prefRowRTL]}>
-            <Text style={styles.prefLabel}>{T.qualityLabel}</Text>
+            <Text style={styles.prefLabel}>{t('player.qualityLabel')}</Text>
             <View style={[styles.segmented, I18nManager.isRTL && styles.segmentedRTL]}>
               {(['auto', '720', '1080'] as const).map((q) => (
                 <Pressable
@@ -425,10 +393,10 @@ export default function SettingsScreen(): React.ReactElement {
                   onPress={() => setQuality(q)}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: quality === q }}
-                  accessibilityLabel={q === 'auto' ? T.qualityAuto : `${q}p`}
+                  accessibilityLabel={q === 'auto' ? t('auto') : `${q}p`}
                 >
                   <Text style={[styles.segmentText, quality === q && styles.segmentTextActive]}>
-                    {q === 'auto' ? T.qualityAuto : `${q}p`}
+                    {q === 'auto' ? t('auto') : `${q}p`}
                   </Text>
                 </Pressable>
               ))}
@@ -437,44 +405,44 @@ export default function SettingsScreen(): React.ReactElement {
         </View>
 
         {/* ── Notifications ── */}
-        <SectionHeader title={T.notifsSection} />
+        <SectionHeader title={t('notifications.label')} />
 
         <View style={styles.card}>
           <View style={[styles.prefRow, I18nManager.isRTL && styles.prefRowRTL]}>
-            <Text style={styles.prefLabel}>{T.notifsSchedule}</Text>
+            <Text style={styles.prefLabel}>{t('notifications.schedule')}</Text>
             <Switch
               value={notifsSchedule}
               onValueChange={setNotifsSchedule}
               trackColor={{ false: '#374151', true: '#0ea5e9' }}
               thumbColor="#ffffff"
-              accessibilityLabel={T.notifsSchedule}
+              accessibilityLabel={t('notifications.schedule')}
             />
           </View>
           <View style={styles.fieldSep} />
           <View style={[styles.prefRow, I18nManager.isRTL && styles.prefRowRTL]}>
-            <Text style={styles.prefLabel}>{T.notifsNew}</Text>
+            <Text style={styles.prefLabel}>{t('notifications.new')}</Text>
             <Switch
               value={notifsNew}
               onValueChange={setNotifsNew}
               trackColor={{ false: '#374151', true: '#0ea5e9' }}
               thumbColor="#ffffff"
-              accessibilityLabel={T.notifsNew}
+              accessibilityLabel={t('notifications.new')}
             />
           </View>
         </View>
 
         {/* ── About ── */}
-        <SectionHeader title={T.aboutSection} />
+        <SectionHeader title="About" />
 
         <View style={styles.card}>
           <View style={[styles.prefRow, I18nManager.isRTL && styles.prefRowRTL]}>
-            <Text style={styles.prefLabel}>{T.versionLabel}</Text>
+            <Text style={styles.prefLabel}>{t('about.version')}</Text>
             <Text style={styles.aboutValue}>{APP_VERSION}</Text>
           </View>
           <View style={styles.fieldSep} />
           <View style={[styles.prefRow, I18nManager.isRTL && styles.prefRowRTL]}>
-            <Text style={styles.prefLabel}>{T.licenseLabel}</Text>
-            <Text style={styles.aboutValue}>{T.openSource}</Text>
+            <Text style={styles.prefLabel}>{t('about.license')}</Text>
+            <Text style={styles.aboutValue}>{t('about.openSource')}</Text>
           </View>
         </View>
 

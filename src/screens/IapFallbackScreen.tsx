@@ -122,7 +122,7 @@ export function IapFallbackScreen({
       >
         <View style={styles.iconContainer}>
           <MaterialCommunityIcons
-            name={content.icon}
+            name={content.icon as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
             size={56}
             color={content.iconColor}
           />

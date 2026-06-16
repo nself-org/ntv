@@ -1,0 +1,20 @@
+# react-native-tvos
+node_modules/
+.expo/
+dist/
+
+# iOS
+ios/build/
+ios/Pods/
+ios/DerivedData/
+*.xcworkspace/xcuserdata/
+
+# Android
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+
+# OS
+.DS_Store
+*.orig.*

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android TV manifest for nTV.
+  LEANBACK_LAUNCHER intent-filter marks this as a TV app in Android TV launcher.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+  <uses-feature android:name="android.software.leanback" android:required="true" />
+
+  <application
+    android:label="nTV"
+    android:icon="@mipmap/ic_launcher"
+    android:banner="@drawable/tv_banner"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme">
+
+    <activity
+      android:name=".MainActivity"
+      android:label="nTV"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:launchMode="singleTask"
+      android:windowSoftInputMode="adjustResize"
+      android:exported="true">
+
+      <!-- TV launcher intent -->
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+      </intent-filter>
+    </activity>
+
+  </application>
+
+</manifest>

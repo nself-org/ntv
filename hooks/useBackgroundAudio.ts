@@ -103,8 +103,10 @@ export function useBackgroundAudio(): BackgroundAudioControls {
 
     return () => {
       cancelled = true;
-      // Destroy releases the audio session — critical for iOS AVAudioSession cleanup
-      TrackPlayer.destroy().catch(() => {});
+      // reset() stops playback and clears queue, releasing audio focus.
+      // react-native-track-player v4.x has no destroy() — reset() is the
+      // correct teardown for unmounting the last consumer.
+      TrackPlayer.reset().catch(() => {});
       _setupComplete = false;
     };
   }, []);

@@ -212,7 +212,6 @@ export function PlayerControls(props: PlayerControlsProps) {
                   minimumTrackTintColor="#E53E3E"
                   maximumTrackTintColor="rgba(255,255,255,0.4)"
                   thumbTintColor="#E53E3E"
-                  accessibilityRole="slider"
                   accessibilityLabel={t('seek')}
                 />
                 {duration > 0 && (
@@ -237,7 +236,6 @@ export function PlayerControls(props: PlayerControlsProps) {
                 minimumTrackTintColor="#FFFFFF"
                 maximumTrackTintColor="rgba(255,255,255,0.4)"
                 thumbTintColor="#FFFFFF"
-                accessibilityRole="slider"
                 accessibilityLabel={t('volume')}
               />
 

@@ -25,13 +25,13 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useChannelList } from '../../hooks/useChannelList';
 import { useEPG } from '../../hooks/useEPG';
+import type { EPGProgram } from '../../hooks/useEPG';
 import type { Channel } from '../../services/m3u-parser';
-import type { Program } from '../../services/m3u-parser';
 
 // ─── Result types ─────────────────────────────────────────────────────────────
 
 type ChannelResult = { type: 'channel'; item: Channel };
-type ProgramResult = { type: 'program'; item: Program & { channelId: string } };
+type ProgramResult = { type: 'program'; item: EPGProgram };
 type SearchResult = ChannelResult | ProgramResult;
 
 // ─── Row components ──────────────────────────────────────────────────────────
@@ -55,9 +55,9 @@ function ChannelRow({ channel, onPress }: { channel: Channel; onPress: () => voi
   );
 }
 
-function ProgramRow({ program }: { program: Program & { channelId: string } }) {
+function ProgramRow({ program }: { program: EPGProgram }) {
   const start = new Date(program.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const stop = new Date(program.stopTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const stop = new Date(program.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return (
     <View style={styles.row}>
       <View style={[styles.logo, styles.programIcon]}>
@@ -77,7 +77,10 @@ export default function SearchScreen(): React.ReactElement {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const { channels, loading: channelsLoading } = useChannelList();
-  const { programs } = useEPG({ channelIds: [] });
+  // Empty channel list — search shows EPG hits only when EPG tab has loaded data.
+  const epgStart = new Date(Date.now() - 3 * 60 * 60 * 1000); // 3h ago
+  const epgEnd = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h ahead
+  const { programs } = useEPG([], epgStart, epgEnd);
 
   const results = useMemo<SearchResult[]>(() => {
     const q = query.trim().toLowerCase();
@@ -91,7 +94,7 @@ export default function SearchScreen(): React.ReactElement {
     const programHits: ProgramResult[] = programs
       .filter((p) => p.title.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q)))
       .slice(0, 30)
-      .map((item) => ({ type: 'program', item: item as Program & { channelId: string } }));
+      .map((item) => ({ type: 'program' as const, item }));
 
     return [...channelHits, ...programHits];
   }, [query, channels, programs]);

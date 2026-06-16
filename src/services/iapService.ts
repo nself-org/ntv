@@ -58,12 +58,12 @@ export async function initializeIAP(): Promise<void> {
  * Returns product details including price and description.
  * On error (region unavailable, etc.), returns empty array.
  */
-export async function getProducts(): Promise<InAppPurchases.Product[]> {
+export async function getProducts(): Promise<InAppPurchases.IAPItemDetails[]> {
   try {
-    const products = await InAppPurchases.getProductsAsync(
+    const response = await InAppPurchases.getProductsAsync(
       Object.values(IAP_PRODUCTS)
     );
-    return products;
+    return response.results ?? [];
   } catch (error) {
     console.error('[IAP] Failed to fetch products:', error);
     return [];
@@ -72,24 +72,35 @@ export async function getProducts(): Promise<InAppPurchases.Product[]> {
 
 /**
  * Initiate a purchase for the given product ID.
- * Returns the transaction/receipt on success.
- * On user cancel or error, returns null.
+ * Returns a Promise that resolves after the purchase flow is initiated.
+ * The result arrives asynchronously via setPurchaseListener.
+ * On user cancel or store error, resolves to null.
  */
 export async function purchaseProduct(
   productId: string
-): Promise<InAppPurchases.IAPItem | null> {
-  try {
-    const result = await InAppPurchases.purchaseItemAsync(productId);
-    return result || null;
-  } catch (error: any) {
-    // User cancelled or store unavailable
-    if (error.code === 'E_USER_CANCELLED') {
-      console.log('[IAP] User cancelled purchase');
-      return null;
-    }
-    console.error('[IAP] Purchase failed:', error);
-    return null;
-  }
+): Promise<InAppPurchases.InAppPurchase | null> {
+  return new Promise((resolve) => {
+    InAppPurchases.setPurchaseListener((response) => {
+      const purchase = response.results?.[0];
+      if (purchase) {
+        resolve(purchase);
+      } else {
+        resolve(null);
+      }
+    });
+
+    InAppPurchases.purchaseItemAsync(productId).catch((error: unknown) => {
+      const errCode = error instanceof Error
+        ? (error as NodeJS.ErrnoException).code
+        : undefined;
+      if (errCode === 'E_USER_CANCELLED') {
+        console.log('[IAP] User cancelled purchase');
+      } else {
+        console.error('[IAP] Purchase failed:', error);
+      }
+      resolve(null);
+    });
+  });
 }
 
 /**
@@ -108,10 +119,10 @@ export async function purchaseProduct(
  * { success: false, reason: string } on invalid/expired/already-claimed
  */
 export async function verifyPurchaseWithBackend(
-  product: InAppPurchases.IAPItem,
+  product: InAppPurchases.InAppPurchase,
   productId: string,
   userJwt: string
-): Promise<{ success: boolean; license?: any; reason?: string }> {
+): Promise<{ success: boolean; license?: unknown; reason?: string }> {
   try {
     const platform = Platform.OS === 'ios' ? 'ios' : 'android';
     const receipt = product.transactionReceipt || product.purchaseToken;
@@ -170,8 +181,9 @@ export async function restorePurchases(
   userJwt: string
 ): Promise<string[]> {
   try {
-    const purchases = await InAppPurchases.getPurchaseHistoryAsync();
-    if (!purchases || purchases.length === 0) {
+    const response = await InAppPurchases.getPurchaseHistoryAsync();
+    const purchases = response.results ?? [];
+    if (purchases.length === 0) {
       return [];
     }
 

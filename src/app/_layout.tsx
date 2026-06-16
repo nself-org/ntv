@@ -12,11 +12,17 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import TrackPlayer from 'react-native-track-player';
 import { initObservability } from '@nself/observability';
 import { NselfI18nProvider } from '@nself/i18n';
 import type { Locale } from '@nself/i18n';
 import { useNotifications } from '@/hooks/useNotifications';
 import { initializeI18n, getDeviceLocale } from '@/i18n';
+import { PlaybackService } from '../../services/backgroundAudioService';
+
+// Register background audio service once at app boot.
+// Must run before TrackPlayer.setupPlayer() (called lazily in useBackgroundAudio).
+TrackPlayer.registerPlaybackService(() => PlaybackService);
 
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN ?? '';
 const OTEL_ENDPOINT = process.env.EXPO_PUBLIC_OTEL_ENDPOINT ?? '';

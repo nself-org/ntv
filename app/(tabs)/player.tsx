@@ -25,6 +25,8 @@ import Video, {
   OnLoadData,
   OnProgressData,
   OnVideoErrorData,
+  SelectedVideoTrackType,
+  VideoRef,
 } from 'react-native-video';
 import { PlayerControls } from '../../components/PlayerControls';
 import { useMediaPlayer } from '../../hooks/useMediaPlayer';
@@ -77,7 +79,7 @@ export default function PlayerScreen() {
       {/* Video element — controls=false so we render custom controls */}
       {streamUri ? (
         <Video
-          ref={videoRef as React.RefObject<Video>}
+          ref={videoRef as React.RefObject<VideoRef>}
           source={{ uri: streamUri }}
           style={styles.video}
           // Playback
@@ -86,12 +88,9 @@ export default function PlayerScreen() {
           // HLS quality selection (-1 = auto, otherwise trackIndex)
           selectedVideoTrack={
             selectedQualityIndex === -1
-              ? { type: 'auto' }
-              : { type: 'index', value: selectedQualityIndex }
+              ? { type: SelectedVideoTrackType.AUTO }
+              : { type: SelectedVideoTrackType.INDEX, value: selectedQualityIndex }
           }
-          // PiP
-          pictureInPicture={isPiP}
-          pictureInPictureActivationGesture="swipeUp"
           // Custom controls
           controls={false}
           // Fullscreen handled via ScreenOrientation, not native fullscreen

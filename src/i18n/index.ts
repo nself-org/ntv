@@ -12,7 +12,6 @@
  */
 
 import { I18nManager } from 'react-native'
-// @ts-expect-error — expo-localization types not available, but package is installed
 import * as Localization from 'expo-localization'
 import { initializeI18next } from '@nself/i18n'
 

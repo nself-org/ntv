@@ -70,6 +70,15 @@ export default function TabsLayout(): React.ReactElement {
         }}
       />
       <Tabs.Screen
+        name="schedule"
+        options={{
+          title: 'Schedule',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="recording-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',

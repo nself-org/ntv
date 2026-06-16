@@ -137,7 +137,8 @@ export default function FavoritesScreen(): React.ReactElement {
 
   // ── UI state body ────────────────────────────────────────────────────────────
 
-  function renderBody(): React.ReactElement {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function renderBody(): any {
     // State: loading (initial fetch)
     if (loading && channels.length === 0) {
       return (

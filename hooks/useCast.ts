@@ -136,13 +136,7 @@ export function useCast(options: UseCastOptions): CastState {
           if (mediaStatus?.streamPosition != null) {
             setLastPosition(mediaStatus.streamPosition);
           }
-          // Capture device name if not yet set
-          if (!deviceName) {
-            const session = await client.getSessionStatus?.();
-            if (session?.device?.friendlyName) {
-              setDeviceName(session.device.friendlyName);
-            }
-          }
+          // Device name is set at cast-session-start via CastContext — no poll needed
         } catch {
           // Non-fatal — position display degrades gracefully
         }
@@ -162,7 +156,7 @@ export function useCast(options: UseCastOptions): CastState {
         positionPollRef.current = null;
       }
     };
-  }, [status, client, deviceName]);
+  }, [status, client]);
 
   // --------------------------------------------------------------------------
   // startCast — open device picker, load media, notify caller to stop local

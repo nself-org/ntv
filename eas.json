@@ -54,6 +54,29 @@
         "buildType": "app-bundle",
         "applicationId": "org.nself.ntv"
       }
+    },
+    "tvos": {
+      "distribution": "store",
+      "ios": {
+        "bundleIdentifier": "org.nself.ntv.tvos",
+        "appleTeamId": "",
+        "scheme": "ntv-tvOS",
+        "buildConfiguration": "Release"
+      }
+    },
+    "androidtv": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle",
+        "applicationId": "org.nself.ntv.androidtv"
+      }
+    },
+    "firetv": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "applicationId": "org.nself.ntv.firetv"
+      }
     }
   },
   "submit": {

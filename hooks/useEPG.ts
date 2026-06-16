@@ -20,7 +20,20 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useGraphQL } from '@nself/graphql-client';
+import { NselfGraphqlClient, HASURA_GRAPHQL_URL } from '@nself/graphql-client';
+
+// Shared client instance for EPG queries (unauthenticated — EPG data is public)
+const _epgClient = NselfGraphqlClient({ url: HASURA_GRAPHQL_URL });
+
+/** Minimal urql-compatible query helper — returns data or throws. */
+async function _query(
+  queryStr: string,
+  variables: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const result = await _epgClient.query(queryStr, variables).toPromise();
+  if (result.error) throw result.error;
+  return (result.data ?? {}) as Record<string, unknown>;
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -103,7 +116,6 @@ export function useEPG(
   startTime: Date,
   endTime: Date,
 ): UseEPGReturn {
-  const { query } = useGraphQL();
 
   const [channels, setChannels] = useState<EPGChannel[]>([]);
   const [programs, setPrograms] = useState<EPGProgram[]>([]);
@@ -127,7 +139,7 @@ export function useEPG(
     setLoading(true);
     setError(null);
 
-    query(EPG_QUERY, {
+    _query(EPG_QUERY, {
       channelIds,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
