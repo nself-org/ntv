@@ -376,7 +376,6 @@ export function TVPlayerScreen({
     return () => {
       handler.disable();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showChannelList, onBack]);
 
   // ---------------------------------------------------------------------------

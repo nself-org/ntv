@@ -1,0 +1,59 @@
+{
+  "channels": {
+    "title": "Channels",
+    "noChannels": "No channels available",
+    "searchPlaceholder": "Search channels...",
+    "addPlaylist": "Add playlist",
+    "refresh": "Refresh"
+  },
+  "epg": {
+    "title": "Programme Guide",
+    "noGuide": "No programme guide available",
+    "now": "Now",
+    "next": "Next"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "noFavorites": "No favorite channels yet",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites"
+  },
+  "search": {
+    "placeholder": "Search channels and guide",
+    "noResults": "No results found",
+    "recentSearches": "Recent searches"
+  },
+  "player": {
+    "streamUnavailable": "Stream Unavailable",
+    "unableToLoad": "Unable to load stream.",
+    "noConnection": "No Connection",
+    "checkInternet": "Check your internet connection.",
+    "quality": "Quality",
+    "auto": "Auto",
+    "seek": "Seek",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "audio": "Audio",
+    "subtitles": "Subtitles",
+    "noSubtitles": "None"
+  },
+  "settings": {
+    "title": "Settings",
+    "playlists": "Playlists",
+    "addPlaylist": "Add playlist",
+    "playlistUrl": "Playlist URL",
+    "playlistName": "Playlist name",
+    "language": "Language",
+    "theme": "Theme",
+    "bufferSize": "Buffer size",
+    "epgRefresh": "EPG refresh interval",
+    "clearCache": "Clear cache",
+    "about": "About ɳTV"
+  },
+  "library": {
+    "title": "Library",
+    "noItems": "No recordings",
+    "record": "Record",
+    "recordingInProgress": "Recording in progress"
+  }
+}

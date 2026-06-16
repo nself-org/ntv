@@ -86,7 +86,6 @@ export default function PlayerScreen(): React.ReactElement {
     return () => {
       audio.stop();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioOnly, streamUri, audio.isReady, channelTitle, artworkUrl]);
 
   return (

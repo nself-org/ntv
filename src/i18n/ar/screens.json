@@ -1,0 +1,59 @@
+{
+  "channels": {
+    "title": "القنوات",
+    "noChannels": "لا توجد قنوات متاحة",
+    "searchPlaceholder": "البحث في القنوات...",
+    "addPlaylist": "إضافة قائمة تشغيل",
+    "refresh": "تحديث"
+  },
+  "epg": {
+    "title": "دليل البرامج",
+    "noGuide": "دليل البرامج غير متاح",
+    "now": "الآن",
+    "next": "التالي"
+  },
+  "favorites": {
+    "title": "المفضلة",
+    "noFavorites": "لا توجد قنوات مفضلة بعد",
+    "addToFavorites": "إضافة إلى المفضلة",
+    "removeFromFavorites": "إزالة من المفضلة"
+  },
+  "search": {
+    "placeholder": "ابحث في القنوات والدليل",
+    "noResults": "لا توجد نتائج",
+    "recentSearches": "عمليات البحث الأخيرة"
+  },
+  "player": {
+    "streamUnavailable": "البث غير متاح",
+    "unableToLoad": "تعذر تحميل البث.",
+    "noConnection": "لا توجد اتصالات",
+    "checkInternet": "تحقق من اتصالك بالإنترنت.",
+    "quality": "الجودة",
+    "auto": "تلقائي",
+    "seek": "البحث",
+    "fullscreen": "ملء الشاشة",
+    "exitFullscreen": "الخروج من ملء الشاشة",
+    "audio": "الصوت",
+    "subtitles": "الترجمة",
+    "noSubtitles": "بلا ترجمة"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "playlists": "قوائم التشغيل",
+    "addPlaylist": "إضافة قائمة تشغيل",
+    "playlistUrl": "رابط قائمة التشغيل",
+    "playlistName": "اسم قائمة التشغيل",
+    "language": "اللغة",
+    "theme": "المظهر",
+    "bufferSize": "حجم المخزن المؤقت",
+    "epgRefresh": "فاصل تحديث الدليل",
+    "clearCache": "مسح ذاكرة التخزين المؤقت",
+    "about": "حول ɳTV"
+  },
+  "library": {
+    "title": "المكتبة",
+    "noItems": "لا توجد تسجيلات",
+    "record": "تسجيل",
+    "recordingInProgress": "التسجيل جارٍ"
+  }
+}
