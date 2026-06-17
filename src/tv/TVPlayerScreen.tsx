@@ -295,6 +295,11 @@ export function TVPlayerScreen({
   const [showChannelList, setShowChannelList] = useState(false);
   const [videoError, setVideoError] = useState<VideoError | null>(null);
   const controlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Live playback position/duration tracked via onProgress/onLoad so D-pad
+  // seek can compute a RELATIVE target (current ± SEEK_STEP) instead of an
+  // absolute mark. Kept in refs to avoid re-rendering on every tick.
+  const currentPositionRef = useRef(0);
+  const durationRef = useRef(0);
 
   // ---------------------------------------------------------------------------
   // Controls auto-dismiss
@@ -382,10 +387,22 @@ export function TVPlayerScreen({
   // Player callbacks
   // ---------------------------------------------------------------------------
 
-  const handleLoad = useCallback(() => {
+  const handleLoad = useCallback((data?: { duration?: number; currentTime?: number }) => {
+    if (typeof data?.duration === 'number') durationRef.current = data.duration;
+    if (typeof data?.currentTime === 'number') currentPositionRef.current = data.currentTime;
     setUiState('playing');
     setVideoError(null);
   }, []);
+
+  const handleProgress = useCallback(
+    (data: { currentTime: number; seekableDuration?: number }) => {
+      currentPositionRef.current = data.currentTime;
+      if (typeof data.seekableDuration === 'number' && data.seekableDuration > 0) {
+        durationRef.current = data.seekableDuration;
+      }
+    },
+    [],
+  );
 
   const handleBuffer = useCallback(({ isBuffering }: { isBuffering: boolean }) => {
     if (uiState === 'error') return;
@@ -426,11 +443,16 @@ export function TVPlayerScreen({
   }, []);
 
   const handleSeekBack = useCallback(() => {
-    videoRef.current?.seek(Math.max(0, -SEEK_STEP), 100);
+    const target = Math.max(0, currentPositionRef.current - SEEK_STEP);
+    currentPositionRef.current = target;
+    videoRef.current?.seek(target, 100);
   }, []);
 
   const handleSeekForward = useCallback(() => {
-    videoRef.current?.seek(SEEK_STEP, 100);
+    const max = durationRef.current > 0 ? durationRef.current : Number.MAX_SAFE_INTEGER;
+    const target = Math.min(max, currentPositionRef.current + SEEK_STEP);
+    currentPositionRef.current = target;
+    videoRef.current?.seek(target, 100);
   }, []);
 
   const handleChannelSelect = useCallback(
@@ -454,7 +476,8 @@ export function TVPlayerScreen({
         style={StyleSheet.absoluteFill}
         resizeMode="contain"
         paused={!isPlaying}
-        onLoad={handleLoad}
+        onLoad={handleLoad as any}
+        onProgress={handleProgress as any}
         onBuffer={handleBuffer}
         onError={handleError as any}
         repeat={false}

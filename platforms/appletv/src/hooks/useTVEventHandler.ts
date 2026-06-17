@@ -14,7 +14,7 @@
  * SPORT: F12-REPO-TYPE-MAP.md
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Platform, TVEventHandler } from 'react-native';
 
 export type TVRemoteEventType =
@@ -41,14 +41,25 @@ type TVEventCallback = (component: null, event: TVRemoteEvent) => void;
  * @param callback - called on each remote event while mounted
  */
 export function useTVEventHandler(callback: TVEventCallback): void {
+  // Keep the latest callback in a ref so the TVEventHandler is registered ONCE
+  // (mount) and not torn down + re-registered on every render. Callers often
+  // pass a fresh callback identity each render (e.g. when player progress state
+  // changes every tick); keying the effect on [callback] caused a
+  // disable()+enable() storm every frame. The ref forwards to the current
+  // callback without re-running the effect.
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
   useEffect(() => {
     if (!Platform.isTV) return;
 
     const handler = new TVEventHandler();
-    handler.enable(null, callback);
+    handler.enable(null, (component: null, event: TVRemoteEvent) =>
+      callbackRef.current(component, event),
+    );
 
     return () => {
       handler.disable();
     };
-  }, [callback]);
+  }, []);
 }

@@ -97,6 +97,29 @@ function slugId(name: string, index: number): string {
   return slug ? `${slug}-${index}` : `channel-${index}`;
 }
 
+// ─── Stream URL safety ──────────────────────────────────────────────────────────
+
+/**
+ * Schemes that are safe to hand to the video player. Anything else
+ * (`javascript:`, `file:`, `data:`, `content:`, arbitrary custom schemes) is a
+ * potential injection vector when the playlist is fetched from an untrusted
+ * source, so it is rejected at the parse boundary before it can reach the player.
+ */
+const ALLOWED_STREAM_SCHEMES = ['http:', 'https:', 'rtmp:', 'rtmps:', 'rtsp:'];
+
+/**
+ * Validate that a parsed stream URL uses an allowlisted scheme.
+ * Relative or scheme-less lines and any disallowed scheme return false.
+ * Exported so callers (e.g. the add-source form) can reuse the same allowlist.
+ */
+export function isAllowedStreamUrl(url: string): boolean {
+  const trimmed = url.trim();
+  if (trimmed === '') return false;
+  const match = /^([a-z][a-z0-9+.-]*:)/i.exec(trimmed);
+  if (!match) return false; // no scheme → reject (no relative stream URLs)
+  return ALLOWED_STREAM_SCHEMES.includes(match[1].toLowerCase());
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -149,6 +172,14 @@ export function parseM3U(text: string, opts: ParseM3UOptions = {}): ParseM3UResu
 
     // Non-comment, non-empty line after #EXTINF = stream URL
     const url = line;
+
+    // Reject untrusted/disallowed-scheme URLs (javascript:, file:, data:, …)
+    // before they can ever reach the player via router.push.
+    if (!isAllowedStreamUrl(url)) {
+      warnings.push(`Line ${i + 1}: stream URL rejected (disallowed scheme): ${url}`);
+      pendingExtinf = null;
+      continue;
+    }
 
     if (pendingExtinf !== null) {
       const attrs = parseAttributes(pendingExtinf);

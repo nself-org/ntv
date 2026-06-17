@@ -155,8 +155,11 @@ export default function EPGScreen(): React.ReactElement {
     );
   }
 
-  // State 3: Empty (EPG configured but no data)
-  if (!loading && programs.length === 0 && channelIds.length === 0) {
+  // State 3: Empty (no EPG data to render). This covers BOTH "no channels
+  // configured" and "channels configured but none returned EPG programs" —
+  // either way there is nothing to populate the grid, so show the empty state
+  // rather than rendering an empty EPGGrid.
+  if (!loading && programs.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
         <Header />

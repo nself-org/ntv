@@ -135,6 +135,23 @@ export function PlayerScreen({
     [channels, onSetSource],
   );
 
+  // Channel zap: move to the next/previous channel relative to the active one.
+  // Wraps around the channel list. No-op when fewer than 2 channels exist.
+  const zapChannel = useCallback(
+    (direction: 1 | -1) => {
+      if (channels.length < 2) return;
+      const idx = channels.findIndex((c) => c.id === activeChannelId);
+      const base = idx === -1 ? 0 : idx;
+      const nextIdx = (base + direction + channels.length) % channels.length;
+      const next = channels[nextIdx];
+      if (next) onSetSource?.(next.url, next.id);
+    },
+    [channels, activeChannelId, onSetSource],
+  );
+
+  const channelUp = useCallback(() => zapChannel(1), [zapChannel]);
+  const channelDown = useCallback(() => zapChannel(-1), [zapChannel]);
+
   // useTVEventHandler — registered once, cleaned up on unmount.
   // Only fires when NO panel is open (panels have their own TVEventHandler).
   useTVEventHandler(
@@ -172,12 +189,17 @@ export function PlayerScreen({
             openChannelList();
             break;
 
-          // 'down' and 'menu' are not intercepted here — system handles.
+          case 'down':
+            // 'down' from player → zap to the previous channel
+            channelDown();
+            break;
+
+          // 'menu' is not intercepted here — system handles.
           default:
             break;
         }
       },
-      [player, openChannelList],
+      [player, openChannelList, channelDown],
     ),
   );
 
@@ -218,6 +240,8 @@ export function PlayerScreen({
         currentProgramTitle={currentProgramTitle}
         togglePlayPause={player.togglePlayPause}
         retry={player.retry}
+        onChannelUp={channelUp}
+        onChannelDown={channelDown}
       />
 
       {/* Channel list panel: slides in from the right on 'up' from player */}

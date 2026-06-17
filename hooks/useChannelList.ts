@@ -4,13 +4,18 @@
  *          manages favorites with optimistic updates, and supports search/category filtering.
  * Inputs:  sourceUrl (M3U URL or Xtream credentials stored in AsyncStorage).
  * Outputs: { channels, sections, favorites, search, setSearch, toggleFavorite, loading, error, refresh }
- * Constraints: AsyncStorage for offline cache. No GraphQL client wired yet (stub mutations).
+ * Constraints: AsyncStorage for non-sensitive offline cache only. Xtream credentials
+ *              (username/password) are sensitive and MUST be kept in expo-secure-store
+ *              (Keychain/Keystore), per the Security-Always-Free doctrine and
+ *              .claude/docs/security/secrets-handling-checklist.md — never AsyncStorage.
+ *              No GraphQL client wired yet (stub mutations).
  *              Background sync via expo-background-fetch is registered separately (see registerBackgroundSync).
  * SPORT: F12-REPO-TYPE-MAP.md ntv iptv-data feature
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { parseM3U } from '../services/m3u-parser';
 import type { Channel } from '../services/m3u-parser';
 import { xtreamFullSync } from '../services/xtream';
@@ -21,7 +26,9 @@ import type { XtreamCredentials } from '../services/xtream';
 const STORAGE_KEY_CHANNELS = 'ntv:channels:cache';
 const STORAGE_KEY_FAVORITES = 'ntv:channels:favorites';
 const STORAGE_KEY_M3U_URLS = 'ntv:m3u:urls';
-const STORAGE_KEY_XTREAM_CREDS = 'ntv:xtream:creds';
+// Xtream credentials live in expo-secure-store (Keychain/Keystore), NOT AsyncStorage.
+// SecureStore keys must match /^[A-Za-z0-9._-]+$/ (no colons), so this differs in form.
+const SECURE_KEY_XTREAM_CREDS = 'ntv_xtream_creds';
 
 // Cache TTL: 30 minutes
 const CACHE_TTL_MS = 30 * 60 * 1_000;
@@ -121,7 +128,7 @@ async function saveM3UUrls(urls: string[]): Promise<void> {
 
 async function loadXtreamCreds(): Promise<XtreamCredentials[]> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY_XTREAM_CREDS);
+    const raw = await SecureStore.getItemAsync(SECURE_KEY_XTREAM_CREDS);
     return raw ? (JSON.parse(raw) as XtreamCredentials[]) : [];
   } catch {
     return [];
@@ -129,7 +136,11 @@ async function loadXtreamCreds(): Promise<XtreamCredentials[]> {
 }
 
 async function saveXtreamCreds(creds: XtreamCredentials[]): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY_XTREAM_CREDS, JSON.stringify(creds));
+  if (creds.length === 0) {
+    await SecureStore.deleteItemAsync(SECURE_KEY_XTREAM_CREDS);
+    return;
+  }
+  await SecureStore.setItemAsync(SECURE_KEY_XTREAM_CREDS, JSON.stringify(creds));
 }
 
 async function fetchM3U(url: string): Promise<Channel[]> {
@@ -157,11 +168,19 @@ function buildSections(channels: Channel[], favorites: Set<string>, search: stri
     ? channels.filter((c) => c.name.toLowerCase().includes(q) || c.group.toLowerCase().includes(q))
     : channels;
 
-  const favoriteChannels = filtered.filter((c) => favorites.has(c.id));
+  // Only show a dedicated Favorites section when not searching, so a search
+  // result is grouped purely by category (avoids the same channel appearing
+  // both in Favorites and in its category group during search).
+  const showFavoritesSection = q === '' && favorites.size > 0;
+  const favoriteChannels = showFavoritesSection
+    ? filtered.filter((c) => favorites.has(c.id))
+    : [];
 
-  // Group remaining channels by group title
+  // Group remaining channels by group title. When the Favorites section is
+  // shown, exclude favorites here so they are not duplicated across sections.
   const groupMap = new Map<string, Channel[]>();
   for (const ch of filtered) {
+    if (showFavoritesSection && favorites.has(ch.id)) continue;
     const key = ch.group.trim() || 'Other';
     if (!groupMap.has(key)) groupMap.set(key, []);
     groupMap.get(key)!.push(ch);
@@ -169,7 +188,7 @@ function buildSections(channels: Channel[], favorites: Set<string>, search: stri
 
   const sections: ChannelSection[] = [];
 
-  // Favorites first (if any and not searching)
+  // Favorites first (only when not searching, per above)
   if (favoriteChannels.length > 0) {
     sections.push({ title: 'Favorites', data: favoriteChannels });
   }

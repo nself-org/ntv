@@ -8,6 +8,64 @@
 
 import type { Channel } from './m3u-parser';
 
+// ─── Hermes-safe base64 decode ──────────────────────────────────────────────────
+// Xtream EPG titles/descriptions arrive base64-encoded. Node's `Buffer` is NOT
+// available under Hermes (the RN/Expo JS engine), so `Buffer.from(s,'base64')`
+// throws a ReferenceError at runtime. This pure-TS decoder works on every engine.
+const B64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+/**
+ * Decode a base64 string to UTF-8 text without relying on Node's Buffer.
+ * Returns an empty string for empty/whitespace-only input; tolerates missing
+ * padding and ignores characters outside the base64 alphabet.
+ */
+function decodeBase64Utf8(input: string): string {
+  const str = (input ?? '').replace(/[^A-Za-z0-9+/=]/g, '');
+  if (str.length === 0) return '';
+
+  const bytes: number[] = [];
+  let buffer = 0;
+  let bits = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i];
+    if (c === '=') break;
+    const val = B64_CHARS.indexOf(c);
+    if (val === -1) continue;
+    buffer = (buffer << 6) | val;
+    bits += 6;
+    if (bits >= 8) {
+      bits -= 8;
+      bytes.push((buffer >> bits) & 0xff);
+    }
+  }
+
+  // Decode the raw byte sequence as UTF-8.
+  let result = '';
+  let i = 0;
+  while (i < bytes.length) {
+    const b0 = bytes[i++];
+    if (b0 < 0x80) {
+      result += String.fromCharCode(b0);
+    } else if (b0 >= 0xc0 && b0 < 0xe0) {
+      const b1 = bytes[i++] ?? 0;
+      result += String.fromCharCode(((b0 & 0x1f) << 6) | (b1 & 0x3f));
+    } else if (b0 >= 0xe0 && b0 < 0xf0) {
+      const b1 = bytes[i++] ?? 0;
+      const b2 = bytes[i++] ?? 0;
+      result += String.fromCharCode(((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (b2 & 0x3f));
+    } else {
+      const b1 = bytes[i++] ?? 0;
+      const b2 = bytes[i++] ?? 0;
+      const b3 = bytes[i++] ?? 0;
+      const cp =
+        ((b0 & 0x07) << 18) | ((b1 & 0x3f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f);
+      const off = cp - 0x10000;
+      result += String.fromCharCode(0xd800 + (off >> 10), 0xdc00 + (off & 0x3ff));
+    }
+  }
+  return result;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface XtreamCredentials {
@@ -255,7 +313,8 @@ export async function xtreamAuthenticate(creds: XtreamCredentials): Promise<Xtre
   if (!raw.user_info || !raw.server_info) {
     throw new Error('Invalid Xtream server response: missing user_info or server_info');
   }
-  if (raw.user_info.status !== 'Active') {
+  // Xtream servers return status in varying casing ("Active", "active", "ACTIVE").
+  if ((raw.user_info.status ?? '').toLowerCase() !== 'active') {
     throw new Error(`Xtream account not active — status: ${raw.user_info.status}`);
   }
   return mapAuthResponse(raw);
@@ -319,11 +378,11 @@ export async function xtreamGetShortEPG(
     epgListings: (raw.epg_listings ?? []).map((e) => ({
       id: e.id,
       epgId: e.epg_id,
-      title: Buffer.from(e.title, 'base64').toString('utf-8'),
+      title: decodeBase64Utf8(e.title),
       lang: e.lang,
       start: e.start,
       end: e.end,
-      description: Buffer.from(e.description ?? '', 'base64').toString('utf-8'),
+      description: decodeBase64Utf8(e.description ?? ''),
       channelId: e.channel_id,
       startTimestamp: e.start_timestamp,
       stopTimestamp: e.stop_timestamp,

@@ -83,14 +83,19 @@ function RootContent(): React.ReactElement {
     });
   }, [requestPermission]);
 
+  // NselfI18nProvider is wired to the SAME locale that useLocale()/setLocale
+  // mutates (single source of truth in LocaleContext). Previously RootLayout
+  // held a separate duplicate useState and fed THAT to the provider, so
+  // setLocale() from SettingsScreen never reached it and strings/RTL never
+  // updated at runtime. Reading locale here keeps the provider in sync.
   return (
-    <>
+    <NselfI18nProvider locale={locale}>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="player/[id]" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
-    </>
+    </NselfI18nProvider>
   );
 }
 
@@ -105,13 +110,9 @@ function LocaleProvider({ children }: { children: ReactNode }): React.ReactEleme
 }
 
 function RootLayout(): React.ReactElement {
-  const [locale, setLocale] = useState<Locale>(getDeviceLocale() as Locale);
-
   return (
     <LocaleProvider>
-      <NselfI18nProvider locale={locale}>
-        <RootContent />
-      </NselfI18nProvider>
+      <RootContent />
     </LocaleProvider>
   );
 }

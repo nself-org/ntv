@@ -142,33 +142,40 @@ type ChannelRowProps = {
   channel: EPGChannel;
   programs: EPGProgram[];
   windowStart: Date;
-  scrollX: React.RefObject<ScrollView | null>;
   sharedScrollX: React.MutableRefObject<number>;
   totalWindowMinutes: number;
   onProgramPress: (program: EPGProgram, channel: EPGChannel) => void;
+  /** Register/unregister this row's horizontal ScrollView with the grid so the
+   *  master scroll can drive it. Without this the grid's ref Map stays empty
+   *  and only the header scrolls. */
+  registerRow: (id: string, ref: ScrollView | null) => void;
 };
 
 const ChannelRow = memo(function ChannelRow({
   channel,
   programs,
   windowStart,
-  scrollX,
   sharedScrollX,
   totalWindowMinutes,
   onProgramPress,
+  registerRow,
 }: ChannelRowProps) {
   const rowScrollRef = useRef<ScrollView>(null);
   const totalWidth = totalWindowMinutes * PIXELS_PER_MINUTE;
 
-  // Sync horizontal scroll from shared scroll position on mount
+  // Register this row's ScrollView into the grid's ref Map so onMasterScroll
+  // and the auto-scroll-on-load can drive it; unregister on unmount/recycle.
   useEffect(() => {
+    registerRow(channel.id, rowScrollRef.current);
+    // Align newly-mounted/recycled rows to the current shared scroll position.
     if (rowScrollRef.current && sharedScrollX.current > 0) {
       rowScrollRef.current.scrollTo({
         x: sharedScrollX.current,
         animated: false,
       });
     }
-  }, [sharedScrollX]);
+    return () => registerRow(channel.id, null);
+  }, [channel.id, registerRow, sharedScrollX]);
 
   return (
     <View style={styles.row}>
@@ -321,6 +328,27 @@ export function EPGGrid({
 
   // All row refs for coordinated scroll
   const rowScrollRefs = useRef<Map<string, ScrollView>>(new Map());
+  // Timeline header ScrollView — also driven by the master scroll.
+  const headerScrollRef = useRef<ScrollView>(null);
+
+  // Register/unregister a row's ScrollView. Passed down to every ChannelRow so
+  // the Map is actually populated (previously it was always empty, so scroll
+  // sync was a no-op and only the header tracked the master scroll).
+  const registerRow = useCallback((id: string, ref: ScrollView | null) => {
+    if (ref) {
+      rowScrollRefs.current.set(id, ref);
+    } else {
+      rowScrollRefs.current.delete(id);
+    }
+  }, []);
+
+  // Apply a horizontal offset to the header + every registered row.
+  const applyScrollX = useCallback((x: number, animated: boolean) => {
+    headerScrollRef.current?.scrollTo({ x, animated });
+    rowScrollRefs.current.forEach((ref) => {
+      ref.scrollTo({ x, animated });
+    });
+  }, []);
 
   // Auto-scroll to current time on mount
   useEffect(() => {
@@ -331,23 +359,19 @@ export function EPGGrid({
       setTimeout(() => {
         masterScrollRef.current?.scrollTo({ x: targetX, animated: true });
         sharedScrollX.current = targetX;
-        rowScrollRefs.current.forEach((ref) => {
-          ref.scrollTo({ x: targetX, animated: false });
-        });
+        applyScrollX(targetX, false);
       }, 300);
     }
-  }, [startTime]);
+  }, [startTime, applyScrollX]);
 
-  // Sync all row scrolls when master scrolls
+  // Sync header + all row scrolls when master scrolls
   const onMasterScroll = useCallback(
     (event: { nativeEvent: { contentOffset: { x: number } } }) => {
       const x = event.nativeEvent.contentOffset.x;
       sharedScrollX.current = x;
-      rowScrollRefs.current.forEach((ref) => {
-        ref.scrollTo({ x, animated: false });
-      });
+      applyScrollX(x, false);
     },
-    [],
+    [applyScrollX],
   );
 
   const renderItem = useCallback(
@@ -358,14 +382,14 @@ export function EPGGrid({
           channel={channel}
           programs={channelPrograms}
           windowStart={startTime}
-          scrollX={masterScrollRef}
           sharedScrollX={sharedScrollX}
           totalWindowMinutes={totalWindowMinutes}
           onProgramPress={onProgramPress}
+          registerRow={registerRow}
         />
       );
     },
-    [programsByChannel, startTime, totalWindowMinutes, onProgramPress],
+    [programsByChannel, startTime, totalWindowMinutes, onProgramPress, registerRow],
   );
 
   return (
@@ -376,6 +400,7 @@ export function EPGGrid({
 
         {/* Timeline header — scrolls horizontally via master scroll */}
         <ScrollView
+          ref={headerScrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
           scrollEnabled={false}

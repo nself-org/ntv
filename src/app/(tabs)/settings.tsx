@@ -478,7 +478,8 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6b7280',
+    // WCAG AA: #6b7280 was 4.16:1 on #030712; #9ca3af is ~7:1.
+    color: '#9ca3af',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginTop: 24,
@@ -492,7 +493,8 @@ const styles = StyleSheet.create({
   },
   emptyNote: {
     fontSize: 13,
-    color: '#4b5563',
+    // WCAG AA: #4b5563 was 2.58:1 on #030712; #9ca3af is ~7:1.
+    color: '#9ca3af',
     marginBottom: 8,
   },
   // Language row
@@ -510,7 +512,8 @@ const styles = StyleSheet.create({
   langValue: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0ea5e9',
+    // WCAG AA: #0ea5e9 was 2.77:1 on #030712; #38bdf8 (sky-400) is ~6:1.
+    color: '#38bdf8',
   },
   // Source rows
   sourceRow: {
@@ -535,7 +538,8 @@ const styles = StyleSheet.create({
   },
   xtreamUser: {
     fontSize: 11,
-    color: '#6b7280',
+    // WCAG AA: #6b7280 was below 4.5:1 on #111827; #9ca3af clears it.
+    color: '#9ca3af',
     marginTop: 2,
   },
   removeBtn: {
