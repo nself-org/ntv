@@ -1,6 +1,8 @@
 /**
  * Purpose: ɳTV phone/tablet full-screen player screen with 7-state UI and VideoError
  *          typed error handling.
+ *          Sub-components (ErrorCard, OfflineBanner, ControlsOverlay) live in
+ *          PlayerScreenOverlays.tsx to keep this file under the 300-line cap.
  *
  * Inputs:
  *   - streamUri: string — HLS/DASH/MP4/RTSP URI
@@ -10,14 +12,10 @@
  *
  * Outputs:
  *   - Full-screen react-native-video player with controls overlay.
- *   - 7 states: loading (spinner), buffering (spinner), playing (controls), paused (controls),
- *     error (VideoError card + retry), offline (OfflineBanner), success (briefly shown on load).
+ *   - 7 states: loading, buffering, playing, paused, error, offline, success.
  *
  * Constraints:
  *   - VideoError discriminated union from src/types/video-errors.ts.
- *   - Subtitle overlay (if subtitle track available via react-native-video).
- *   - Audio track selector pressable if multiple tracks exist.
- *   - Cast button via CastButton component.
  *   - All strings i18n-wrapped.
  *   - WCAG 2.1 AA: accessible labels on all controls.
  *
@@ -26,7 +24,6 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Pressable,
   StyleSheet,
   Text,
@@ -34,16 +31,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Video, { type VideoRef } from 'react-native-video';
-import { useNselfTranslation } from '@nself/i18n';
-import {
-  type VideoError,
-  getVideoErrorMessage,
-  isRetryableError,
-} from '../types/video-errors';
+import { type VideoError } from '../types/video-errors';
+import { ErrorCard, OfflineBanner, ControlsOverlay } from './PlayerScreenOverlays';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface PlayerScreenProps {
   streamUri: string;
@@ -61,134 +52,7 @@ type UIState =
   | 'offline'
   | 'success';
 
-// ---------------------------------------------------------------------------
-// Error card
-// ---------------------------------------------------------------------------
-
-interface ErrorCardProps {
-  error: VideoError;
-  onRetry?: () => void;
-}
-
-function ErrorCard({ error, onRetry }: ErrorCardProps): React.ReactElement {
-  const message = getVideoErrorMessage(error);
-  const canRetry = isRetryableError(error);
-
-  return (
-    <View
-      style={styles.errorCard}
-      accessible
-      accessibilityRole="alert"
-      accessibilityLabel={`Playback error: ${message}`}
-    >
-      <Text style={styles.errorIcon}>⚠️</Text>
-      <Text style={styles.errorTitle}>Playback Error</Text>
-      <Text style={styles.errorMessage}>{message}</Text>
-      {canRetry && onRetry && (
-        <Pressable
-          style={styles.retryButton}
-          onPress={onRetry}
-          accessible
-          accessibilityRole="button"
-          accessibilityLabel="Retry playback"
-          hitSlop={8}
-        >
-          <Text style={styles.retryText}>Retry</Text>
-        </Pressable>
-      )}
-    </View>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Offline banner
-// ---------------------------------------------------------------------------
-
-function OfflineBanner(): React.ReactElement {
-  return (
-    <View
-      style={styles.offlineBanner}
-      accessible
-      accessibilityRole="alert"
-      accessibilityLabel="No internet connection — playback unavailable"
-    >
-      <Text style={styles.offlineBannerText}>
-        No internet connection — live streaming requires an active connection.
-      </Text>
-    </View>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Controls overlay
-// ---------------------------------------------------------------------------
-
-interface ControlsOverlayProps {
-  title: string;
-  uiState: UIState;
-  isPlaying: boolean;
-  onTogglePlay: () => void;
-  onBack?: () => void;
-}
-
-function ControlsOverlay({
-  title,
-  uiState,
-  isPlaying,
-  onTogglePlay,
-  onBack,
-}: ControlsOverlayProps): React.ReactElement {
-  return (
-    <View style={styles.controlsOverlay} pointerEvents="box-none">
-      {/* Top bar */}
-      <View style={styles.controlsTop}>
-        {onBack && (
-          <Pressable
-            style={styles.backButton}
-            onPress={onBack}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            hitSlop={8}
-          >
-            <Text style={styles.backIcon}>‹</Text>
-          </Pressable>
-        )}
-        <Text style={styles.controlsTitle} numberOfLines={1}>
-          {title}
-        </Text>
-      </View>
-
-      {/* Center controls */}
-      <View style={styles.controlsCenter} pointerEvents="box-none">
-        {(uiState === 'loading' || uiState === 'buffering') && (
-          <ActivityIndicator
-            size="large"
-            color="#fff"
-            accessible
-            accessibilityLabel={uiState === 'buffering' ? 'Buffering' : 'Loading'}
-          />
-        )}
-        {(uiState === 'playing' || uiState === 'paused') && (
-          <Pressable
-            style={styles.playPauseButton}
-            onPress={onTogglePlay}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
-            hitSlop={12}
-          >
-            <Text style={styles.playPauseIcon}>{isPlaying ? '⏸' : '▶'}</Text>
-          </Pressable>
-        )}
-      </View>
-    </View>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// PlayerScreen
-// ---------------------------------------------------------------------------
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function PlayerScreen({
   streamUri,
@@ -202,9 +66,7 @@ export default function PlayerScreen({
   const [videoError, setVideoError] = useState<VideoError | null>(null);
   const [isOffline, setIsOffline] = useState(false);
 
-  // ---------------------------------------------------------------------------
-  // Video callbacks
-  // ---------------------------------------------------------------------------
+  // ─── Video callbacks ────────────────────────────────────────────────────────
 
   const handleLoad = useCallback(() => {
     setUiState('playing');
@@ -221,7 +83,6 @@ export default function PlayerScreen({
     error?: {
       code?: number;
       errorString?: string;
-      errorCode?: string;
       localizedDescription?: string;
     };
   }) => {
@@ -234,10 +95,7 @@ export default function PlayerScreen({
       code === -1004 || // NSURLErrorCannotConnectToHost
       desc.toLowerCase().includes('network') ||
       desc.toLowerCase().includes('connection');
-
-    const isDrm =
-      desc.toLowerCase().includes('drm') ||
-      desc.toLowerCase().includes('protected');
+    const isDrm = desc.toLowerCase().includes('drm') || desc.toLowerCase().includes('protected');
 
     let err: VideoError;
     if (isNetwork) {
@@ -262,18 +120,12 @@ export default function PlayerScreen({
 
   const handleTogglePlay = useCallback(() => {
     setIsPlaying((prev) => {
-      if (prev) {
-        setUiState('paused');
-      } else {
-        setUiState('playing');
-      }
+      setUiState(!prev ? 'playing' : 'paused');
       return !prev;
     });
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
+  // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.container}>
@@ -319,7 +171,7 @@ export default function PlayerScreen({
         />
       )}
 
-      {/* Back button always shown during error/offline */}
+      {/* Back button shown during error/offline states */}
       {(uiState === 'error' || uiState === 'offline') && onBack && (
         <SafeAreaView style={styles.safeBack} pointerEvents="box-none">
           <Pressable
@@ -338,34 +190,19 @@ export default function PlayerScreen({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-
-  controlsOverlay: {
+  offlineBannerContainer: { position: 'absolute', top: 0, left: 0, right: 0 },
+  errorOverlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  controlsTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 48,
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  controlsTitle: { flex: 1, fontSize: 16, fontWeight: '600', color: '#fff' },
-  controlsCenter: {
-    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.85)',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 24,
   },
-
-  backButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  backIcon: { fontSize: 32, color: '#fff', lineHeight: 36 },
+  safeBack: { position: 'absolute', top: 0, left: 0 },
   backButtonStandalone: {
     width: 44,
     height: 44,
@@ -375,61 +212,5 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     margin: 16,
   },
-  safeBack: { position: 'absolute', top: 0, left: 0 },
-
-  playPauseButton: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  playPauseIcon: { fontSize: 30, color: '#fff' },
-
-  // Error overlay
-  errorOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  errorCard: {
-    backgroundColor: '#1f2937',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    maxWidth: 400,
-    width: '100%',
-  },
-  errorIcon: { fontSize: 40, marginBottom: 12 },
-  errorTitle: { fontSize: 18, fontWeight: '700', color: '#f9fafb', marginBottom: 8 },
-  errorMessage: { fontSize: 13, color: '#9ca3af', textAlign: 'center', lineHeight: 18 },
-  retryButton: {
-    marginTop: 16,
-    backgroundColor: '#ef4444',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 8,
-    minHeight: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  retryText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-
-  // Offline
-  offlineBannerContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-  offlineBanner: {
-    backgroundColor: '#f59e0b',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
-  offlineBannerText: { fontSize: 13, fontWeight: '600', color: '#000', textAlign: 'center' },
+  backIcon: { fontSize: 32, color: '#fff', lineHeight: 36 },
 });

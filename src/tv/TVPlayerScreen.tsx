@@ -4,270 +4,44 @@
  *          No touch targets. Integrates with TVChannelList slide-in panel.
  *
  * Inputs:
- *   - streamUrl: string — HLS/DASH URI
- *   - title: string — channel/content title
- *   - channels?: Channel[] — for slide-in channel list on 'up'
- *   - onBack?: () => void
- *   - onSelectChannel?: (channel: Channel) => void
+ *   streamUrl        — HLS/DASH URI to play.
+ *   title?           — channel/content title for the overlay (default "Live TV").
+ *   channels?        — list of channels for the slide-in channel list (triggered by D-pad up).
+ *   activeChannelId? — currently playing channel id, highlighted in TVChannelList.
+ *   channelsLoading? — whether channel list data is still loading.
+ *   onBack?          — called when the user presses Back.
+ *   onSelectChannel? — called when user selects a new channel from the list.
  *
  * Outputs:
- *   - Full-screen react-native-video player (0 margin/padding, full bleed).
- *   - D-pad controls: up=channel list, select=play/pause, left/right=seek±10s, back=exit player.
- *   - Overlay controls bar with play/pause, seek, title.
- *   - VideoError handling with typed error card.
+ *   Full-screen react-native-video player with TVControlsOverlay, TVErrorCard,
+ *   and TVChannelList slide-in panel.
  *
  * Constraints:
- *   - isTVSelectable={true} on every interactive element.
- *   - hasTVPreferredFocus on play/pause button.
- *   - Focus ring: yellow 3px border on focused element.
- *   - Text min 28sp.
- *   - TVEventHandler registered once; cleaned up on unmount.
+ *   - TVEventHandler registered once, cleaned up on unmount.
+ *   - D-pad: up=open channel list, down=close, left=seek back, right=seek forward,
+ *     select/playPause=toggle play, menu/back=back or close panel.
+ *   - Controls auto-dismiss after CONTROLS_DISMISS_MS ms of inactivity.
+ *   - Text min 28sp; focus ring: focusBorder 3px.
  *
  * SPORT: F12-REPO-TYPE-MAP.md — ntv tv-player-screen; T-P3-E5-W3-S3-T01
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { TVFocusGuideView, TVEventHandler } from './tv-compat';
+import { Platform, StyleSheet, View } from 'react-native';
+import { TVEventHandler } from './tv-compat';
 import Video, { type VideoRef } from 'react-native-video';
 import { TVChannelList } from './TVChannelList';
-import {
-  type VideoError,
-  getVideoErrorMessage,
-  isRetryableError,
-} from '../types/video-errors';
+import { TVErrorCard } from './TVErrorCard';
+import { TVControlsOverlay } from './TVControlsOverlay';
+import { TV_COLORS as C, SEEK_STEP, CONTROLS_DISMISS_MS } from './TVPlayerColors';
+import type { VideoError } from '../types/video-errors';
 import type { Channel } from '../../services/m3u-parser';
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const SEEK_STEP = 10; // seconds
-const CONTROLS_DISMISS_MS = 5000;
-const COLORS = {
-  bg: '#000000',
-  overlay: 'rgba(0,0,0,0.65)',
-  text: '#ffffff',
-  muted: '#9ca3af',
-  focusBorder: '#fbbf24',
-  focusBg: 'rgba(251, 191, 36, 0.15)',
-  error: '#ef4444',
-  primary: '#0ea5e9',
-};
+type UIState = 'loading' | 'buffering' | 'playing' | 'paused' | 'error' | 'offline';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type UIState =
-  | 'loading'
-  | 'buffering'
-  | 'playing'
-  | 'paused'
-  | 'error'
-  | 'offline';
-
-// ---------------------------------------------------------------------------
-// TV Error Card
-// ---------------------------------------------------------------------------
-
-interface TVErrorCardProps {
-  error: VideoError;
-  onRetry?: () => void;
-  onBack?: () => void;
-}
-
-function TVErrorCard({ error, onRetry, onBack }: TVErrorCardProps): React.ReactElement {
-  const message = getVideoErrorMessage(error);
-  const canRetry = isRetryableError(error);
-
-  return (
-    <View style={styles.errorContainer} accessible accessibilityRole="alert">
-      <Text style={styles.errorIcon}>⚠️</Text>
-      <Text style={styles.errorTitle}>Playback Error</Text>
-      <Text style={styles.errorMessage}>{message}</Text>
-      <TVFocusGuideView style={styles.errorButtons} autoFocus destinations={[]}>
-        {canRetry && onRetry && (
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            style={(s: any) => [styles.tvButton, (s.focused as boolean) && styles.tvButtonFocused]}
-            onPress={onRetry}
-            // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-            isTVSelectable
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Retry playback"
-            // @ts-ignore — hasTVPreferredFocus is a react-native-tvos prop, absent in RN types
-            hasTVPreferredFocus
-          >
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(s: any) => (
-              <Text style={[styles.tvButtonText, (s.focused as boolean) && styles.tvButtonTextFocused]}>
-                Retry
-              </Text>
-            )}
-          </Pressable>
-        )}
-        {onBack && (
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            style={(s: any) => [styles.tvButton, (s.focused as boolean) && styles.tvButtonFocused]}
-            onPress={onBack}
-            // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-            isTVSelectable
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            // @ts-ignore — hasTVPreferredFocus is a react-native-tvos prop, absent in RN types
-            hasTVPreferredFocus={!canRetry}
-          >
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(s: any) => (
-              <Text style={[styles.tvButtonText, (s.focused as boolean) && styles.tvButtonTextFocused]}>
-                Back
-              </Text>
-            )}
-          </Pressable>
-        )}
-      </TVFocusGuideView>
-    </View>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Controls overlay
-// ---------------------------------------------------------------------------
-
-interface TVControlsOverlayProps {
-  title: string;
-  uiState: UIState;
-  isPlaying: boolean;
-  onTogglePlay: () => void;
-  onSeekBack: () => void;
-  onSeekForward: () => void;
-  onBack?: () => void;
-}
-
-function TVControlsOverlay({
-  title,
-  uiState,
-  isPlaying,
-  onTogglePlay,
-  onSeekBack,
-  onSeekForward,
-  onBack,
-}: TVControlsOverlayProps): React.ReactElement {
-  return (
-    <View style={styles.controlsOverlay} pointerEvents="box-none">
-      {/* Title bar */}
-      <View style={styles.titleBar}>
-        <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
-      </View>
-
-      {/* Center — loading/buffering indicator */}
-      {(uiState === 'loading' || uiState === 'buffering') && (
-        <View style={styles.centerIndicator} pointerEvents="none">
-          <ActivityIndicator
-            size="large"
-            color={COLORS.primary}
-            accessible
-            accessibilityLabel={uiState === 'buffering' ? 'Buffering' : 'Loading'}
-          />
-        </View>
-      )}
-
-      {/* Bottom controls */}
-      {(uiState === 'playing' || uiState === 'paused') && (
-        <TVFocusGuideView style={styles.bottomControls} autoFocus destinations={[]}>
-          {onBack && (
-            <Pressable
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              style={(s: any) => [styles.controlBtn, (s.focused as boolean) && styles.controlBtnFocused]}
-              onPress={onBack}
-              // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-              isTVSelectable
-              accessible
-              accessibilityRole="button"
-              accessibilityLabel="Back"
-            >
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {(s: any) => (
-                <Text style={[styles.controlBtnText, (s.focused as boolean) && styles.controlBtnTextFocused]}>‹ Back</Text>
-              )}
-            </Pressable>
-          )}
-
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            style={(s: any) => [styles.controlBtn, (s.focused as boolean) && styles.controlBtnFocused]}
-            onPress={onSeekBack}
-            // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-            isTVSelectable
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel={`Seek back ${SEEK_STEP} seconds`}
-          >
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(s: any) => (
-              <Text style={[styles.controlBtnText, (s.focused as boolean) && styles.controlBtnTextFocused]}>
-                ⟨ {SEEK_STEP}s
-              </Text>
-            )}
-          </Pressable>
-
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            style={(s: any) => [styles.controlBtn, styles.controlBtnMain, (s.focused as boolean) && styles.controlBtnFocused]}
-            onPress={onTogglePlay}
-            // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-            isTVSelectable
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
-            // @ts-ignore — hasTVPreferredFocus is a react-native-tvos prop, absent in RN types
-            hasTVPreferredFocus
-          >
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(s: any) => (
-              <Text style={[styles.controlBtnTextLarge, (s.focused as boolean) && styles.controlBtnTextFocused]}>
-                {isPlaying ? '⏸' : '▶'}
-              </Text>
-            )}
-          </Pressable>
-
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            style={(s: any) => [styles.controlBtn, (s.focused as boolean) && styles.controlBtnFocused]}
-            onPress={onSeekForward}
-            // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-            isTVSelectable
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel={`Seek forward ${SEEK_STEP} seconds`}
-          >
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(s: any) => (
-              <Text style={[styles.controlBtnText, (s.focused as boolean) && styles.controlBtnTextFocused]}>
-                {SEEK_STEP}s ⟩
-              </Text>
-            )}
-          </Pressable>
-        </TVFocusGuideView>
-      )}
-    </View>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// TVPlayerScreen
-// ---------------------------------------------------------------------------
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface TVPlayerScreenProps {
   streamUrl: string;
@@ -278,6 +52,8 @@ export interface TVPlayerScreenProps {
   onBack?: () => void;
   onSelectChannel?: (channel: Channel) => void;
 }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function TVPlayerScreen({
   streamUrl,
@@ -295,21 +71,15 @@ export function TVPlayerScreen({
   const [showChannelList, setShowChannelList] = useState(false);
   const [videoError, setVideoError] = useState<VideoError | null>(null);
   const controlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Live playback position/duration tracked via onProgress/onLoad so D-pad
-  // seek can compute a RELATIVE target (current ± SEEK_STEP) instead of an
-  // absolute mark. Kept in refs to avoid re-rendering on every tick.
+  // Playback position/duration in refs to avoid re-rendering on every progress tick.
   const currentPositionRef = useRef(0);
   const durationRef = useRef(0);
 
-  // ---------------------------------------------------------------------------
-  // Controls auto-dismiss
-  // ---------------------------------------------------------------------------
+  // ─── Controls auto-dismiss ─────────────────────────────────────────────────
 
   const resetControlsTimer = useCallback(() => {
     if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
-    controlsTimerRef.current = setTimeout(() => {
-      setShowControls(false);
-    }, CONTROLS_DISMISS_MS);
+    controlsTimerRef.current = setTimeout(() => setShowControls(false), CONTROLS_DISMISS_MS);
   }, []);
 
   const showControlsAndReset = useCallback(() => {
@@ -317,75 +87,68 @@ export function TVPlayerScreen({
     resetControlsTimer();
   }, [resetControlsTimer]);
 
-  useEffect(() => {
-    return () => {
-      if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
-    };
+  useEffect(() => () => {
+    if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // D-pad / remote event handler
-  // ---------------------------------------------------------------------------
+  // ─── D-pad / remote event handler ─────────────────────────────────────────
+
+  const handleTogglePlay = useCallback(() => {
+    setIsPlaying((prev) => {
+      setUiState(!prev ? 'playing' : 'paused');
+      return !prev;
+    });
+  }, []);
+
+  const handleSeekBack = useCallback(() => {
+    const target = Math.max(0, currentPositionRef.current - SEEK_STEP);
+    currentPositionRef.current = target;
+    videoRef.current?.seek(target, 100);
+  }, []);
+
+  const handleSeekForward = useCallback(() => {
+    const max = durationRef.current > 0 ? durationRef.current : Number.MAX_SAFE_INTEGER;
+    const target = Math.min(max, currentPositionRef.current + SEEK_STEP);
+    currentPositionRef.current = target;
+    videoRef.current?.seek(target, 100);
+  }, []);
 
   useEffect(() => {
     if (!Platform.isTV) return;
-
     const handler = new TVEventHandler();
     handler.enable(null, (_cmp: unknown, event: { eventType: string }) => {
       const type = event?.eventType;
       if (!type) return;
-
       switch (type) {
         case 'select':
         case 'playPause':
-          if (showChannelList) {
-            // Let FlatList handle selection
-          } else {
-            handleTogglePlay();
-            showControlsAndReset();
-          }
+          if (!showChannelList) { handleTogglePlay(); showControlsAndReset(); }
           break;
         case 'up':
-          if (!showChannelList) {
-            setShowChannelList(true);
-          }
+          if (!showChannelList) setShowChannelList(true);
           break;
         case 'down':
           setShowChannelList(false);
           break;
         case 'left':
-          if (!showChannelList) {
-            handleSeekBack();
-            showControlsAndReset();
-          }
+          if (!showChannelList) { handleSeekBack(); showControlsAndReset(); }
           break;
         case 'right':
-          if (!showChannelList) {
-            handleSeekForward();
-            showControlsAndReset();
-          }
+          if (!showChannelList) { handleSeekForward(); showControlsAndReset(); }
           break;
         case 'menu':
         case 'back':
-          if (showChannelList) {
-            setShowChannelList(false);
-          } else {
-            onBack?.();
-          }
+          if (showChannelList) setShowChannelList(false);
+          else onBack?.();
           break;
         default:
           break;
       }
     });
+    return () => handler.disable();
+  }, [showChannelList, onBack, handleTogglePlay, handleSeekBack, handleSeekForward, showControlsAndReset]);
 
-    return () => {
-      handler.disable();
-    };
-  }, [showChannelList, onBack]);
-
-  // ---------------------------------------------------------------------------
-  // Player callbacks
-  // ---------------------------------------------------------------------------
+  // ─── Player callbacks ──────────────────────────────────────────────────────
 
   const handleLoad = useCallback((data?: { duration?: number; currentTime?: number }) => {
     if (typeof data?.duration === 'number') durationRef.current = data.duration;
@@ -415,7 +178,6 @@ export function TVPlayerScreen({
     const code = data?.error?.code;
     const desc = data?.error?.localizedDescription ?? data?.error?.errorString ?? '';
     const isNetwork = code === -1009 || code === -1004 || desc.toLowerCase().includes('network');
-
     let err: VideoError;
     if (isNetwork) {
       err = { type: 'network', code: String(code ?? 'unknown') };
@@ -424,7 +186,6 @@ export function TVPlayerScreen({
     } else {
       err = { type: 'stream_unavailable', reason: desc };
     }
-
     setVideoError(err);
     setUiState('error');
   }, []);
@@ -435,26 +196,6 @@ export function TVPlayerScreen({
     setIsPlaying(true);
   }, []);
 
-  const handleTogglePlay = useCallback(() => {
-    setIsPlaying((prev) => {
-      setUiState(!prev ? 'playing' : 'paused');
-      return !prev;
-    });
-  }, []);
-
-  const handleSeekBack = useCallback(() => {
-    const target = Math.max(0, currentPositionRef.current - SEEK_STEP);
-    currentPositionRef.current = target;
-    videoRef.current?.seek(target, 100);
-  }, []);
-
-  const handleSeekForward = useCallback(() => {
-    const max = durationRef.current > 0 ? durationRef.current : Number.MAX_SAFE_INTEGER;
-    const target = Math.min(max, currentPositionRef.current + SEEK_STEP);
-    currentPositionRef.current = target;
-    videoRef.current?.seek(target, 100);
-  }, []);
-
   const handleChannelSelect = useCallback(
     (channel: Channel) => {
       setShowChannelList(false);
@@ -463,13 +204,10 @@ export function TVPlayerScreen({
     [onSelectChannel],
   );
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.container}>
-      {/* Full-bleed video */}
       <Video
         ref={videoRef}
         source={{ uri: streamUrl }}
@@ -483,14 +221,12 @@ export function TVPlayerScreen({
         repeat={false}
       />
 
-      {/* Error overlay */}
       {uiState === 'error' && videoError && (
         <View style={styles.errorOverlay}>
           <TVErrorCard error={videoError} onRetry={handleRetry} onBack={onBack} />
         </View>
       )}
 
-      {/* Controls overlay */}
       {uiState !== 'error' && (showControls || uiState === 'loading' || uiState === 'buffering') && (
         <TVControlsOverlay
           title={title}
@@ -503,7 +239,6 @@ export function TVPlayerScreen({
         />
       )}
 
-      {/* Channel list slide-in panel */}
       {showChannelList && (
         <View style={styles.channelListPanel}>
           <TVChannelList
@@ -518,67 +253,10 @@ export function TVPlayerScreen({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg },
-
-  // Controls overlay
-  controlsOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
-    backgroundColor: COLORS.overlay,
-  },
-  titleBar: {
-    paddingTop: 48,
-    paddingHorizontal: 40,
-  },
-  titleText: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  centerIndicator: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bottomControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 48,
-    paddingHorizontal: 40,
-    gap: 20,
-  },
-
-  // TV buttons
-  controlBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  controlBtnMain: {
-    paddingHorizontal: 28,
-    paddingVertical: 16,
-    borderRadius: 14,
-  },
-  controlBtnFocused: {
-    borderColor: COLORS.focusBorder,
-    backgroundColor: COLORS.focusBg,
-  },
-  controlBtnText: { fontSize: 26, color: COLORS.text, fontWeight: '600' },
-  controlBtnTextLarge: { fontSize: 36, color: COLORS.text },
-  controlBtnTextFocused: { color: COLORS.focusBorder },
-
-  // Error
+  container: { flex: 1, backgroundColor: C.bg },
   errorOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.85)',
@@ -586,40 +264,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 40,
   },
-  errorContainer: {
-    backgroundColor: '#1f2937',
-    borderRadius: 20,
-    padding: 40,
-    alignItems: 'center',
-    maxWidth: 600,
-    width: '100%',
-  },
-  errorIcon: { fontSize: 56, marginBottom: 16 },
-  errorTitle: { fontSize: 32, fontWeight: '700', color: COLORS.text, marginBottom: 12 },
-  errorMessage: { fontSize: 24, color: COLORS.muted, textAlign: 'center', lineHeight: 34 },
-  errorButtons: {
-    flexDirection: 'row',
-    gap: 20,
-    marginTop: 32,
-  },
-
-  // TV button in error card
-  tvButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-  },
-  tvButtonFocused: {
-    borderColor: COLORS.focusBorder,
-    backgroundColor: COLORS.focusBg,
-  },
-  tvButtonText: { fontSize: 26, color: COLORS.text, fontWeight: '600' },
-  tvButtonTextFocused: { color: COLORS.focusBorder },
-
-  // Channel list panel
   channelListPanel: {
     position: 'absolute',
     top: 0,
