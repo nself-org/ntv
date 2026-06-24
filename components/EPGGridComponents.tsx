@@ -24,22 +24,30 @@ import React, { memo, useCallback, useEffect, useRef } from 'react';
 import {
   Image,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import type { EPGChannel, EPGProgram } from '../hooks/useEPG';
+import { styles } from './EPGGridStyles';
 
 // ---------------------------------------------------------------------------
-// Layout constants (exported so EPGGrid.tsx uses the same values)
+// Layout constants — defined in ./EPGGridConstants, re-exported here so existing
+// consumers (EPGGrid.tsx) keep importing them from this module unchanged.
 // ---------------------------------------------------------------------------
 
-export const PIXELS_PER_MINUTE = 4;
-export const ROW_HEIGHT = 64;
-export const LOGO_COLUMN_WIDTH = 72;
-export const TIMELINE_HEIGHT = 32;
-export const TIMELINE_LABEL_INTERVAL_MINUTES = 30;
+export {
+  PIXELS_PER_MINUTE,
+  ROW_HEIGHT,
+  LOGO_COLUMN_WIDTH,
+  TIMELINE_HEIGHT,
+  TIMELINE_LABEL_INTERVAL_MINUTES,
+} from './EPGGridConstants';
+import {
+  PIXELS_PER_MINUTE,
+  ROW_HEIGHT,
+  TIMELINE_LABEL_INTERVAL_MINUTES,
+} from './EPGGridConstants';
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -247,69 +255,4 @@ export const CurrentTimeMarker = memo(function CurrentTimeMarker({
   return <View style={[styles.currentTimeMarker, { left: elapsedMinutes * PIXELS_PER_MINUTE }]} />;
 });
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    height: ROW_HEIGHT,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#222',
-  },
-  logoColumn: {
-    width: LOGO_COLUMN_WIDTH,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#111',
-    borderRightWidth: 1,
-    borderRightColor: '#333',
-    padding: 4,
-  },
-  channelLogo: { width: 52, height: 36 },
-  channelLogoPlaceholder: {
-    width: 52,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#222',
-    borderRadius: 4,
-  },
-  channelLogoText: { color: '#aaa', fontSize: 9, textAlign: 'center' },
-  programsScroll: { flex: 1 },
-  timelineHeader: { height: TIMELINE_HEIGHT, position: 'relative' },
-  timelineLabel: {
-    position: 'absolute',
-    top: 6,
-    color: '#aaa',
-    fontSize: 11,
-    fontVariant: ['tabular-nums'],
-  },
-  currentTimeMarker: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 2,
-    backgroundColor: '#e53e3e',
-    zIndex: 10,
-  },
-  programTile: {
-    position: 'absolute',
-    top: 4,
-    height: ROW_HEIGHT - 8,
-    backgroundColor: '#1e3a5f',
-    borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  programTileCurrent: {
-    backgroundColor: '#2b6cb0',
-    borderLeftWidth: 3,
-    borderLeftColor: '#63b3ed',
-  },
-  programTitle: { color: '#e2e8f0', fontSize: 12, fontWeight: '600' },
-  programTime: { color: '#90cdf4', fontSize: 10, marginTop: 2 },
-});
+// Styles live in ./EPGGridStyles.ts (extracted to keep this file <300 lines).
