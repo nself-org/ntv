@@ -1,7 +1,6 @@
 /**
  * Purpose: TV (rn-tvos) 10-foot channel list for ɳTV — Apple TV / Android TV / Fire TV.
- *          Full D-pad navigation via TVFocusGuideView. Focus rings on all interactive elements.
- *          No touch targets — TV-only D-pad controls only.
+ *          TVChannelRow extracted to TVChannelRow.tsx.
  *
  * Inputs:
  *   - channels: Channel[] — list of IPTV channels
@@ -13,12 +12,10 @@
  *
  * Outputs:
  *   - Vertically scrollable FlatList of channels with TV focus navigation.
- *   - First channel has hasTVPreferredFocus.
- *   - Yellow focus ring (3px border) on focused element.
+ *   - Loading / error / empty state views.
  *
  * Constraints:
  *   - isTVSelectable={true} on every interactive element.
- *   - accessible={true} on every row.
  *   - Text min 28sp for TV readability at 3m.
  *   - No touch handlers — D-pad/remote only.
  *   - TVFocusGuideView wraps the list for cross-section D-pad navigation.
@@ -30,8 +27,6 @@ import React, { useCallback } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Image,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -39,103 +34,7 @@ import {
 } from 'react-native';
 import { TVFocusGuideView } from './tv-compat';
 import type { Channel } from '../../services/m3u-parser';
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-const COLORS = {
-  bg: '#08090e',
-  surface: '#12151f',
-  border: '#1e2333',
-  text: '#ffffff',
-  muted: '#9ca3af',
-  primary: '#0ea5e9',
-  focusBorder: '#fbbf24', // yellow focus ring
-  focusBg: 'rgba(251, 191, 36, 0.12)',
-  live: '#ef4444',
-  active: 'rgba(14, 165, 233, 0.25)',
-};
-
-// ---------------------------------------------------------------------------
-// TV Channel Row
-// ---------------------------------------------------------------------------
-
-interface TVChannelRowProps {
-  channel: Channel;
-  isActive: boolean;
-  isFirst: boolean;
-  onSelect: (channel: Channel) => void;
-}
-
-const TVChannelRow = React.memo(function TVChannelRow({
-  channel,
-  isActive,
-  isFirst,
-  onSelect,
-}: TVChannelRowProps): React.ReactElement {
-  return (
-    <Pressable
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      style={(state: any) => [
-        styles.row,
-        isActive && styles.rowActive,
-        (state.focused as boolean) && styles.rowFocused,
-      ]}
-      onPress={() => onSelect(channel)}
-      // @ts-ignore — isTVSelectable is a react-native-tvos prop, absent in RN types
-      isTVSelectable
-      accessible
-      accessibilityRole="button"
-      accessibilityLabel={`${channel.name}${isActive ? ', currently playing' : ''}`}
-      // @ts-ignore — hasTVPreferredFocus is a react-native-tvos prop, absent in RN types
-      hasTVPreferredFocus={isFirst}
-    >
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      {(state: any) => {
-        const focused = state.focused as boolean;
-        return (<>
-          {channel.logoUrl ? (
-            <Image
-              source={{ uri: channel.logoUrl }}
-              style={styles.logo}
-              resizeMode="contain"
-              accessibilityIgnoresInvertColors
-            />
-          ) : (
-            <View style={[styles.logo, styles.logoPlaceholder]}>
-              <Text style={styles.logoText}>
-                {channel.name.slice(0, 2).toUpperCase()}
-              </Text>
-            </View>
-          )}
-
-          <View style={styles.rowContent}>
-            <Text
-              style={[styles.channelName, focused && styles.channelNameFocused]}
-              numberOfLines={1}
-            >
-              {channel.name}
-            </Text>
-            {channel.group.trim() !== '' && (
-              <Text style={styles.channelGroup} numberOfLines={1}>
-                {channel.group}
-              </Text>
-            )}
-          </View>
-
-          <View style={styles.liveDot} accessibilityLabel="Live" />
-
-          {isActive && (
-            <View style={styles.playingBadge} accessibilityLabel="Now playing">
-              <Text style={styles.playingBadgeText}>▶ NOW</Text>
-            </View>
-          )}
-        </>);
-      }}
-    </Pressable>
-  );
-});
+import { COLORS, TVChannelRow } from './TVChannelRow';
 
 // ---------------------------------------------------------------------------
 // TVChannelList
@@ -254,56 +153,6 @@ const styles = StyleSheet.create({
   },
   list: { flex: 1, width: '100%' },
   listContent: { paddingVertical: 16 },
-
-  // Row
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    minHeight: 80,
-    borderRadius: 10,
-    marginHorizontal: 12,
-    marginVertical: 4,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: COLORS.surface,
-  },
-  rowActive: { backgroundColor: COLORS.active },
-  rowFocused: {
-    borderColor: COLORS.focusBorder,
-    backgroundColor: COLORS.focusBg,
-  },
-
-  logo: { width: 56, height: 56, borderRadius: 8, marginEnd: 20 },
-  logoPlaceholder: {
-    backgroundColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: { fontSize: 18, fontWeight: '700', color: COLORS.primary },
-
-  rowContent: { flex: 1 },
-  channelName: { fontSize: 28, fontWeight: '600', color: COLORS.text },
-  channelNameFocused: { color: COLORS.focusBorder },
-  channelGroup: { fontSize: 20, color: COLORS.muted, marginTop: 4 },
-
-  liveDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLORS.live,
-    marginHorizontal: 16,
-  },
-  playingBadge: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  playingBadgeText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-
-  // States
   stateText: { fontSize: 28, color: COLORS.muted, marginTop: 16, textAlign: 'center' },
   stateSubText: { fontSize: 22, color: COLORS.muted, marginTop: 8, textAlign: 'center' },
   errorIcon: { fontSize: 56 },

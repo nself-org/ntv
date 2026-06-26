@@ -1,16 +1,21 @@
 /**
  * Purpose: Floating controls overlay for nTV media player.
- * Inputs: MediaPlayerState + callbacks from useMediaPlayer.
+ *          Loading/error/offline state views extracted to PlayerStateOverlays.tsx.
+ *
+ * Inputs:  MediaPlayerState + callbacks from useMediaPlayer.
  * Outputs: play/pause, seek, volume, fullscreen, PiP, quality picker overlay.
- * Constraints: no media logic — all state from hook; QualityPicker in QualityPicker.tsx.
- *              All strings i18n-wrapped via useNselfTranslation.
- *              Accessibility labels on all interactive elements.
- * SPORT: F12-REPO-TYPE-MAP.md — ntv media-player feature status updated; T-P3-E4-W2-S4-T08
+ *
+ * Constraints:
+ *   - No media logic — all state from hook; QualityPicker in QualityPicker.tsx.
+ *   - All strings i18n-wrapped via useNselfTranslation.
+ *   - Accessibility labels on all interactive elements.
+ *   - State overlays (loading/error/offline) live in PlayerStateOverlays.tsx.
+ *
+ * SPORT: F12-REPO-TYPE-MAP.md — ntv media-player feature; T-P3-E4-W2-S4-T08
  */
 
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
   Platform,
   Pressable,
   StyleSheet,
@@ -25,10 +30,13 @@ import type {
   MediaPlayerState,
 } from '../hooks/useMediaPlayer';
 import { QualityPicker } from './QualityPicker';
+import {
+  BufferingOverlay,
+  ErrorOverlay,
+  OfflineOverlay,
+} from './PlayerStateOverlays';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type PlayerControlsProps = MediaPlayerState &
   Pick<
@@ -44,9 +52,7 @@ type PlayerControlsProps = MediaPlayerState &
     | 'showControlsFor'
   >;
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatTime(seconds: number): string {
   if (!isFinite(seconds) || seconds < 0) return '0:00';
@@ -55,9 +61,7 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function PlayerControls(props: PlayerControlsProps) {
   const { t } = useNselfTranslation();
@@ -98,48 +102,29 @@ export function PlayerControls(props: PlayerControlsProps) {
     [seek, showControlsFor],
   );
 
-  // Loading / buffering
   if (uiState === 'buffering' || uiState === 'loading') {
-    return (
-      <View style={styles.bufferingOverlay} pointerEvents="none">
-        <ActivityIndicator size="large" color="#FFFFFF" />
-      </View>
-    );
+    return <BufferingOverlay />;
   }
 
-  // Error
   if (uiState === 'error') {
     return (
-      <View style={styles.errorOverlay}>
-        <Text style={styles.errorTitle} accessibilityLabel={t('streamUnavailable')}>{t('streamUnavailable')}</Text>
-        <Text style={styles.errorMessage}>{errorMessage ?? t('unableToLoadStream')}</Text>
-        <Pressable
-          style={styles.retryButton}
-          onPress={retry}
-          accessibilityRole="button"
-          accessibilityLabel={t('retry')}
-        >
-          <Text style={styles.retryText}>{t('retry')}</Text>
-        </Pressable>
-      </View>
+      <ErrorOverlay
+        errorTitle={t('streamUnavailable')}
+        errorMessage={errorMessage ?? t('unableToLoadStream')}
+        retryLabel={t('retry')}
+        onRetry={retry}
+      />
     );
   }
 
-  // Offline
   if (uiState === 'offline') {
     return (
-      <View style={styles.errorOverlay}>
-        <Text style={styles.errorTitle} accessibilityLabel={t('noConnection')}>{t('noConnection')}</Text>
-        <Text style={styles.errorMessage}>{t('checkInternet')}</Text>
-        <Pressable
-          style={styles.retryButton}
-          onPress={retry}
-          accessibilityRole="button"
-          accessibilityLabel={t('retry')}
-        >
-          <Text style={styles.retryText}>{t('retry')}</Text>
-        </Pressable>
-      </View>
+      <OfflineOverlay
+        noConnectionLabel={t('noConnection')}
+        checkInternetLabel={t('checkInternet')}
+        retryLabel={t('retry')}
+        onRetry={retry}
+      />
     );
   }
 
@@ -152,7 +137,6 @@ export function PlayerControls(props: PlayerControlsProps) {
   return (
     <TouchableWithoutFeedback onPress={handleOverlayPress}>
       <View style={styles.container}>
-        {/* Quality picker modal */}
         {showQualityPicker && qualities.length > 0 && (
           <QualityPicker
             qualities={qualities}
@@ -255,43 +239,9 @@ export function PlayerControls(props: PlayerControlsProps) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  bufferingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  },
-  errorOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.75)',
-    padding: 24,
-  },
-  errorTitle: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  errorMessage: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  retryButton: {
-    backgroundColor: '#E53E3E',
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  retryText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
   container: { ...StyleSheet.absoluteFillObject },
   overlay: {
     ...StyleSheet.absoluteFillObject,

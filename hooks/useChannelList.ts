@@ -2,44 +2,43 @@
  * Purpose: React hook for IPTV channel list management in ɳTV.
  *          Fetches channels from M3U URLs + Xtream sources, caches offline via AsyncStorage,
  *          manages favorites with optimistic updates, and supports search/category filtering.
+ *          buildSections extracted to buildChannelSections.ts; background sync to channelBackgroundSync.ts.
+ *
  * Inputs:  sourceUrl (M3U URL or Xtream credentials stored in AsyncStorage).
  * Outputs: { channels, sections, favorites, search, setSearch, toggleFavorite, loading, error, refresh }
+ *
  * Constraints: AsyncStorage for non-sensitive offline cache only. Xtream credentials
  *              (username/password) are sensitive and MUST be kept in expo-secure-store
  *              (Keychain/Keystore), per the Security-Always-Free doctrine and
  *              .claude/docs/security/secrets-handling-checklist.md — never AsyncStorage.
  *              No GraphQL client wired yet (stub mutations).
- *              Background sync via expo-background-fetch is registered separately (see registerBackgroundSync).
- * SPORT: F12-REPO-TYPE-MAP.md ntv iptv-data feature
+ *              Background sync via expo-background-fetch: see channelBackgroundSync.ts.
+ *              Storage/fetch helpers extracted to channelListStorage.ts (≤50-line rule).
+ *
+ * SPORT: F12-REPO-TYPE-MAP.md — ntv iptv-data feature
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import { parseM3U } from '../services/m3u-parser';
 import type { Channel } from '../services/m3u-parser';
 import { xtreamFullSync } from '../services/xtream';
 import type { XtreamCredentials } from '../services/xtream';
+import {
+  loadCachedChannels,
+  saveChannelCache,
+  loadFavorites,
+  saveFavorites,
+  loadM3UUrls,
+  saveM3UUrls,
+  loadXtreamCreds,
+  saveXtreamCreds,
+  fetchM3U,
+} from './channelListStorage';
+import { buildSections, type ChannelSection } from './buildChannelSections';
 
-// ─── Storage Keys ────────────────────────────────────────────────────────────
-
-const STORAGE_KEY_CHANNELS = 'ntv:channels:cache';
-const STORAGE_KEY_FAVORITES = 'ntv:channels:favorites';
-const STORAGE_KEY_M3U_URLS = 'ntv:m3u:urls';
-// Xtream credentials live in expo-secure-store (Keychain/Keystore), NOT AsyncStorage.
-// SecureStore keys must match /^[A-Za-z0-9._-]+$/ (no colons), so this differs in form.
-const SECURE_KEY_XTREAM_CREDS = 'ntv_xtream_creds';
-
-// Cache TTL: 30 minutes
-const CACHE_TTL_MS = 30 * 60 * 1_000;
+// Re-export ChannelSection so consumers can import from this module as before.
+export type { ChannelSection } from './buildChannelSections';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-export interface ChannelSection {
-  /** Category / group name — used as SectionList section header */
-  title: string;
-  data: Channel[];
-}
 
 export interface ChannelListState {
   /** Full flat channel list (all sources merged) */
@@ -74,134 +73,6 @@ export interface ChannelListState {
   xtreamSources: XtreamCredentials[];
 }
 
-interface CachedChannels {
-  channels: Channel[];
-  cachedAt: number;
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function loadCachedChannels(): Promise<Channel[] | null> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY_CHANNELS);
-    if (!raw) return null;
-    const parsed: CachedChannels = JSON.parse(raw);
-    const age = Date.now() - parsed.cachedAt;
-    if (age > CACHE_TTL_MS) return parsed.channels; // Serve stale while revalidating
-    return parsed.channels;
-  } catch {
-    return null;
-  }
-}
-
-async function saveChannelCache(channels: Channel[]): Promise<void> {
-  const payload: CachedChannels = { channels, cachedAt: Date.now() };
-  await AsyncStorage.setItem(STORAGE_KEY_CHANNELS, JSON.stringify(payload));
-}
-
-async function loadFavorites(): Promise<Set<string>> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY_FAVORITES);
-    if (!raw) return new Set();
-    return new Set(JSON.parse(raw) as string[]);
-  } catch {
-    return new Set();
-  }
-}
-
-async function saveFavorites(favorites: Set<string>): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify([...favorites]));
-}
-
-async function loadM3UUrls(): Promise<string[]> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY_M3U_URLS);
-    return raw ? (JSON.parse(raw) as string[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-async function saveM3UUrls(urls: string[]): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY_M3U_URLS, JSON.stringify(urls));
-}
-
-async function loadXtreamCreds(): Promise<XtreamCredentials[]> {
-  try {
-    const raw = await SecureStore.getItemAsync(SECURE_KEY_XTREAM_CREDS);
-    return raw ? (JSON.parse(raw) as XtreamCredentials[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-async function saveXtreamCreds(creds: XtreamCredentials[]): Promise<void> {
-  if (creds.length === 0) {
-    await SecureStore.deleteItemAsync(SECURE_KEY_XTREAM_CREDS);
-    return;
-  }
-  await SecureStore.setItemAsync(SECURE_KEY_XTREAM_CREDS, JSON.stringify(creds));
-}
-
-async function fetchM3U(url: string): Promise<Channel[]> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15_000);
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) throw new Error(`HTTP ${response.status} fetching M3U: ${url}`);
-    const text = await response.text();
-    const { channels } = parseM3U(text, { sourceUrl: url });
-    return channels;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-/**
- * Group a flat channel array into sections by group/category.
- * Favorites section is first if any favorites are present.
- * Ungrouped channels go into an "Other" section.
- */
-function buildSections(channels: Channel[], favorites: Set<string>, search: string): ChannelSection[] {
-  const q = search.toLowerCase().trim();
-  const filtered = q
-    ? channels.filter((c) => c.name.toLowerCase().includes(q) || c.group.toLowerCase().includes(q))
-    : channels;
-
-  // Only show a dedicated Favorites section when not searching, so a search
-  // result is grouped purely by category (avoids the same channel appearing
-  // both in Favorites and in its category group during search).
-  const showFavoritesSection = q === '' && favorites.size > 0;
-  const favoriteChannels = showFavoritesSection
-    ? filtered.filter((c) => favorites.has(c.id))
-    : [];
-
-  // Group remaining channels by group title. When the Favorites section is
-  // shown, exclude favorites here so they are not duplicated across sections.
-  const groupMap = new Map<string, Channel[]>();
-  for (const ch of filtered) {
-    if (showFavoritesSection && favorites.has(ch.id)) continue;
-    const key = ch.group.trim() || 'Other';
-    if (!groupMap.has(key)) groupMap.set(key, []);
-    groupMap.get(key)!.push(ch);
-  }
-
-  const sections: ChannelSection[] = [];
-
-  // Favorites first (only when not searching, per above)
-  if (favoriteChannels.length > 0) {
-    sections.push({ title: 'Favorites', data: favoriteChannels });
-  }
-
-  // Alphabetically sorted groups
-  const sortedGroups = [...groupMap.keys()].sort((a, b) => a.localeCompare(b));
-  for (const group of sortedGroups) {
-    sections.push({ title: group, data: groupMap.get(group)! });
-  }
-
-  return sections;
-}
-
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
@@ -225,7 +96,6 @@ export function useChannelList(): ChannelListState {
   // Initial load: cache → sources
   useEffect(() => {
     void (async () => {
-      // Load config first
       const [urls, creds, favs] = await Promise.all([
         loadM3UUrls(),
         loadXtreamCreds(),
@@ -241,7 +111,6 @@ export function useChannelList(): ChannelListState {
         setChannels(cached);
       }
 
-      // Fetch fresh data if any sources configured
       if (urls.length > 0 || creds.length > 0) {
         await fetchAll(urls, creds);
       }
@@ -264,7 +133,6 @@ export function useChannelList(): ChannelListState {
 
       const merged: Channel[] = [];
       const errs: string[] = [];
-
       for (const result of results) {
         if (result.status === 'fulfilled') {
           merged.push(...result.value);
@@ -287,7 +155,6 @@ export function useChannelList(): ChannelListState {
       if (errs.length > 0 && deduped.length === 0) {
         setError(new Error(`All sources failed:\n${errs.join('\n')}`));
       } else if (errs.length > 0) {
-        // Partial success — don't surface as error, channels loaded
         console.warn('[useChannelList] Some sources failed:', errs);
       }
     } catch (err) {
@@ -305,9 +172,6 @@ export function useChannelList(): ChannelListState {
     void fetchAll(m3uUrls, xtreamSources);
   }, [fetchAll, m3uUrls, xtreamSources]);
 
-  /**
-   * Toggle favorite: optimistic update in state + async persist.
-   */
   const toggleFavorite = useCallback((channelId: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
@@ -316,7 +180,6 @@ export function useChannelList(): ChannelListState {
       } else {
         next.add(channelId);
       }
-      // Async persist (fire-and-forget)
       void saveFavorites(next);
       return next;
     });
@@ -328,7 +191,6 @@ export function useChannelList(): ChannelListState {
     const next = [...m3uUrls.filter((u) => u !== trimmed), trimmed];
     setM3UUrls(next);
     await saveM3UUrls(next);
-    // Immediately fetch from new source
     void fetchAll(next, xtreamSources);
   }, [m3uUrls, xtreamSources, fetchAll]);
 
@@ -340,10 +202,7 @@ export function useChannelList(): ChannelListState {
   }, [m3uUrls, xtreamSources, fetchAll]);
 
   const addXtreamSource = useCallback(async (creds: XtreamCredentials) => {
-    const next = [
-      ...xtreamSources.filter((c) => c.server !== creds.server),
-      creds,
-    ];
+    const next = [...xtreamSources.filter((c) => c.server !== creds.server), creds];
     setXtreamSources(next);
     await saveXtreamCreds(next);
     void fetchAll(m3uUrls, next);
@@ -356,7 +215,6 @@ export function useChannelList(): ChannelListState {
     void fetchAll(m3uUrls, next);
   }, [xtreamSources, m3uUrls, fetchAll]);
 
-  // Memoize sections to avoid re-grouping on every render
   const sections = useMemo(
     () => buildSections(channels, favorites, search),
     [channels, favorites, search],
@@ -381,56 +239,5 @@ export function useChannelList(): ChannelListState {
   };
 }
 
-// ─── Background Sync ──────────────────────────────────────────────────────────
-
-/**
- * Background task identifier for expo-background-fetch.
- * Register this in app entry point using BackgroundFetch.registerTaskAsync().
- */
-export const BACKGROUND_SYNC_TASK = 'ntv-channel-sync';
-
-/**
- * Background sync handler — re-fetches all M3U sources and updates the AsyncStorage cache.
- * Call this from within expo-task-manager defineTask(BACKGROUND_SYNC_TASK, ...) handler.
- *
- * @returns BackgroundFetch.BackgroundFetchResult equivalent: 'new-data' | 'no-data' | 'failed'
- */
-export async function runBackgroundChannelSync(): Promise<'new-data' | 'no-data' | 'failed'> {
-  try {
-    const [urls, creds] = await Promise.all([loadM3UUrls(), loadXtreamCreds()]);
-
-    if (urls.length === 0 && creds.length === 0) {
-      return 'no-data';
-    }
-
-    const results = await Promise.allSettled([
-      ...urls.map((url) => fetchM3U(url)),
-      ...creds.map((c) => xtreamFullSync(c).then((r) => r.channels)),
-    ]);
-
-    const merged: Channel[] = [];
-    for (const result of results) {
-      if (result.status === 'fulfilled') {
-        merged.push(...result.value);
-      }
-    }
-
-    if (merged.length === 0) {
-      return 'failed';
-    }
-
-    // Deduplicate
-    const seen = new Set<string>();
-    const deduped = merged.filter((ch) => {
-      if (seen.has(ch.url)) return false;
-      seen.add(ch.url);
-      return true;
-    });
-
-    await saveChannelCache(deduped);
-    return 'new-data';
-  } catch (err) {
-    console.error('[BackgroundSync] Channel sync failed:', err);
-    return 'failed';
-  }
-}
+// Re-export background sync so consumers that previously imported from this module continue to work.
+export { BACKGROUND_SYNC_TASK, runBackgroundChannelSync } from './channelBackgroundSync';
