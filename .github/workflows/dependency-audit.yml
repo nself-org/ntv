@@ -21,6 +21,16 @@ jobs:
         with:
           version: 9
 
+      - name: Create @nself workspace stubs
+        run: |
+          for pkg in auth-core graphql-client i18n observability ui; do
+            mkdir -p stubs/@nself/$pkg
+            echo '{"name":"@nself/'"$pkg"'","version":"0.0.0","main":"index.js"}' > stubs/@nself/$pkg/package.json
+            echo 'module.exports = {};' > stubs/@nself/$pkg/index.js
+          done
+          echo 'packages:' > pnpm-workspace.yaml
+          echo "  - 'stubs/@nself/*'" >> pnpm-workspace.yaml
+
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
