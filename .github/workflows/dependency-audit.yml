@@ -35,4 +35,11 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Dependency audit
+        # CVE-2025-71330 / CVE-2025-71329 (image-size ICNS/JXL/HEIF infinite-loop DoS,
+        # GHSA-w3rx-r6r6-pgpr / GHSA-5p2g-fcmc-qvqq) are ignored via package.json's
+        # pnpm.auditConfig.ignoreCves: no patched release exists upstream (image-size@2.0.2
+        # is npm "latest" and still vulnerable). image-size is a transitive dev/build-time
+        # dependency of Metro (bundler), never exposed to untrusted runtime input in the
+        # shipped app, so the risk is accepted rather than silently passing. Re-check
+        # periodically for a fix: https://github.com/image-size/image-size/issues
         run: pnpm audit --audit-level=high
