@@ -171,3 +171,5 @@ android/app/build/
 *.hprof
 *.jks
 pnpm-lock.yaml
+*.generated.env
+**/*.gen.yml
