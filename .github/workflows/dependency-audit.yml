@@ -10,6 +10,10 @@ on:
   schedule:
     - cron: '0 4 * * 1' # Weekly Monday 04:00 UTC
 
+concurrency:
+  group: dependency-audit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   audit:
     name: pnpm audit
