@@ -1,6 +1,7 @@
 {
   "name": "ntv",
   "version": "1.2.1",
+  "license": "MIT",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
